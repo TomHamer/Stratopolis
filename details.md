@@ -1,7 +1,7 @@
 Group Members: Calum Snowdon - u6044174; Mobile 0414 780 197,
 
-		       Tom Hamer     - u6081614; Mobile 0450 642 476
-		       
+	       Tom Hamer     - u6081614; Mobile 0450 642 476
+      
 Weekly meeting time: Saturday 4pm
 
 Roles:
