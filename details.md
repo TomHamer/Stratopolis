@@ -10,12 +10,14 @@ Tom   -
 Studying the game to develop an idea for what would make a good AI
 	
 Develop outlines for possible methods we could use to test our classes/methods
+
 	
 Calum -
 
 Designing the UI
 	
 Researching ways to improve already implemented code
+
 
 As we develop an idea for how the project will work, we'll assign the
 development of individual modules/classes to specific members.
