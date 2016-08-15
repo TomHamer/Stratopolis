@@ -22,7 +22,7 @@ public class PiecesTest {
 
         boolean success = piece.colours == colours;
 
-        assertTrue("Test failed. Required colours were {G,N,N}, but pieces returned "+Arrays.toString(piece.colours), success );
+        assertTrue("Test failed. Required colours were [G,N,N], but pieces returned "+Arrays.toString(piece.colours), success );
 
     }
     @Test
@@ -36,7 +36,7 @@ public class PiecesTest {
         int[][] coords = new int[][] {coord1,coord2,coord3};
         boolean success = piece.coords == coords;
 
-        assertTrue("Test failed. Required coordinates were {{4,2},{5,2},{4,3}, but pieces returned "+Arrays.deepToString(piece.coords), success );
+        assertTrue("Test failed. Required coordinates were [[4, 2], [5, 2], [4, 3]], but pieces returned "+Arrays.deepToString(piece.coords), success );
 
     }
 

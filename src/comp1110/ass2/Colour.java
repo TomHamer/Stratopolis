@@ -6,3 +6,5 @@ package comp1110.ass2;
 public enum Colour {
     R, G, N, W
 }
+
+

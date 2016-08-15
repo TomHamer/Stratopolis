@@ -19,4 +19,12 @@ public class Tile {
         height++;
         alignment = c;
     }
+
+    public Colour Alignment() {
+        return alignment;
+    }
+
+    public int Height() {
+        return height;
+    }
 }
