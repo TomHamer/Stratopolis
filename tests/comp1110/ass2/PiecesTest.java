@@ -9,34 +9,57 @@ import static org.junit.Assert.*;
  * Created by Tom on 15/08/2016.
  */
 
-//runs a test on
+//runs a test on the pieces class, checking whether the class returns the correct pieces and colours
 
 public class PiecesTest {
 
 
     @Test
     public void coloursTest() throws Exception {
-        String input = "DBKB";
-        Pieces piece = new Pieces(input);
-        Colour[] colours = new Colour[] {Colour.G,Colour.N,Colour.N};
+        String[] inputs = {"DBKB","HCAD","EFDC"};
 
-        boolean success = piece.colours == colours;
+        Colour[][] colours = new Colour[][] {{Colour.G,Colour.N,Colour.N},{Colour.R,Colour.N,Colour.N},{Colour.R,Colour.N,Colour.R}};
 
-        assertTrue("Test failed. Required colours were {G,N,N}, but pieces returned "+Arrays.toString(piece.colours), success );
+        for (int j=0; j<3; j++){
+            colourTestAgainst(inputs[j],colours[j]);
+        }
+
+
+
 
     }
     @Test
     public void coordinatesTest() throws Exception {
-        String input = "DBKB";
-        Pieces piece = new Pieces(input);
+        String[] inputs = {"DBKB","HCAD","EFDC"};
 
-        int[] coord1 = new int[] {4,2};
-        int[] coord2 = new int[] {5,2};
-        int[] coord3 = new int[] {4,3};
-        int[][] coords = new int[][] {coord1,coord2,coord3};
-        boolean success = piece.coords == coords;
+        int[][][] testCoords = new int[][][] {{{3,1}, {4,1},{3,0}},{{7,2},{6,2},{7,3}},{{5,6},{5,5},{4,6}}};
 
-        assertTrue("Test failed. Required coordinates were {{4,2},{5,2},{4,3}, but pieces returned "+Arrays.deepToString(piece.coords), success );
+        for (int j=0; j<3; j++){
+            coordTestAgainst(inputs[j],testCoords[j]);
+        }
+
+
+
+    }
+
+    private void colourTestAgainst(String move, Colour[] colours) {
+        Pieces piece = new Pieces(move);
+        boolean success= true;
+            if (!Arrays.equals(colours, piece.colours)) {
+                assertTrue("Test failed. Required colours for" + move + " were" + Arrays.toString(colours)+", but pieces returned "+Arrays.toString(piece.colours), success );
+            }
+        }
+
+
+    private void coordTestAgainst(String move, int[][] coords) {
+        Pieces piece = new Pieces(move);
+        boolean success= true;
+        for (int i = 0; i < 3; i++) {
+            if (!Arrays.equals(coords[i], piece.coords[i])) {
+                assertTrue("Test failed. Required coordinates for " + move + " were" + Arrays.deepToString(coords) + ", but pieces returned "+Arrays.deepToString(piece.coords), success );
+            }
+        }
+
 
     }
 
