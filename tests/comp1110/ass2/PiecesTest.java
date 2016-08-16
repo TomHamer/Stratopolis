@@ -32,7 +32,7 @@ public class PiecesTest {
     public void coordinatesTest() throws Exception {
         String[] inputs = {"DBKB","HCAD","EFDC"};
 
-        int[][][] testCoords = new int[][][] {{{3,1}, {4,1},{3,0}},{{7,2},{6,2},{7,3}},{{5,6},{5,5},{4,6}}};
+        int[][][] testCoords = new int[][][] {{{3,1}, {4,1},{3,0}},{{7,2},{6,2},{7,3}},{{4,5},{4,4},{3,5}}};
 
         for (int j=0; j<3; j++){
             coordTestAgainst(inputs[j],testCoords[j]);
@@ -44,19 +44,19 @@ public class PiecesTest {
 
     private void colourTestAgainst(String move, Colour[] colours) {
         Pieces piece = new Pieces(move);
-        boolean success= true;
+
             if (!Arrays.equals(colours, piece.colours)) {
-                assertTrue("Test failed. Required colours for" + move + " were" + Arrays.toString(colours)+", but pieces returned "+Arrays.toString(piece.colours), success );
+                assertTrue("Test failed. Required colours for" + move + " were" + Arrays.toString(colours)+", but pieces returned "+Arrays.toString(piece.colours), false );
             }
         }
 
 
     private void coordTestAgainst(String move, int[][] coords) {
         Pieces piece = new Pieces(move);
-        boolean success= true;
+
         for (int i = 0; i < 3; i++) {
             if (!Arrays.equals(coords[i], piece.coords[i])) {
-                assertTrue("Test failed. Required coordinates for " + move + " were" + Arrays.deepToString(coords) + ", but pieces returned "+Arrays.deepToString(piece.coords), success );
+                assertTrue("Test failed. Required coordinates for " + move + " were" + Arrays.deepToString(coords) + ", but pieces returned "+Arrays.deepToString(piece.coords), false );
             }
         }
 
