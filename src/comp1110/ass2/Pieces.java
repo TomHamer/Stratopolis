@@ -139,8 +139,8 @@ public class Pieces {
                     break;
                 case 'O':
 
-                    colours[0] = Colour.G;
-                    colours[1] = Colour.N;
+                    colours[0] = Colour.N;
+                    colours[1] = Colour.G;
                     colours[2] = Colour.G;
 
                     break;
@@ -187,8 +187,8 @@ public class Pieces {
 
             // do piece U
 
-            colours[0] = Colour.G;
-            colours[1] = Colour.R;
+            colours[0] = Colour.R;
+            colours[1] = Colour.G;
 
 
         }
@@ -205,11 +205,11 @@ public class Pieces {
 
                 } else {
 
-                    int[] coord1A = {valX, valY + 1};
+                    int[] coord1A = {valX + 1, valY};
                     coords[1] = coord1A;
 
 
-                    int[] coord2A = {valX + 1, valY};
+                    int[] coord2A = {valX, valY + 1};
                     coords[2] = coord2A;
                 }
 
@@ -224,11 +224,11 @@ public class Pieces {
 
                 } else {
 
-                    int[] coord1B = {valX + 1, valY};
+                    int[] coord1B = {valX, valY + 1};
                     coords[1] = coord1B;
 
 
-                    int[] coord2B = {valX, valY - 1};
+                    int[] coord2B = {valX - 1, valY};
                     coords[2] = coord2B;
                 }
 
@@ -242,11 +242,11 @@ public class Pieces {
 
                 } else {
 
-                    int[] coord1C = {valX, valY - 1};
+                    int[] coord1C = {valX - 1, valY};
                     coords[1] = coord1C;
 
 
-                    int[] coord2C = {valX - 1, valY};
+                    int[] coord2C = {valX, valY - 1};
                     coords[2] = coord2C;
                 }
 
@@ -260,11 +260,11 @@ public class Pieces {
 
                 } else {
 
-                    int[] coord1D = {valX - 1, valY};
+                    int[] coord1D = {valX, valY - 1};
                     coords[1] = coord1D;
 
 
-                    int[] coord2D = {valX, valY + 1};
+                    int[] coord2D = {valX + 1, valY};
                     coords[2] = coord2D;
                 }
 

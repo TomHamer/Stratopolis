@@ -11,6 +11,10 @@ import java.util.Set;
  */
 public class StratoGame {
 
+    public static void main(String[] args) {
+        System.out.println(isPlacementWellFormed("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC"));
+    }
+
     /**
      * Determine whether a tile placement is well-formed according to the following:
      * - it consists of exactly four characters
@@ -56,9 +60,11 @@ public class StratoGame {
 
         for (int i = 4; i <= placement.length() - 4; i += 4) {
             if (!isTilePlacementWellFormed(placement.substring(i, i+4))) {return false;}
-            if (green && !(placement.charAt(i) <= 'J')) {return false;}
-            if (!green && (placement.charAt(i) <= 'J')) {return false;}
-            if (chars.contains(placement.charAt(i +2))) {return false;}
+            if (green && (placement.charAt(i+2) <= 'J')) {return false;}
+            if (!green && !(placement.charAt(i+2) <= 'J')) {return false;}
+            if (chars.contains(placement.charAt(i+2))) {
+                System.out.println(chars);
+                System.out.println( placement.charAt(i+2));return false;}
             green = !green;
             chars.add(placement.charAt(i+2));
         }
@@ -76,13 +82,13 @@ public class StratoGame {
         // FIXME Task 6: determine whether a placement is valid
         BoardState board = new BoardState();
         for (int i = 0; i <= placement.length() - 4; i += 4) {
-            if (board.IsValidMove(placement)) {
-                board.PlaceTile(placement);
+            if (board.IsValidMove(placement.substring(i, i+4))) {
+                board.PlaceTile(placement.substring(i, i+4));
             } else {
                 return false;
             }
         }
-        return true;
+        return isPlacementWellFormed(placement);
     }
 
     /**
