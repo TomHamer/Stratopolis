@@ -25,12 +25,35 @@ public class BoardState {
 
     // Determine if a given move is valid on the board
     public boolean IsValidMove (String move) {
-        return true;
+        Pieces piece = new Pieces(move);
+        Colour[] col = piece.colours;
+        int[][] cor = piece.coords;
+        boolean valid = true;
+
+        for (int i = 0; i < 3; i++) {
+            Colour c = board[cor[i][0]][cor[i][1]].Alignment();
+            if (  !(c == col[i]   || col[i] == Colour.N ||
+                    c == Colour.N || c      == Colour.W)) {
+                return false;
+            }
+        }
+
+        return (board[cor[0][0]][cor[0][1]].Height() ==
+                board[cor[1][0]][cor[1][1]].Height() &&
+                board[cor[1][0]][cor[1][1]].Height() ==
+                board[cor[2][0]][cor[2][1]].Height());
     }
 
     // Perform a given move - keep track of played pieces with state
     public void PlaceTile (String move) {
+        state = state + move;
+        Pieces piece = new Pieces(move);
+        Colour[] col = piece.colours;
+        int[][] cor = piece.coords;
 
+        for (int i = 0; i < 3; i++) {
+            board[cor[i][0]][cor[i][1]].Stack(col[i]);
+        }
     }
 
     // Return the score for a given player. Can possibly optimise to score both players at once

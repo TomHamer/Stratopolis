@@ -1,5 +1,8 @@
 package comp1110.ass2;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This class provides the text interface for the Strato Game
  *
@@ -21,7 +24,15 @@ public class StratoGame {
      */
     static boolean isTilePlacementWellFormed(String tilePlacement) {
         // FIXME Task 3: determine whether a tile placement is well-formed
-        return false;
+        char x = tilePlacement.charAt(0);
+        char y = tilePlacement.charAt(1);
+        char p = tilePlacement.charAt(2);
+        char o = tilePlacement.charAt(3);
+
+        return (x >= 'A' && x <= 'Z' &&
+                y >= 'A' && y <= 'Z' &&
+                p >= 'A' && p <= 'U' &&
+                o >= 'A' && o <= 'D');
     }
 
     /**
@@ -38,8 +49,20 @@ public class StratoGame {
      */
     static boolean isPlacementWellFormed(String placement) {
         // FIXME Task 4: determine whether a placement is well-formed
-        String foo;
-        return false;
+        if (!placement.substring(0, 4).equals("MMUA")) {return false;}
+        Set<Character> chars = new HashSet<>();
+
+        boolean green = true;
+
+        for (int i = 4; i <= placement.length() - 4; i += 4) {
+            if (!isTilePlacementWellFormed(placement.substring(i, i+4))) {return false;}
+            if (green && !(placement.charAt(i) <= 'J')) {return false;}
+            if (!green && (placement.charAt(i) <= 'J')) {return false;}
+            if (chars.contains(placement.charAt(i +2))) {return false;}
+            green = !green;
+            chars.add(placement.charAt(i+2));
+        }
+        return (placement.length() % 4 == 0);
     }
 
     /**
@@ -51,7 +74,15 @@ public class StratoGame {
      */
     static boolean isPlacementValid(String placement) {
         // FIXME Task 6: determine whether a placement is valid
-        return false;
+        BoardState board = new BoardState();
+        for (int i = 0; i <= placement.length() - 4; i += 4) {
+            if (board.IsValidMove(placement)) {
+                board.PlaceTile(placement);
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
