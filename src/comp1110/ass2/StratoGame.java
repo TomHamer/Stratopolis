@@ -12,7 +12,8 @@ import java.util.Set;
 public class StratoGame {
 
     public static void main(String[] args) {
-        System.out.println(isPlacementWellFormed("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC"));
+        BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC");
+        b.PutBoard();
     }
 
     /**
@@ -78,7 +79,7 @@ public class StratoGame {
      * @param placement A placement string
      * @return True if the placement is valid
      */
-    static boolean isPlacementValid(String placement) {
+    public static boolean isPlacementValid(String placement) {
         // FIXME Task 6: determine whether a placement is valid
         BoardState board = new BoardState();
         for (int i = 0; i <= placement.length() - 4; i += 4) {

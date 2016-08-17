@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 public class Board extends Application {
     private static final int BOARD_WIDTH = 933;
     private static final int BOARD_HEIGHT = 700;
+    private static final int SQUARE_SIZE = 23;
 
     // FIXME Task 8: Implement a basic playable Strato Game in JavaFX that only allows pieces to be placed in valid places
 

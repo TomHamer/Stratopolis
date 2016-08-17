@@ -1,5 +1,12 @@
 package comp1110.ass2;
 
+import javafx.scene.Group;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+
 /**
  * Created by calum on 8/15/2016.
  */
@@ -11,6 +18,8 @@ package comp1110.ass2;
 public class BoardState {
     private Tile[][] board;
     private String state;
+    private static final String URI_BASE = "gui/assets/";
+    private static final int SQUARE_SIZE = 28;
 
     public BoardState() {
         board = new Tile[26][26];
@@ -31,7 +40,7 @@ public class BoardState {
             }
         }
 
-        for (int i = 0; i < start.length() - 4; i += 4) {
+        for (int i = 0; i <= start.length() - 4; i += 4) {
             this.PlaceTile(start.substring(i, i+4));
         }
     }
@@ -78,6 +87,42 @@ public class BoardState {
                 System.out.print(t.Alignment() + ", ");
             }
             System.out.println();
+        }
+    }
+
+    public Group GetBoardGroup (double squareSize) {
+        Group display = new Group();
+
+        Rectangle border = new Rectangle((26 * squareSize) + 20, (26 * squareSize) + 20);
+        border.relocate(-10, -10);
+        border.setStrokeWidth(3);
+        border.setFill(Color.WHITE);
+        border.setStroke(Color.BLACK);
+        display.getChildren().add(border);
+
+        for (int x = 0; x < 26; x++) {
+            for (int y = 0; y < 26; y++) {
+                Group toAdd = board[y][x].TileFX(squareSize);
+                if (toAdd == null) {continue;}
+                toAdd.relocate(x * squareSize, y * squareSize);
+                display.getChildren().add(toAdd);
+            }
+        }
+
+
+
+
+        return display;
+    }
+
+
+
+    class Square extends ImageView {
+        Square (String colour, double size) {
+            System.out.println(URI_BASE + colour + ".png");
+            setImage(new Image(BoardState.class.getResource(URI_BASE + colour + ".png").toString()));
+            setFitHeight(size);
+            setFitWidth(size);
         }
     }
 
