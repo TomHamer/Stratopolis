@@ -109,10 +109,75 @@ public class BoardState {
             }
         }
 
-
-
-
         return display;
+    }
+
+    public int BoardScore () {
+        Union[][] bases = new Union[26][26];
+        Union[][] sets = new Union[26][26];
+        int maxLength = 0;
+        for (int i = 0; i < 26; i++) {
+            for (int j = 0; j < 26; j++) {
+                if (board[i][j].Alignment() == Colour.G) {
+                    sets[i][j] = new Union(board[i][j]);
+                    bases[i][j] = new Union(board[i][j]);
+                    maxLength = 1;
+                }
+            }
+        }
+
+        for (int i = 0; i < 26; i++) {
+            for (int j = 0; j < 26; j++) {
+                if (board[j][i].Alignment() == Colour.G) {
+                    if (i < 25 && board[j][i+1].Alignment() == Colour.G) {
+                        if (sets[j][i].head != sets[j][i+1].head) {
+                            sets[j][i].Add(sets[j][i + 1]);
+                            sets[j][i+1] = sets[j][i];
+                            maxLength = Math.max(sets[j][i].head.length, maxLength);
+                        }
+                    }
+                    if (j < 25 && board[j+1][i].Alignment() == Colour.G) {
+                        if (sets[j][i].head != sets[j+1][i].head) {
+                            sets[j][i].Add(sets[j+1][i]);
+                            sets[j+1][i] = sets[j][i];
+                            maxLength = Math.max(sets[j][i].head.length, maxLength);
+                        }
+                    }
+                }
+            }
+        }
+        return maxLength;
+    }
+
+    class Union {
+        Union head;
+        Union next;
+        Object item;
+        int length;
+
+        Union (Object o) {
+            head = this;
+            next = null;
+            item = o;
+            length = 1;
+        }
+
+        void Add (Union u) {
+            if (next == null) {
+                u.SetHead(head);
+                next = u;
+                head.length += u.length;
+            } else {
+                next.Add(u);
+            }
+        }
+
+        void SetHead (Union u) {
+            head = u;
+            if (next != null) {
+                next.SetHead(u);
+            }
+        }
     }
 
 
