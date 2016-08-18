@@ -12,9 +12,10 @@ import java.util.Set;
 public class StratoGame {
 
     public static void main(String[] args) {
-        //BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC");
-        BoardState b = new BoardState("AATAADTD");
-        System.out.println("Green score is: " + b.BoardScore());
+        BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC");
+        //BoardState b = new BoardState("AATAADTD");
+        System.out.println("Green score is: " + b.BoardScore(true));
+        System.out.println("Red  score  is: " + b.BoardScore(false));
     }
 
     /**
@@ -104,8 +105,7 @@ public class StratoGame {
      */
     static int getScoreForPlacement(String placement, boolean green) {
         // FIXME Task 7: determine the score for a player given a placement
-        BoardState board = new BoardState(placement);
-        return board.BoardScore();
+        return (new BoardState(placement)).BoardScore(green);
     }
 
     /**

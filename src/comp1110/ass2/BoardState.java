@@ -112,15 +112,16 @@ public class BoardState {
         return display;
     }
 
-    public int BoardScore () {
-        Union[][] bases = new Union[26][26];
+    public int BoardScore (boolean green) {
+        Colour col;
+        if (green) {col = Colour.G;}
+        else {col = Colour.R;}
         Union[][] sets = new Union[26][26];
         int maxLength = 0;
         for (int i = 0; i < 26; i++) {
             for (int j = 0; j < 26; j++) {
-                if (board[i][j].Alignment() == Colour.G) {
-                    sets[i][j] = new Union(board[i][j]);
-                    bases[i][j] = new Union(board[i][j]);
+                if (board[i][j].Alignment() == col) {
+                    sets[i][j] = new Union();
                     maxLength = 1;
                 }
             }
@@ -128,16 +129,24 @@ public class BoardState {
 
         for (int i = 0; i < 26; i++) {
             for (int j = 0; j < 26; j++) {
-                if (board[j][i].Alignment() == Colour.G) {
-                    if (i < 25 && board[j][i+1].Alignment() == Colour.G) {
-                        if (sets[j][i].head != sets[j][i+1].head) {
+                if (board[j][i].Alignment() == col) {
+                    if (i < 25 && board[j][i+1].Alignment() == col) {
+                        if (sets[j][i].head.length < sets[j][i+1].head.length) {
+                            sets[j][i+1].Add(sets[j][i]);
+                            sets[j][i] = sets[j][i+1];
+                            maxLength = Math.max(sets[j][i].head.length, maxLength);
+                        } else if (sets[j][i].head != sets[j][i+1].head) {
                             sets[j][i].Add(sets[j][i + 1]);
                             sets[j][i+1] = sets[j][i];
                             maxLength = Math.max(sets[j][i].head.length, maxLength);
                         }
                     }
-                    if (j < 25 && board[j+1][i].Alignment() == Colour.G) {
-                        if (sets[j][i].head != sets[j+1][i].head) {
+                    if (j < 25 && board[j+1][i].Alignment() == col) {
+                        if (sets[j][i].head.length < sets[j+1][i].head.length) {
+                            sets[j+1][i].Add(sets[j][i]);
+                            sets[j][i] = sets[j+1][i];
+                            maxLength = Math.max(sets[j][i].head.length, maxLength);
+                        } else if (sets[j][i].head != sets[j+1][i].head) {
                             sets[j][i].Add(sets[j+1][i]);
                             sets[j+1][i] = sets[j][i];
                             maxLength = Math.max(sets[j][i].head.length, maxLength);
@@ -152,13 +161,11 @@ public class BoardState {
     class Union {
         Union head;
         Union next;
-        Object item;
         int length;
 
-        Union (Object o) {
+        Union () {
             head = this;
             next = null;
-            item = o;
             length = 1;
         }
 
