@@ -6,8 +6,11 @@ import javafx.scene.image.ImageView;
 import java.util.Random;
 import java.util.Arrays;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.layout.HBox;
+
 
 
 
@@ -23,15 +26,33 @@ public class Deck {
     private char currentPieceType;
     private String toString;
     private char[] pieceArray;
+    private int SIZE = 10;
 
     private static final String URI_BASE = "gui/assets/";
 
     private int homeX, homeY;
+    private int draggedX, draggedY;
+
+    private Group deckFX(double size, int x, int y) {
+        Group group = new Group();
 
 
-    class FXDraggablePiece extends ImageView {
+        FXDraggablePiece FXDeck = new FXDraggablePiece(currentPieceType,size,x,y);
+
+        group.getChildren().add(FXDeck);
+
+
+        return  group;
+    }
+
+
+
+
+    private class FXDraggablePiece extends ImageView {
 
         double mouseX, mouseY;
+
+        //doesnt deal with orientation yet
 
 
         FXDraggablePiece (char pieceType, double size, int x, int y) {
@@ -41,26 +62,51 @@ public class Deck {
             setFitWidth(size);
             setOnScroll(event -> {// scroll to change orientation
                 rotate();
+                this.setRotate(180);
                 event.consume();
             });
-            setOnMousePressed(event -> {      // mouse press indicates begin of drag
+            setOnMousePressed(event -> {
+
+                // mouse press indicates begin of drag
                 mouseX = event.getSceneX();
                 mouseY = event.getSceneY();
+
             });
             setOnMouseDragged(event -> {      // mouse is being dragged
-                toFront();
+                //toFront();
                 double movementX = event.getSceneX() - mouseX;
                 double movementY = event.getSceneY() - mouseY;
                 setLayoutX(getLayoutX() + movementX);
                 setLayoutY(getLayoutY() + movementY);
+
                 mouseX = event.getSceneX();
                 mouseY = event.getSceneY();
                 event.consume();
             });
             setOnMouseReleased(event -> {     // drag is complete
                // snapToGrid
+
+                if(true) {
+
+
+
+                drop();
+
+                    this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+                    setLayoutX(homeX);
+                    setLayoutY(homeY);
+
+                } else {
+
+
+                //currently just snaps back home
                 setLayoutX(homeX);
                 setLayoutY(homeY);
+
+
+                }
+                event.consume();
+
 
 
             });
@@ -77,7 +123,7 @@ public class Deck {
 
     //create a javafx object
 
-    public Deck(Colour alignment, int x, int y) {
+    public Group Deck(Colour alignment, int x, int y) {
         char[] deck;
 
         //generate a new deck
@@ -93,7 +139,8 @@ public class Deck {
         currentPieceOrientation = 'A';
         currentPieceType = pieceArray[0];
 
-        
+        return deckFX(100, x, y);
+
 
 
 
@@ -111,6 +158,7 @@ public class Deck {
 
         pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
         currentPieceType = pieceArray[0];
+        //update board placement
 
         //place piece and get next piece
 
