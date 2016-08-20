@@ -33,17 +33,7 @@ public class Deck {
     private int homeX, homeY;
     private int draggedX, draggedY;
 
-    private Group deckFX(double size, int x, int y) {
-        Group group = new Group();
-
-
-        FXDraggablePiece FXDeck = new FXDraggablePiece(currentPieceType,size,x,y);
-
-        group.getChildren().add(FXDeck);
-
-
-        return  group;
-    }
+    private ImageView deckFX(double size, int x, int y) { return new FXDraggablePiece(currentPieceType,size,x,y); }
 
 
 
@@ -58,11 +48,14 @@ public class Deck {
         FXDraggablePiece (char pieceType, double size, int x, int y) {
             System.out.println(URI_BASE + pieceType + ".png");
             setImage(new Image(BoardState.class.getResource(URI_BASE + pieceType + ".png").toString()));
+            setLayoutX(homeX);
+            setLayoutY(homeY);
             setFitHeight(size);
             setFitWidth(size);
             setOnScroll(event -> {// scroll to change orientation
                 rotate();
-                this.setRotate(180);
+                double rotation = this.getRotate();
+                this.setRotate((rotation+90) % 360);
                 event.consume();
             });
             setOnMousePressed(event -> {
@@ -86,11 +79,13 @@ public class Deck {
             setOnMouseReleased(event -> {     // drag is complete
                // snapToGrid
 
-                if(true) {
+                if(true) { //if placement is fine
 
 
 
-                drop();
+                drop((int) event.getSceneX(), (int) event.getSceneY(), (int) this.getRotate(), pieceType);
+
+                    this.setRotate(0);
 
                     this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
                     setLayoutX(homeX);
@@ -123,13 +118,15 @@ public class Deck {
 
     //create a javafx object
 
-    public Group Deck(Colour alignment, int x, int y) {
+    public ImageView makeDeck(Colour alignment, int x, int y) {
         char[] deck;
+        homeX = x;
+        homeY = y;
 
         //generate a new deck
         if (alignment == Colour.R) {
             deck = new char[] {'A','B','C','D','E','F','G','H','I','J'};
-        } {
+        } else  {
             deck = new char[] {'K','L','M','N','O','P','Q','R','S','T'};
         }
         //shuffle the deck
@@ -139,7 +136,7 @@ public class Deck {
         currentPieceOrientation = 'A';
         currentPieceType = pieceArray[0];
 
-        return deckFX(100, x, y);
+        return deckFX(100, homeX, homeY);
 
 
 
@@ -154,10 +151,24 @@ public class Deck {
 
     }
 
-    public void drop() {
+    public void drop(int x, int y, int rotation, char piece) {
 
         pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
         currentPieceType = pieceArray[0];
+
+        System.out.println("Attempted to place " + currentPieceType + " in " + currentPieceOrientation
+                             + " orientation " + " at " + "("+x+","+y+")");
+
+        // do some conversion from screen coords to board coords
+
+        //if isPlacementValid() {
+
+        //makePlacement(textField.getText());
+
+        //}
+
+
+
         //update board placement
 
         //place piece and get next piece
