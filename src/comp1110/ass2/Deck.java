@@ -26,12 +26,14 @@ public class Deck {
     private char currentPieceType;
     private String toString;
     private char[] pieceArray;
-    private int SIZE = 10;
+
 
     private static final String URI_BASE = "gui/assets/";
 
     private int homeX, homeY;
     private int draggedX, draggedY;
+    private final int SIZE_OF_DECK = 100; // this is not the number of pieces in the deck, it is the physical size of the icon
+    //on screen
 
     private ImageView deckFX(double size, int x, int y) { return new FXDraggablePiece(currentPieceType,size,x,y); }
 
@@ -83,9 +85,12 @@ public class Deck {
 
 
 
-                drop((int) event.getSceneX(), (int) event.getSceneY(), (int) this.getRotate(), pieceType);
+                drop((int) this.getLayoutX(), (int) this.getLayoutY(), (int) this.getRotate(), pieceType);
+
 
                     this.setRotate(0);
+
+
 
                     this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
                     setLayoutX(homeX);
@@ -136,7 +141,7 @@ public class Deck {
         currentPieceOrientation = 'A';
         currentPieceType = pieceArray[0];
 
-        return deckFX(100, homeX, homeY);
+        return deckFX(SIZE_OF_DECK, homeX, homeY);
 
 
 
