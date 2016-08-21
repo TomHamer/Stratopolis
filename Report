@@ -1,0 +1,18 @@
+Report for the assignment
+
+
+ 15/08
+
+ The team discussed the structure of the program as a whole. Several classes were created - boardState, Colour, Pieces and Tile.
+ This conversation helped us to get our heads around the specification of the program.
+ Two seperate roles were then decided on for the coming week: Tom would write the code in Pieces.java,
+ which would enable pieces in string representation to be decoded into a list of colours and coords to be passed to boardState.java.
+ The role of Calum was then to begin programming the essential functions for boardState that would enable the objects that were passed from Pieces.java to be placed on the board.
+
+16/08
+
+Testing seemed to suggest that Pieces.java was doing its job correctly, however the team spent some time reflecting on the fact that
+the code in Pieces.java was hard to test due to the hardcoding of many cases of different piece type and orientation, which there seemed to be no other way around.
+To do the job well, the test would need to have many samples of each case, however the team decided to wait until something went wrong to go back and more thoroughly test the class.
+
+Calum continued to work on the boardstate, and implemented code for tasks 3,4,6.

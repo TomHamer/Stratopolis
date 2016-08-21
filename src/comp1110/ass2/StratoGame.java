@@ -77,7 +77,7 @@ public class StratoGame {
     /**
      * Determine whether a placement is valid.  To be valid, the placement must be well-formed
      * and each tile placement must follow the game's placement rules.
-     *
+
      * @param placement A placement string
      * @return True if the placement is valid
      */

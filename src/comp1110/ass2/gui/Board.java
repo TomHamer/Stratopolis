@@ -22,6 +22,8 @@ public class Board extends Application {
     private static final int DECK_COORD_Y = 50;
     private BoardState board = new BoardState();
 
+
+
     // FIXME Task 8: Implement a basic playable Strato Game in JavaFX that only allows pieces to be placed in valid places
 
     // FIXME Task 9: Implement scoring
