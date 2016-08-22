@@ -32,6 +32,7 @@ public class BoardState {
         state = "";
     }
 
+    // Creates a BoardState and adds the given placement string to the board.
     public BoardState(String start) {
         board = new Tile[26][26];
         for (int i = 0; i < 26; i++) {
@@ -51,6 +52,7 @@ public class BoardState {
         Colour[] col = piece.colours;
         int[][] cor = piece.coords;
 
+        // Checks that the colours it's been placed on are consistent with the rules.
         for (int i = 0; i < 3; i++) {
             Colour c = board[cor[i][1]][cor[i][0]].Alignment();
             if (  !(c == col[i]   || col[i] == Colour.N ||
@@ -59,6 +61,8 @@ public class BoardState {
             }
         }
 
+        // Checks that the heights of the tiles below are valid and that there is a piece adjacent,
+        // and that if it's being stacked it is straddling at least 2 pieces.
         return (board[cor[0][1]][cor[0][0]].Height() == board[cor[1][1]][cor[1][0]].Height() &&
                 board[cor[1][1]][cor[1][0]].Height() == board[cor[2][1]][cor[2][0]].Height()) && Adjacent(move) && Straddle(move);
     }
@@ -70,10 +74,12 @@ public class BoardState {
         int x = piece.coords[0][0];
         int y = piece.coords[0][1];
 
+        // Each case checks the surrounding region of the piece. If any of them have non-zero
+        // height, there is a tile there so the new piece is adjacent top another piece.
         switch (move.charAt(3)) {
             case 'A':
                 if (y - 1 >= 0) {
-                    adjacent = adjacent || board[y-1][x].Height() != 0 || board[y-1][x+1].Height() != 0;
+                    adjacent = board[y-1][x].Height() != 0 || board[y-1][x+1].Height() != 0;
                 }
                 if (x - 1 >= 0) {
                     adjacent = adjacent || board[y][x-1].Height() != 0 || board[y+1][x-1].Height() != 0;
@@ -85,7 +91,7 @@ public class BoardState {
 
             case 'B':
                 if (y - 1 >= 0) {
-                    adjacent = adjacent || board[y-1][x].Height() != 0 || board[y-1][x-1].Height() != 0;
+                    adjacent = board[y-1][x].Height() != 0 || board[y-1][x-1].Height() != 0;
                 }
                 if (x + 1 < 26) {
                     adjacent = adjacent || board[y][x+1].Height() != 0 || board[y+1][x+1].Height() != 0;
@@ -97,7 +103,7 @@ public class BoardState {
 
             case 'C':
                 if (y + 1 < 26) {
-                    adjacent = adjacent || board[y+1][x].Height() != 0 || board[y+1][x-1].Height() != 0;
+                    adjacent = board[y+1][x].Height() != 0 || board[y+1][x-1].Height() != 0;
                 }
                 if (x + 1 < 26) {
                     adjacent = adjacent || board[y][x+1].Height() != 0 || board[y-1][x+1].Height() != 0;
@@ -109,7 +115,7 @@ public class BoardState {
 
             case 'D':
                 if (y + 1 < 26) {
-                    adjacent = adjacent || board[y+1][x].Height() != 0 || board[y+1][x+1].Height() != 0;
+                    adjacent = board[y+1][x].Height() != 0 || board[y+1][x+1].Height() != 0;
                 }
                 if (x - 1 >= 0) {
                     adjacent = adjacent || board[y][x-1].Height() != 0 || board[y-1][x-1].Height() != 0;
@@ -126,10 +132,17 @@ public class BoardState {
     // Determines whether a piece straddles two already placed pieces
     private boolean Straddle (String move) {
         int[][] cor = new Pieces(move).coords;
+        // This is the final test performed in the validation of a placement,
+        // so we can assume that all the tiles are of the same height. If any of
+        // them are 0, the piece isn't being stacked so we don't bother with the rest.
         if (board[cor[0][1]][cor[0][0]].Height() == 0) {
             return true;
         }
 
+        // This loop finds the previous piece which takes up one of the same spaces
+        // as the piece being placed. If that piece takes up the exact same space as
+        // the piece being placed, the new piece isn't straddling so the placement is invalid.
+        // If not, it is straddling.
         for (int i = state.length() - 4; i >= 0; i -= 4) {
             String lastMove = state.substring(i, i+4);
             int[][] cor2 = (new Pieces(lastMove)).coords;
@@ -154,7 +167,9 @@ public class BoardState {
         return true;
     }
 
-    // Perform a given move - keep track of played pieces with state
+    // Perform a given move - keep track of played pieces in the state string
+    // NOTE: this method is unsafe, it doesn't check whether or not pieces
+    // are valid before adding them. ALWAYS check with IsValidMove() before using.
     public void PlaceTile (String move) {
         state = state + move;
         Pieces piece = new Pieces(move);
@@ -168,16 +183,7 @@ public class BoardState {
         }
     }
 
-    public void PutBoard () {
-        for (Tile[] ts : board) {
-            System.out.print("[");
-            for (Tile t : ts) {
-                System.out.print(t.Alignment() + ", ");
-            }
-            System.out.println();
-        }
-    }
-
+    // Turns the board into a JavaFX group
     public Group GetBoardGroup (double squareSize) {
         Group display = new Group();
 
@@ -217,6 +223,8 @@ public class BoardState {
             }
         }
 
+        // "Links together" adjacent tiles of the same colour with a Union type.
+        // Keeps track of the largest union created and returns the recorded value at the end.
         for (int i = 0; i < 26; i++) {
             for (int j = 0; j < 26; j++) {
                 if (board[j][i].Alignment() == col) {
@@ -281,17 +289,6 @@ public class BoardState {
             if (next != null) {
                 next.SetHead(u);
             }
-        }
-    }
-
-
-
-    class Square extends ImageView {
-        Square (String colour, double size) {
-            System.out.println(URI_BASE + colour + ".png");
-            setImage(new Image(BoardState.class.getResource(URI_BASE + colour + ".png").toString()));
-            setFitHeight(size);
-            setFitWidth(size);
         }
     }
 

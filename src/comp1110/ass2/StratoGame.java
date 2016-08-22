@@ -12,8 +12,8 @@ import java.util.Set;
 public class StratoGame {
 
     public static void main(String[] args) {
-        BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC");
-        //BoardState b = new BoardState("AATAADTD");
+        //BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC");
+        BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBLOFALKTDOQHCNJNBINCDPPOAJKGBJPPDPPAASPRCQLCDSRRCMIIDPJKDLQIBOSLDIIHARJQDUPEBHNKBTOJD");
         System.out.println("Green score is: " + b.BoardScore(true));
         System.out.println("Red  score  is: " + b.BoardScore(false));
     }

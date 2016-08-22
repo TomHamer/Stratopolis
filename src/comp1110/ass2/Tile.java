@@ -36,6 +36,7 @@ public class Tile {
         return height;
     }
 
+    // Returns a JavaFX Group which represents the tile
     public Group TileFX (double size) {
         if (alignment == Colour.W) {return null;}
 
@@ -53,6 +54,7 @@ public class Tile {
         return toReturn;
     }
 
+    // Essentially taken from Board.java from assignment 1. Used in TileFX.
     class Square extends ImageView {
         Square (Colour colour, double size) {
             String col = "";
