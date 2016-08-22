@@ -44,17 +44,9 @@ public class Tile {
         if (height > 1 &&  !(alignment == Colour.N)) {
             Label l = new Label("" + height);
 
-
-            //l.relocate(7 * (size / 30), -5 * (size / 30));
             l.setTranslateX(9 * size / 30);
             l.setFont(new Font(0.75*size));
             toReturn.getChildren().add(l);
-
-
-            //Text t = new Text(""+height);
-            //t.setFont(new Font(size - 2));
-            //toReturn.getChildren().add(t);
-            //t.relocate(7, -5);
         }
 
 
