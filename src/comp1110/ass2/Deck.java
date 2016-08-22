@@ -26,19 +26,15 @@ public class Deck {
     private char currentPieceType;
     private String toString;
     private char[] pieceArray;
-
+    private comp1110.ass2.gui.Board board;
 
     private static final String URI_BASE = "gui/assets/";
 
     private int homeX, homeY;
-    private int draggedX, draggedY;
-    private final int SIZE_OF_DECK = 100; // this is not the number of pieces in the deck, it is the physical size of the icon
-    //on screen
+    private final int SIZE_OF_DECK = 50; // this is not the number of pieces in the deck, it is the physical size of the icon
+
 
     private ImageView deckFX(double size, int x, int y) { return new FXDraggablePiece(currentPieceType,size,x,y); }
-
-
-
 
     private class FXDraggablePiece extends ImageView {
 
@@ -90,8 +86,6 @@ public class Deck {
 
                     this.setRotate(0);
 
-
-
                     this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
                     setLayoutX(homeX);
                     setLayoutY(homeY);
@@ -123,10 +117,11 @@ public class Deck {
 
     //create a javafx object
 
-    public ImageView makeDeck(Colour alignment, int x, int y) {
+    public ImageView makeDeck(comp1110.ass2.gui.Board theBoard, Colour alignment, int x, int y) {
         char[] deck;
         homeX = x;
         homeY = y;
+        board = theBoard;
 
         //generate a new deck
         if (alignment == Colour.R) {
@@ -163,6 +158,11 @@ public class Deck {
 
         System.out.println("Attempted to place " + currentPieceType + " in " + currentPieceOrientation
                              + " orientation " + " at " + "("+x+","+y+")");
+
+
+        board.makePlacement("AA"+currentPieceType+'A');
+
+
 
         // do some conversion from screen coords to board coords
 
