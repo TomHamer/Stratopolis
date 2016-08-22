@@ -29,8 +29,6 @@ public class Viewer extends Application {
     private static final int VIEWER_HEIGHT = 700;
     private static final int SQUARE_SIZE = 23;
 
-    private static final String URI_BASE = "assets/";
-
     private final Group root = new Group();
     private final Group controls = new Group();
     TextField textField;
@@ -46,13 +44,11 @@ public class Viewer extends Application {
     void makePlacement(String placement) {
         root.getChildren().remove(current);
         BoardState board = new BoardState(placement);
-        System.out.println(placement);
 
         current = board.GetBoardGroup(SQUARE_SIZE);
 
         root.getChildren().add(current);
         current.relocate((VIEWER_WIDTH - SQUARE_SIZE * 26) / 2 - 10,(VIEWER_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
-        board.PutBoard();
 
 
         // FIXME Task 5: implement the simple placement viewer

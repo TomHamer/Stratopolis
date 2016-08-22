@@ -36,6 +36,7 @@ public class Tile {
         return height;
     }
 
+    // Returns a JavaFX Group which represents the tile
     public Group TileFX (double size) {
         if (alignment == Colour.W) {return null;}
 
@@ -44,23 +45,16 @@ public class Tile {
         if (height > 1 &&  !(alignment == Colour.N)) {
             Label l = new Label("" + height);
 
-
-            //l.relocate(7 * (size / 30), -5 * (size / 30));
             l.setTranslateX(9 * size / 30);
             l.setFont(new Font(0.75*size));
             toReturn.getChildren().add(l);
-
-
-            //Text t = new Text(""+height);
-            //t.setFont(new Font(size - 2));
-            //toReturn.getChildren().add(t);
-            //t.relocate(7, -5);
         }
 
 
         return toReturn;
     }
 
+    // Essentially taken from Board.java from assignment 1. Used in TileFX.
     class Square extends ImageView {
         Square (Colour colour, double size) {
             String col = "";

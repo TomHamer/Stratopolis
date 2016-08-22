@@ -12,8 +12,8 @@ import java.util.Set;
 public class StratoGame {
 
     public static void main(String[] args) {
-        BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC");
-        //BoardState b = new BoardState("AATAADTD");
+        //BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC");
+        BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBLOFALKTDOQHCNJNBINCDPPOAJKGBJPPDPPAASPRCQLCDSRRCMIIDPJKDLQIBOSLDIIHARJQDUPEBHNKBTOJD");
         System.out.println("Green score is: " + b.BoardScore(true));
         System.out.println("Red  score  is: " + b.BoardScore(false));
     }
@@ -56,8 +56,11 @@ public class StratoGame {
      */
     static boolean isPlacementWellFormed(String placement) {
         // FIXME Task 4: determine whether a placement is well-formed
+        if (placement == null) {return false;}
+        if (placement.isEmpty()) {return false;}
         if (!placement.substring(0, 4).equals("MMUA")) {return false;}
         Set<Character> chars = new HashSet<>();
+        Set<Character> chars2 = new HashSet<>();
 
         boolean green = true;
 
@@ -66,8 +69,11 @@ public class StratoGame {
             if (green && (placement.charAt(i+2) <= 'J')) {return false;}
             if (!green && !(placement.charAt(i+2) <= 'J')) {return false;}
             if (chars.contains(placement.charAt(i+2))) {
-                System.out.println(chars);
-                System.out.println( placement.charAt(i+2));return false;}
+                if (chars2.contains(placement.charAt(i+2))) {
+                    return false;
+                }
+                chars2.add(placement.charAt(i+2));
+            }
             green = !green;
             chars.add(placement.charAt(i+2));
         }
@@ -83,8 +89,12 @@ public class StratoGame {
      */
     public static boolean isPlacementValid(String placement) {
         // FIXME Task 6: determine whether a placement is valid
+        if (placement == null) {return false;}
+        if (placement.isEmpty()) {return false;}
         BoardState board = new BoardState();
-        for (int i = 0; i <= placement.length() - 4; i += 4) {
+        if (!placement.substring(0, 4).equals("MMUA")) {return false;}
+        else {board.PlaceTile("MMUA");}
+        for (int i = 4; i <= placement.length() - 4; i += 4) {
             if (board.IsValidMove(placement.substring(i, i+4))) {
                 board.PlaceTile(placement.substring(i, i+4));
             } else {
