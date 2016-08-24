@@ -23,6 +23,8 @@ import javafx.scene.layout.HBox;
 public class Deck {
 
     private char currentPieceOrientation;
+    private final int boardCoordX = (comp1110.ass2.gui.Board.getBoardWidth() - comp1110.ass2.gui.Board.getSquareSize()* 26) / 2 - 10;
+    private final int boardCoordY = (comp1110.ass2.gui.Board.getBoardHeight() - comp1110.ass2.gui.Board.getSquareSize() * 26 - 50) / 2 - 10;
     private char currentPieceType;
     private String toString;
     private char[] pieceArray;
@@ -51,9 +53,18 @@ public class Deck {
             setFitHeight(size);
             setFitWidth(size);
             setOnScroll(event -> {// scroll to change orientation
-                rotate();
+
                 double rotation = this.getRotate();
                 this.setRotate((rotation+90) % 360);
+                if (getRotate() == 0) {
+                    currentPieceOrientation = 'A';
+                } else if (getRotate() == 90) {
+                    currentPieceOrientation = 'B';
+                } else if (getRotate() == 180) {
+                    currentPieceOrientation = 'C';
+                } else if (getRotate() == 270) {
+                    currentPieceOrientation = 'D';
+                }
                 event.consume();
             });
             setOnMousePressed(event -> {
@@ -75,30 +86,70 @@ public class Deck {
                 event.consume();
             });
             setOnMouseReleased(event -> {     // drag is complete
+                int xDrop = (int) this.getLayoutX();
+                int yDrop = (int) this.getLayoutY();
+
+
                // snapToGrid
+                char yLetter = 'A';
+                char xLetter = 'A';
+                String current = comp1110.ass2.gui.Board.currentString;
 
-                if(true) { //if placement is fine
+                System.out.println("Attempted to place " + currentPieceType + " in " + currentPieceOrientation
+                        + " orientation " + " at " + "("+xDrop+","+yDrop+")");
+
+                int squareX = (int) (xDrop-boardCoordX)/23;
+                int squareY = (int) (yDrop-boardCoordY)/23;
+
+
+                if (squareX<26 && 0<= squareX && 0<=squareY && squareY<26) {
+                    xLetter = (char)('A' + squareX);
+                    yLetter = (char)('A' + squareY);
+
+                    System.out.println(xLetter);
+                    System.out.println(yLetter);
+                }
+                String newPiece = ""+xLetter+yLetter+currentPieceType+currentPieceOrientation;
+
+                BoardState testBoard = new BoardState(current);
 
 
 
-                drop((int) this.getLayoutX(), (int) this.getLayoutY(), (int) this.getRotate(), pieceType);
+                            if (testBoard.IsValidMove(newPiece)) {
+
+
+
+
+
+
+                                comp1110.ass2.gui.Board.currentString = current + xLetter + yLetter + currentPieceType + currentPieceOrientation;
+                                board.makePlacement();
+
+                                pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
+                                currentPieceType = pieceArray[0];
+
+                                this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+
+
+
+                            }
 
 
                     this.setRotate(0);
 
-                    this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+
                     setLayoutX(homeX);
                     setLayoutY(homeY);
 
-                } else {
+
+
 
 
                 //currently just snaps back home
-                setLayoutX(homeX);
-                setLayoutY(homeY);
 
 
-                }
+
+
                 event.consume();
 
 
@@ -151,34 +202,6 @@ public class Deck {
 
     }
 
-    public void drop(int x, int y, int rotation, char piece) {
-
-        pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
-        currentPieceType = pieceArray[0];
-
-        System.out.println("Attempted to place " + currentPieceType + " in " + currentPieceOrientation
-                             + " orientation " + " at " + "("+x+","+y+")");
-
-
-        board.makePlacement("AA"+currentPieceType+'A');
-
-
-
-        // do some conversion from screen coords to board coords
-
-        //if isPlacementValid() {
-
-        //makePlacement(textField.getText());
-
-        //}
-
-
-
-        //update board placement
-
-        //place piece and get next piece
-
-    }
 
     public void rotate() {
         switch(currentPieceOrientation){
