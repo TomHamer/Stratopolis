@@ -109,6 +109,7 @@ public class Deck {
 
                     System.out.println(xLetter);
                     System.out.println(yLetter);
+                    
                 }
                 String newPiece = ""+xLetter+yLetter+currentPieceType+currentPieceOrientation;
 
