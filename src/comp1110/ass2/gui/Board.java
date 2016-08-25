@@ -23,6 +23,7 @@ public class Board extends Application {
     private BoardState boardState = new BoardState();
     Group root = new Group();
     private Group current = null;
+    private Group displayBoard;
 
 
 
@@ -38,11 +39,15 @@ public class Board extends Application {
     public void addPlacement(String placement) {
 
 
+        root.getChildren().remove(displayBoard);
         boardState.PlaceTile(placement);
 
-        Group displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
+        displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
 
+        displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10,(BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
+        root.getChildren().add(displayBoard);
+        displayBoard.toBack();
 
 
 
@@ -68,7 +73,7 @@ public class Board extends Application {
 
         boardState = new BoardState("MMUA");
 
-        Group displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
+        displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
 
 
         root.getChildren().add(displayBoard);

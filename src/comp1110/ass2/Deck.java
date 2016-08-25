@@ -24,8 +24,8 @@ import javafx.scene.layout.HBox;
 public class Deck {
 
     private char currentPieceOrientation;
-    private final int boardCoordX = (comp1110.ass2.gui.Board.getBoardWidth() - comp1110.ass2.gui.Board.getSquareSize()* 26) / 2 - 10;
-    private final int boardCoordY = (comp1110.ass2.gui.Board.getBoardHeight() - comp1110.ass2.gui.Board.getSquareSize() * 26 - 50) / 2 - 10;
+    private final int boardCoordX = (Board.getBoardWidth() - Board.getSquareSize()* 26) / 2 - 10;
+    private final int boardCoordY = (Board.getBoardHeight() - Board.getSquareSize() * 26 - 50) / 2 - 10;
     private char currentPieceType;
     private String toString;
     private char[] pieceArray;
@@ -89,6 +89,8 @@ public class Deck {
             setOnMouseReleased(event -> {     // drag is complete
                 int xDrop = (int) this.getLayoutX();
                 int yDrop = (int) this.getLayoutY();
+                int squareX = (int) (xDrop-boardCoordX)/23;
+                int squareY = (int) (yDrop-boardCoordY)/23;
 
 
                // snapToGrid
@@ -99,13 +101,32 @@ public class Deck {
                 System.out.println("Attempted to place " + currentPieceType + " in " + currentPieceOrientation
                         + " orientation " + " at " + "("+xDrop+","+yDrop+")");
 
-                int squareX = (int) (xDrop-boardCoordX)/23;
-                int squareY = (int) (yDrop-boardCoordY)/23;
+                switch(currentPieceOrientation) {
+
+                    case 'A':
+                        break; //nothing to be done
+
+                    case 'B':
+                        squareX+=1;
+                        break;
+
+                    case 'C':
+                        squareX++;
+                        squareY--;
+                        break;
+                    case 'D':
+                        squareY--;
+                        break;
+                }
 
 
                 if (squareX<26 && 0<= squareX && 0<=squareY && squareY<26) {
                     xLetter = (char)('A' + squareX);
                     yLetter = (char)('A' + squareY);
+
+
+
+
 
                     System.out.println(xLetter);
                     System.out.println(yLetter);
@@ -132,6 +153,7 @@ public class Deck {
 
 
                     this.setRotate(0);
+                    currentPieceOrientation = 'A';
 
 
                     setLayoutX(homeX);
@@ -184,9 +206,6 @@ public class Deck {
         currentPieceType = pieceArray[0];
 
         return deckFX(SIZE_OF_DECK, homeX, homeY);
-
-
-
 
     }
 
