@@ -20,7 +20,10 @@ public class Board extends Application {
     private static final int SQUARE_SIZE = 23;
     private static final int DECK_COORD_X = 50;
     private static final int DECK_COORD_Y = 50;
-    private BoardState board = new BoardState();
+    private BoardState boardState = new BoardState();
+    Group root = new Group();
+    private Group current = null;
+
 
 
 
@@ -32,20 +35,28 @@ public class Board extends Application {
 
     // FIXME Task 12: Implement a game that can play good moves
 
+    public void addPlacement(String placement) {
+
+
+        boardState.PlaceTile(placement);
+
+        Group displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
+
+
+
+
+
+
+    }
+
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Group root = new Group();
-
         Deck RDeck = new Deck();
 
-        root.getChildren().add(RDeck.makeDeck(Colour.R,DECK_COORD_X,DECK_COORD_Y));
-
-
         Scene scene = new Scene(root,BOARD_WIDTH,BOARD_HEIGHT);
-
-
-
 
         primaryStage.setTitle("ImageView");
         primaryStage.setWidth(415);
@@ -55,7 +66,32 @@ public class Board extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        boardState = new BoardState("MMUA");
+
+        Group displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
+
+
+        root.getChildren().add(displayBoard);
+        displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10,(BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
+
+
+        root.getChildren().add(RDeck.makeDeck(this,Colour.R,DECK_COORD_X,DECK_COORD_Y));
 
 
     }
+
+    public static int getBoardWidth() {
+        return BOARD_WIDTH;
+    }
+
+    public static int getBoardHeight() {
+        return BOARD_HEIGHT;
+    }
+
+    public static int getSquareSize() {
+        return SQUARE_SIZE;
+    }
+
+    public BoardState getBoardState() {return boardState;}
+
 }
