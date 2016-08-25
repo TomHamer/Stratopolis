@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.util.Random;
 import java.util.Arrays;
+import comp1110.ass2.gui.Board;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
@@ -28,7 +29,7 @@ public class Deck {
     private char currentPieceType;
     private String toString;
     private char[] pieceArray;
-    private comp1110.ass2.gui.Board board;
+    private Board board;
 
     private static final String URI_BASE = "gui/assets/";
 
@@ -93,7 +94,7 @@ public class Deck {
                // snapToGrid
                 char yLetter = 'A';
                 char xLetter = 'A';
-                String current = comp1110.ass2.gui.Board.currentString;
+
 
                 System.out.println("Attempted to place " + currentPieceType + " in " + currentPieceOrientation
                         + " orientation " + " at " + "("+xDrop+","+yDrop+")");
@@ -111,24 +112,18 @@ public class Deck {
                 }
                 String newPiece = ""+xLetter+yLetter+currentPieceType+currentPieceOrientation;
 
-                BoardState testBoard = new BoardState(current);
+
+
+                            if (board.getBoardState().IsValidMove(newPiece)) {
 
 
 
-                            if (testBoard.IsValidMove(newPiece)) {
-
-
-
-
-
-
-                                comp1110.ass2.gui.Board.currentString = current + xLetter + yLetter + currentPieceType + currentPieceOrientation;
-                                board.makePlacement();
-
+                                board.addPlacement(newPiece);
                                 pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
                                 currentPieceType = pieceArray[0];
 
                                 this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+                                System.out.println("successfully placed a piece!");
 
 
 
@@ -168,7 +163,7 @@ public class Deck {
 
     //create a javafx object
 
-    public ImageView makeDeck(comp1110.ass2.gui.Board theBoard, Colour alignment, int x, int y) {
+    public ImageView makeDeck(Board theBoard, Colour alignment, int x, int y) {
         char[] deck;
         homeX = x;
         homeY = y;
