@@ -60,6 +60,7 @@ public class Board extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         Deck RDeck = new Deck();
+        Deck LDeck = new Deck();
 
         Scene scene = new Scene(root,BOARD_WIDTH,BOARD_HEIGHT);
 
@@ -81,6 +82,7 @@ public class Board extends Application {
 
 
         root.getChildren().add(RDeck.makeDeck(this,Colour.R,DECK_COORD_X,DECK_COORD_Y));
+        root.getChildren().add(LDeck.makeDeck(this,Colour.G,100,DECK_COORD_Y));
 
 
     }

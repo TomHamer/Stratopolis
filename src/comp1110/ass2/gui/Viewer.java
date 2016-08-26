@@ -13,6 +13,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+
+
 import static comp1110.ass2.StratoGame.isPlacementValid;
 
 /**

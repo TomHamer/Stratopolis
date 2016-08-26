@@ -34,7 +34,7 @@ public class Deck {
     private static final String URI_BASE = "gui/assets/";
 
     private int homeX, homeY;
-    private final int SIZE_OF_DECK = 50; // this is not the number of pieces in the deck, it is the physical size of the icon
+    private final int SIZE_OF_DECK = 46; // this is not the number of pieces in the deck, it is the physical size of the icon
 
 
     private ImageView deckFX(double size, int x, int y) { return new FXDraggablePiece(currentPieceType,size,x,y); }
@@ -56,7 +56,7 @@ public class Deck {
             setOnScroll(event -> {// scroll to change orientation
 
                 double rotation = this.getRotate();
-                this.setRotate((rotation+90) % 360);
+                this.setRotate((rotation % 360) + 90);
                 if (getRotate() == 0) {
                     currentPieceOrientation = 'A';
                 } else if (getRotate() == 90) {
@@ -101,55 +101,46 @@ public class Deck {
                 System.out.println("Attempted to place " + currentPieceType + " in " + currentPieceOrientation
                         + " orientation " + " at " + "("+xDrop+","+yDrop+")");
 
-                switch(currentPieceOrientation) {
-
-                    case 'A':
-                        break; //nothing to be done
-
-                    case 'B':
-                        squareX+=1;
-                        break;
-
-                    case 'C':
-                        squareX++;
-                        squareY--;
-                        break;
-                    case 'D':
-                        squareY--;
-                        break;
-                }
 
 
                 if (squareX<26 && 0<= squareX && 0<=squareY && squareY<26) {
-                    xLetter = (char)('A' + squareX);
-                    yLetter = (char)('A' + squareY);
+                    switch (currentPieceOrientation) {
+
+                        case 'A':
+                            break; //nothing to be done
+
+                        case 'B':
+                            squareX++;
+                            break;
+                        case 'C':
+                            squareX++;
+                            squareY++;
+                            break;
+                        case 'D':
+                            squareY++;
+                            break;
+                    }
+
+                    xLetter = (char) ('A' + squareX);
+                    yLetter = (char) ('A' + squareY);
 
 
+                    String newPiece = "" + xLetter + yLetter + currentPieceType + currentPieceOrientation;
 
 
+                    if (board.getBoardState().IsValidMove(newPiece)) {
 
-                    System.out.println(xLetter);
-                    System.out.println(yLetter);
 
+                        board.addPlacement(newPiece);
+                        pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
+                        currentPieceType = pieceArray[0];
+
+                        this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+                        System.out.println("successfully placed a piece!");
+
+
+                    }
                 }
-                String newPiece = ""+xLetter+yLetter+currentPieceType+currentPieceOrientation;
-
-
-
-                            if (board.getBoardState().IsValidMove(newPiece)) {
-
-
-
-                                board.addPlacement(newPiece);
-                                pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
-                                currentPieceType = pieceArray[0];
-
-                                this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
-                                System.out.println("successfully placed a piece!");
-
-
-
-                            }
 
 
                     this.setRotate(0);
