@@ -1,19 +1,10 @@
 package comp1110.ass2;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.util.Random;
 import java.util.Arrays;
 import comp1110.ass2.gui.Board;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.layout.HBox;
-
-
-
 
 /**
  * Created by Tom on 20/08/2016.
@@ -149,12 +140,6 @@ public class Deck {
 
                     setLayoutX(homeX);
                     setLayoutY(homeY);
-
-
-
-
-
-                //currently just snaps back home
 
 
 
