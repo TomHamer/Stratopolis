@@ -214,10 +214,11 @@ public class BoardState {
         else {col = Colour.R;}
         Union[][] sets = new Union[26][26];
         int maxLength = 0;
+        int height = 0;
         for (int i = 0; i < 26; i++) {
             for (int j = 0; j < 26; j++) {
                 if (board[i][j].Alignment() == col) {
-                    sets[i][j] = new Union();
+                    sets[i][j] = new Union(board[i][j].Height());
                     maxLength = 1;
                 }
             }
@@ -231,9 +232,15 @@ public class BoardState {
                     if (i < 25 && board[j][i+1].Alignment() == col) {
                         if (sets[j][i].head != sets[j][i+1].head) {
 
-                            sets[j][i].Add(sets[j][i + 1]);
+                            sets[j][i].Add(sets[j][i+1].head);
                             sets[j][i+1] = sets[j][i];
-                            maxLength = Math.max(sets[j][i].head.length, maxLength);
+
+                            if (sets[j][i].head.length == maxLength) {
+                                height = Math.max(sets[j][i].head.maxHeight, height);
+                            } else if (maxLength < sets[j][i].head.length) {
+                                height = sets[j][i].head.maxHeight;
+                                maxLength = sets[j][i].head.length;
+                            }
 
                         }
                     }
@@ -241,16 +248,22 @@ public class BoardState {
                     if (j < 25 && board[j+1][i].Alignment() == col) {
                         if (sets[j][i].head != sets[j+1][i].head) {
 
-                            sets[j][i].Add(sets[j+1][i]);
+                            sets[j][i].Add(sets[j+1][i].head);
                             sets[j+1][i] = sets[j][i];
-                            maxLength = Math.max(sets[j][i].head.length, maxLength);
+
+                            if (sets[j][i].head.length == maxLength) {
+                                height = Math.max(sets[j][i].head.maxHeight, height);
+                            } else if (maxLength < sets[j][i].head.length) {
+                                height = sets[j][i].head.maxHeight;
+                                maxLength = sets[j][i].head.length;
+                            }
 
                         }
                     }
                 }
             }
         }
-        return maxLength;
+        return maxLength * height;
     }
 
     // Inspired by https://en.wikipedia.org/wiki/Disjoint-set_data_structure. A class
@@ -264,11 +277,13 @@ public class BoardState {
         Union head; // The start of the list which the union is contained within
         Union next; // The next element in the list
         int length; // The number of elements in the list. NOTE: only kept valid for the head.
+        int maxHeight;
 
-        Union () {
+        Union (int height) {
             head = this;
             next = null;
             length = 1;
+            maxHeight = height;
         }
 
         // Adds one union to the end of another one. Adding a union of length m to one of
@@ -278,6 +293,7 @@ public class BoardState {
                 u.SetHead(head); // Updates the head of all elements in the union being added. O(m).
                 next = u;
                 head.length += u.length;
+                head.maxHeight = Math.max(head.maxHeight, u.maxHeight);
             } else {
                 next.Add(u); // Recursively finds the end of the list being added to. O(n).
             }
