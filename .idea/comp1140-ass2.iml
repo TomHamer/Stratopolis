@@ -19,5 +19,15 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES />
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/Downloads/la4j-master-2.jar!/la4j-master-2/src/main/java" />
+          <root url="jar://$USER_HOME$/Downloads/la4j-master-2.jar!/la4j-master-2/src/test/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>

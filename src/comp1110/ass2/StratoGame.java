@@ -2,6 +2,8 @@ package comp1110.ass2;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
+
 
 /**
  * This class provides the text interface for the Strato Game
@@ -122,11 +124,38 @@ public class StratoGame {
      * Generate a valid move that follows from: the given placement, a piece to
      * play, and the piece the opponent will play next.
      *
-     * @param placement  A valid placement string indicating a game state
-     * @param piece  The piece you are to play ('A' to 'T')
-     * @param opponentsPiece The piece your opponent will be asked to play next ('A' to 'T' or 0 if last move).
+     //* @param placement  A valid placement string indicating a game state
+     //* @param piece  The piece you are to play ('A' to 'T')
+     //* @param opponentsPiece The piece your opponent will be asked to play next ('A' to 'T' or 0 if last move).
      * @return A string indicating a valid tile placement that represents your move.
      */
+    static ArrayList<String> generatePossibleMoves(BoardState board, boolean redIsPlaying) {
+        ArrayList<String> toReturn = new ArrayList<>();
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        for (char i : alphabet.toCharArray()) {
+            for (char j : alphabet.toCharArray()) {
+                for (char k : "ABCD".toCharArray()) {
+                    if (redIsPlaying)
+                        for (char p : "ABCDEFGHIJ".toCharArray()) {
+                            String newMove = i + j + k + p + "";
+                            if (board.IsValidMove(newMove)) {
+                                toReturn.add(newMove);
+                            }
+                        }
+                    else {
+                        for (char p : "KLMNOPQRST".toCharArray()) {
+                            String newMove = i + j + k + p + "";
+                            if (board.IsValidMove(newMove)) {
+                                toReturn.add(newMove);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return toReturn;
+    }
+
     static String generateMove(String placement, char piece, char opponentsPiece) {
         // FIXME Task 10: generate a valid move
         return null;
