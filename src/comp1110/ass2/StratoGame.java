@@ -93,9 +93,12 @@ public class StratoGame {
         // FIXME Task 6: determine whether a placement is valid
         if (placement == null) {return false;}
         if (placement.isEmpty()) {return false;}
+
         BoardState board = new BoardState();
+
         if (!placement.substring(0, 4).equals("MMUA")) {return false;}
         else {board.PlaceTile("MMUA");}
+
         for (int i = 4; i <= placement.length() - 4; i += 4) {
             if (board.IsValidMove(placement.substring(i, i+4))) {
                 board.PlaceTile(placement.substring(i, i+4));
