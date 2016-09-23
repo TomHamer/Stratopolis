@@ -3,4 +3,4 @@ following documented exceptions:
 
 * This section was all my own work
 
-Signed: Calum Snowdon (u6044174)
+Signed: Calum Snowdon (u6044174), Tom Hamer (U6081614)
