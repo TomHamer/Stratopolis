@@ -37,21 +37,17 @@ public class Board extends Application {
     // FIXME Task 12: Implement a game that can play good moves
 
     public void addPlacement(String placement) {
+        boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
 
+        //root.getChildren().remove(displayBoard);
+        //boardState.PlaceTile(placement);
 
-        root.getChildren().remove(displayBoard);
-        boardState.PlaceTile(placement);
+        //displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
 
-        displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
+        //displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10,(BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
-        displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10,(BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
-
-        root.getChildren().add(displayBoard);
-        displayBoard.toBack();
-
-
-
-
+        //root.getChildren().add(displayBoard);
+        //displayBoard.toBack();
     }
 
 

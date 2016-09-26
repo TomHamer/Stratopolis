@@ -210,6 +210,23 @@ public class BoardState {
         return display;
     }
 
+    // Adds a piece to the board group without generating a new group. There is
+    // room for optimisation, currently it stacks tile objects on top of each other
+    // so there are objects in the background which are never seen again
+    public void UpdateBoardGroup(Group boardGroup, double squareSize, String placement) {
+        PlaceTile(placement);
+        Pieces piece = new Pieces(placement);
+
+        for (int i = 0; i < 3; i++) {
+            int x = piece.coords[i][0];
+            int y = piece.coords[i][1];
+
+            Group toAdd = board[y][x].TileFX(squareSize);
+            toAdd.relocate(x * squareSize, y * squareSize);
+            boardGroup.getChildren().add(toAdd);
+        }
+    }
+
     // Function to find the score for a certain player. Makes use of the
     // "Union" class, described below.
     public int BoardScore (boolean green) {
@@ -273,7 +290,7 @@ public class BoardState {
         return maxLength * height;
     }
 
-    class Cores {
+    private class Cores {
         private int availableCores = 4;
 
         boolean Available () {return availableCores > 0;}
@@ -283,7 +300,7 @@ public class BoardState {
         boolean Done () {return availableCores == Runtime.getRuntime().availableProcessors();}
     }
 
-    class Score {
+    private class Score {
         private int size = 0;
         private int height = 0;
 
@@ -299,13 +316,11 @@ public class BoardState {
         int Return () {return size * height;}
     }
 
+    // A parallelised version of scoring. Is slower than the sequential version
+    // and is mildly dodgy code.
     public int ConcurrentScore (boolean green) throws InterruptedException {
         //long start = System.nanoTime();
         Colour col;
-
-
-
-
 
         Cores cores = new Cores();
         Score score = new Score();
@@ -330,7 +345,7 @@ public class BoardState {
             private int height = 0;
 
 
-            PartialScorer (int rangeStart, int rangeEnd) {
+            private PartialScorer (int rangeStart, int rangeEnd) {
                 start = rangeStart;
                 end   = rangeEnd;
             }
@@ -342,7 +357,6 @@ public class BoardState {
                         synchronized (cores) {
                             if (cores.Available() && end - start > 5) {
                                 cores.CheckOut();
-
 
                                 Thread scorer = new Thread(new PartialScorer((start + end) / 2, end));
                                 end = (start + end) / 2;

@@ -132,7 +132,7 @@ public class StratoGame {
     static int getScoreForPlacement(String placement, boolean green) {
         // FIXME Task 7: determine the score for a player given a placement
         return (new BoardState(placement)).BoardScore(green);
-        
+
         //try {
         //    return (new BoardState(placement)).ConcurrentScore(green);
         //} catch(InterruptedException e) {
