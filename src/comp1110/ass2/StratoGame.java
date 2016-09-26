@@ -12,12 +12,23 @@ import java.util.ArrayList;
  * (http://boardgamegeek.com/boardgame/125022/stratopolis)
  */
 public class StratoGame {
+    private static BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBLOFAKJLAPPABQKMCJNECRLRBLQGBNPKBLPHDPRPBJOFAMRRDOKHCMINCOTGAQITDTIIBRPKCKIDCRSOBTPCCSRQASGCAQKPBQUADPRLCQNJAIPSBGOIB");
 
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws InterruptedException {
         //BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC");
-        BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBLOFAKJLAPPABQKMCJNECRLRBLQGBNPKBLPHDPRPBJOFAMRRDOKHCMINCOTGAQITDTIIBRPKCKIDCRSOBTPCCSRQASGCAQKPBQUADPRLCQNJAIPSBGOIB");
-        System.out.println("Green score is: " + b.BoardScore(true));
-        System.out.println("Red  score  is: " + b.BoardScore(false));
+        //BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBLOFAKJLAPPABQKMCJNECRLRBLQGBNPKBLPHDPRPBJOFAMRRDOKHCMINCOTGAQITDTIIBRPKCKIDCRSOBTPCCSRQASGCAQKPBQUADPRLCQNJAIPSBGOIB");
+        long start = System.nanoTime();
+        System.out.println(b.ConcurrentScore(true));
+        long end = System.nanoTime();
+        System.out.println("Concurrent time: " + (end - start));
+
+        start = System.nanoTime();
+        System.out.println(b.BoardScore(true));
+        end = System.nanoTime();
+        System.out.println("Sequential time: " + (end - start));
+        //System.out.println("Green score is: " + b.BoardScore(true));
+        //System.out.println("Red  score  is: " + b.BoardScore(false));
     }
 
     /**
@@ -121,6 +132,13 @@ public class StratoGame {
     static int getScoreForPlacement(String placement, boolean green) {
         // FIXME Task 7: determine the score for a player given a placement
         return (new BoardState(placement)).BoardScore(green);
+        
+        //try {
+        //    return (new BoardState(placement)).ConcurrentScore(green);
+        //} catch(InterruptedException e) {
+        //    e.printStackTrace();
+        //}
+        //return 0;
     }
 
     /**

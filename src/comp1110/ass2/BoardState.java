@@ -273,6 +273,159 @@ public class BoardState {
         return maxLength * height;
     }
 
+    class Cores {
+        private int availableCores = 4;
+
+        boolean Available () {return availableCores > 0;}
+
+        void CheckOut () {availableCores--;}
+        void Return () {availableCores++;}
+        boolean Done () {return availableCores == Runtime.getRuntime().availableProcessors();}
+    }
+
+    class Score {
+        private int size = 0;
+        private int height = 0;
+
+        void Set(int inSize, int inHeight) {
+            if (inSize > size) {
+                size = inSize;
+                height = inHeight;
+            } else if (inSize == size && inHeight > height) {
+                height = inHeight;
+            }
+        }
+
+        int Return () {return size * height;}
+    }
+
+    public int ConcurrentScore (boolean green) throws InterruptedException {
+        //long start = System.nanoTime();
+        Colour col;
+
+
+
+
+
+        Cores cores = new Cores();
+        Score score = new Score();
+
+        if (green) {col = Colour.G;}
+        else {col = Colour.R;}
+
+        Union[][] sets = new Union[26][26];
+
+
+        for (int i = 0; i < 26; i++) {
+            for (int j = 0; j < 26; j++) {
+                if (board[i][j].Alignment() == col) {
+                    sets[i][j] = new Union(board[i][j].Height());
+                }
+            }
+        }
+
+        class PartialScorer implements Runnable {
+            private int start, end;
+            private int maxLength = 0;
+            private int height = 0;
+
+
+            PartialScorer (int rangeStart, int rangeEnd) {
+                start = rangeStart;
+                end   = rangeEnd;
+            }
+
+            @Override
+            public void run() {
+                for (int i = start; i < end; i++) {
+                    if (cores.Available()) {
+                        synchronized (cores) {
+                            if (cores.Available() && end - start > 5) {
+                                cores.CheckOut();
+
+
+                                Thread scorer = new Thread(new PartialScorer((start + end) / 2, end));
+                                end = (start + end) / 2;
+                                scorer.start();
+                            }
+                        }
+                    }
+
+                    int j = i / 26;
+                    int k = i % 26;
+
+                    synchronized (board[j][k]) {
+                        if (board[j][k].Alignment() == col) {
+                            if (k != 25 && board[j][k+1].Alignment() == col) {
+                                synchronized (board[j][k+1]) {
+                                    if (sets[j][k].head != sets[j][k+1].head) {
+
+                                        sets[j][k].Add(sets[j][k+1]);
+                                        sets[j][k+1] = sets[j][k];
+
+                                        if (sets[j][k].head.length == maxLength) {
+                                            height = Math.max(sets[j][k].head.maxHeight, height);
+                                        } else if (maxLength < sets[j][k].head.length) {
+                                            height = sets[j][k].head.maxHeight;
+                                            maxLength = sets[(j)][k].head.length;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (j < 25 && board[j + 1][k].Alignment() == col) {
+                                synchronized (board[j + 1][k]) {
+                                    if (sets[j][k].head != sets[j + 1][k].head) {
+
+                                        sets[j][k].Add(sets[j + 1][k]);
+                                        sets[j + 1][k] = sets[j][k];
+
+                                        if (sets[j][k].head.length == maxLength) {
+                                            height = Math.max(sets[j][k].head.maxHeight, height);
+                                        } else if (maxLength < sets[j][k].head.length) {
+                                            height = sets[j][k].head.maxHeight;
+                                            maxLength = sets[(j)][k].head.length;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                synchronized (score) {
+                    score.Set(maxLength, height);
+                }
+
+                synchronized (cores) {
+                    cores.Return();
+                    cores.notify();
+                }
+
+            }
+        }
+
+        cores.CheckOut();
+        new Thread(new PartialScorer(0, 675)).start();
+
+
+        synchronized (cores) {
+            while (!cores.Done()) {
+                try {
+                    cores.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        //long end = System.nanoTime();
+        //System.out.println("Fucntion took " + (end - start) + " while task creation took " + (taskEnd - taskStart));
+        return score.Return();
+    }
+
+
+
     // Inspired by https://en.wikipedia.org/wiki/Disjoint-set_data_structure. A class
     // to assist with finding the score for a player. It's essentially a bunch of pointers.
     // It's a class which allows associations to be created with other members

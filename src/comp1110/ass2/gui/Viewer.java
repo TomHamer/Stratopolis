@@ -52,7 +52,7 @@ public class Viewer extends Application {
         root.getChildren().add(current);
         current.relocate((VIEWER_WIDTH - SQUARE_SIZE * 26) / 2 - 10,(VIEWER_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
-
+        System.out.println(board.BoardScore(true));
         // FIXME Task 5: implement the simple placement viewer
     }
 
