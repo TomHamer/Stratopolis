@@ -244,6 +244,7 @@ public class BoardState {
                 if (board[i][j].Alignment() == col) {
                     sets[i][j] = new Union(board[i][j].Height());
                     maxLength = 1;
+                    height = 1;
                 }
             }
         }
@@ -255,34 +256,23 @@ public class BoardState {
                 if (board[j][i].Alignment() == col) {
                     if (i < 25 && board[j][i+1].Alignment() == col) {
                         if (sets[j][i].head != sets[j][i+1].head) {
-
                             sets[j][i].Add(sets[j][i+1]);
                             sets[j][i+1] = sets[j][i];
-
-                            if (sets[j][i].head.length == maxLength) {
-                                height = Math.max(sets[j][i].head.maxHeight, height);
-                            } else if (maxLength < sets[j][i].head.length) {
-                                height = sets[j][i].head.maxHeight;
-                                maxLength = sets[j][i].head.length;
-                            }
-
                         }
                     }
 
                     if (j < 25 && board[j+1][i].Alignment() == col) {
                         if (sets[j][i].head != sets[j+1][i].head) {
-
                             sets[j][i].Add(sets[j+1][i]);
                             sets[j+1][i] = sets[j][i];
-
-                            if (sets[j][i].head.length == maxLength) {
-                                height = Math.max(sets[j][i].head.maxHeight, height);
-                            } else if (maxLength < sets[j][i].head.length) {
-                                height = sets[j][i].head.maxHeight;
-                                maxLength = sets[j][i].head.length;
-                            }
-
                         }
+                    }
+
+                    if (sets[j][i].head.length == maxLength) {
+                        height = Math.max(sets[j][i].head.maxHeight, height);
+                    } else if (maxLength < sets[j][i].head.length) {
+                        height = sets[j][i].head.maxHeight;
+                        maxLength = sets[j][i].head.length;
                     }
                 }
             }

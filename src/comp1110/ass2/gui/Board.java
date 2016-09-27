@@ -6,6 +6,8 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 //import comp1110.ass2.Deck;
 import comp1110.ass2.Colour;
@@ -26,10 +28,12 @@ public class Board extends Application {
     private static final int SQUARE_SIZE = 23;
     private static final int DECK_COORD_X = 50;
     private static final int DECK_COORD_Y = 50;
-    private BoardState boardState = new BoardState();
+    private final BoardState boardState = new BoardState("MMUA");
     Group root = new Group();
     private Group current = null;
     private Group displayBoard;
+    private boolean gameOver = false;
+    private Text greenScore, redScore;
 
 
 
@@ -74,7 +78,19 @@ public class Board extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        boardState = new BoardState("MMUA");
+        greenScore = new Text("1");
+        redScore = new Text("1");
+
+        root.getChildren().add(greenScore);
+        root.getChildren().add(redScore);
+
+        greenScore.setFont(new Font(20));
+        redScore.setFont(new Font(20));
+
+        greenScore.relocate(DECK_COORD_X, DECK_COORD_Y + 50);
+        redScore.relocate(DECK_COORD_X + 50, DECK_COORD_Y + 50);
+
+        //boardState = new BoardState("MMUA");
 
         displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
 
@@ -82,11 +98,8 @@ public class Board extends Application {
         root.getChildren().add(displayBoard);
         displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10,(BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
-
-        root.getChildren().add(RDeck.makeDeck(Colour.R,DECK_COORD_X,DECK_COORD_Y));
-        root.getChildren().add(LDeck.makeDeck(Colour.G,100,DECK_COORD_Y));
-
-
+        root.getChildren().add(RDeck.makeDeck(Colour.G,DECK_COORD_X,DECK_COORD_Y));
+        root.getChildren().add(LDeck.makeDeck(Colour.R,DECK_COORD_X + 50,DECK_COORD_Y));
     }
 
     public static int getBoardWidth() {
@@ -219,13 +232,15 @@ public class Board extends Application {
 
 
                             addPlacement(newPiece);
-                            pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length); //??
+
+                            pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
                             currentPieceType = pieceArray[0];
+
+                            greenScore.setText("" + boardState.BoardScore(true));
+                            redScore.setText("" + boardState.BoardScore(false));
 
                             this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
                             System.out.println("successfully placed a piece!");
-
-
                         }
                     }
 
@@ -249,9 +264,9 @@ public class Board extends Application {
 
             //generate a new deck
             if (alignment == Colour.R) {
-                deck = new char[] {'A','B','C','D','E','F','G','H','I','J'};
+                deck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
             } else  {
-                deck = new char[] {'K','L','M','N','O','P','Q','R','S','T'};
+                deck = new char[] {'K','L','M','N','O','P','Q','R','S','T','K','L','M','N','O','P','Q','R','S','T'};
             }
             //shuffle the deck
 
