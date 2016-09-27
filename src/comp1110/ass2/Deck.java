@@ -47,7 +47,8 @@ public class Deck {
             setOnScroll(event -> {// scroll to change orientation
 
                 double rotation = this.getRotate();
-                this.setRotate((rotation % 360) + 90);
+                this.setRotate((rotation + 90) % 360);
+                System.out.println(getRotate());
                 if (getRotate() == 0) {
                     currentPieceOrientation = 'A';
                 } else if (getRotate() == 90) {

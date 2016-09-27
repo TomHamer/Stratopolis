@@ -60,7 +60,7 @@ public class Board extends Application {
 
         Scene scene = new Scene(root,BOARD_WIDTH,BOARD_HEIGHT);
 
-        primaryStage.setTitle("ImageView");
+        primaryStage.setTitle("Stratopolis");
         primaryStage.setWidth(415);
         primaryStage.setHeight(200);
 
