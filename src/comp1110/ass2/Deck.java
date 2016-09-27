@@ -48,7 +48,6 @@ public class Deck {
 
                 double rotation = this.getRotate();
                 this.setRotate((rotation + 90) % 360);
-                System.out.println(getRotate());
                 if (getRotate() == 0) {
                     currentPieceOrientation = 'A';
                 } else if (getRotate() == 90) {
@@ -116,9 +115,7 @@ public class Deck {
                     xLetter = (char) ('A' + squareX);
                     yLetter = (char) ('A' + squareY);
 
-
                     String newPiece = "" + xLetter + yLetter + currentPieceType + currentPieceOrientation;
-
 
                     if (board.getBoardState().IsValidMove(newPiece)) {
 
@@ -134,32 +131,16 @@ public class Deck {
                     }
                 }
 
+                this.setRotate(0);
+                currentPieceOrientation = 'A';
 
-                    this.setRotate(0);
-                    currentPieceOrientation = 'A';
-
-
-                    setLayoutX(homeX);
-                    setLayoutY(homeY);
-
-
-
+                setLayoutX(homeX);
+                setLayoutY(homeY);
 
                 event.consume();
-
-
-
             });
         }
     }
-
-
-
-
-
-
-
-
 
     //create a javafx object
 
@@ -232,7 +213,4 @@ public class Deck {
 
         return list;
     }
-
-
-
 }
