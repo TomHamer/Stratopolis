@@ -245,7 +245,7 @@ public class Board extends Application {
                                     System.out.println("successfully placed a piece!");
                                 } else {
                                     this.setImage(null);
-                                    
+
                                     if (!green) {
                                         // game over case
                                     }
