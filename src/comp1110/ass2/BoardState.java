@@ -13,6 +13,7 @@ import javafx.scene.shape.Rectangle;
 
 /* Abstracts the board, represents it as an array of tiles which are individually
    manipulated by adding pieces. Allows checking for valid moves.
+   Written in its entirety by Calum Snowdon.
  */
 
 public class BoardState {

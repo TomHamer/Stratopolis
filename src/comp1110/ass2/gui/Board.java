@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Arrays;
 
+// Majority of code was written by Tom Hamer
+// Code was polished/optimised by Calum Snowdon
+
 public class Board extends Application {
 
 
@@ -121,7 +124,7 @@ public class Board extends Application {
      * Created by Tom on 20/08/2016.
      */
 
-//A deck consists of a list of tiles,
+//A deck consists of a list of tiles, represents the draggable tile icons on the board
 
     public class Deck {
 
@@ -142,12 +145,10 @@ public class Board extends Application {
 
         private ImageView deckFX(double size, int x, int y) { return new FXDraggablePiece(currentPieceType,size,x,y); }
 
+        // Made with reference to the similar class from assignment 1
         private class FXDraggablePiece extends ImageView {
 
             double mouseX, mouseY;
-
-            //doesnt deal with orientation yet
-
 
             FXDraggablePiece (char pieceType, double size, int x, int y) {
                 System.out.println(URI_BASE + pieceType + ".png");

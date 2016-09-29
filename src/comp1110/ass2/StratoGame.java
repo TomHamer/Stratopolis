@@ -11,6 +11,8 @@ import java.util.ArrayList;
  * The game is based directly on Gigamic's Stratopolis game
  * (http://boardgamegeek.com/boardgame/125022/stratopolis)
  */
+
+// Mostly uses features of BoardState to accomplish tasks. Written mostly by Calum Snowdon.
 public class StratoGame {
     private static BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBLOFAKJLAPPABQKMCJNECRLRBLQGBNPKBLPHDPRPBJOFAMRRDOKHCMINCOTGAQITDTIIBRPKCKIDCRSOBTPCCSRQASGCAQKPBQUADPRLCQNJAIPSBGOIB");
 
@@ -150,6 +152,7 @@ public class StratoGame {
      //* @param opponentsPiece The piece your opponent will be asked to play next ('A' to 'T' or 0 if last move).
      * @return A string indicating a valid tile placement that represents your move.
      */
+    // Written by Tom Hamer
     static ArrayList<String> generatePossibleMoves(BoardState board, boolean redIsPlaying) {
         ArrayList<String> toReturn = new ArrayList<>();
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
