@@ -5,23 +5,22 @@ import comp1110.ass2.StratoGame;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-//import comp1110.ass2.Deck;
 import comp1110.ass2.Colour;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import  java.io.*;
+import  sun.audio.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 import java.util.Arrays;
 
 public class Board extends Application {
-
-
 
     private static final int BOARD_WIDTH = 933;
     private static final int BOARD_HEIGHT = 700;
@@ -34,6 +33,11 @@ public class Board extends Application {
     private Group displayBoard;
     private Text greenScore, redScore;
     private boolean greensTurn = true;
+    private AudioStream AS;
+    private boolean soundOn = false;
+
+
+
 
 
 
@@ -53,10 +57,8 @@ public class Board extends Application {
 
     public void start(Stage primaryStage) {
 
-        Deck RDeck = new Deck();
-        Deck LDeck = new Deck();
 
-        Scene scene = new Scene(root,BOARD_WIDTH,BOARD_HEIGHT);
+        Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
 
         primaryStage.setTitle("Stratopolis");
         primaryStage.setWidth(415);
@@ -83,12 +85,32 @@ public class Board extends Application {
 
 
         root.getChildren().add(displayBoard);
-        displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10,(BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
+        displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
-        root.getChildren().add(RDeck.makeDeck(Colour.G,DECK_COORD_X,DECK_COORD_Y));
-        root.getChildren().add(LDeck.makeDeck(Colour.R,DECK_COORD_X + 50,DECK_COORD_Y));
+        InputStream in = null;
+        try {
+            in = new FileInputStream("src/comp1110.ass2/gui/assets/bensound-goinghigher.mp3");
+            AS = new AudioStream(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //creates two new decks
+        Deck RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y);
+        Deck LDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y);
 
 
+        scene.setOnKeyPressed(event -> {
+            if(event.getCharacter().equals("m")) {
+                if(soundOn) {
+                    AudioPlayer.player.stop(AS);
+                    soundOn = false;
+                } else {
+                    AudioPlayer.player.start(AS);
+                    soundOn = true;
+                }
+            }
+        });
     }
 
     public static int getBoardWidth() {
@@ -111,7 +133,7 @@ public class Board extends Application {
     //it updates the boardstate to include the new piece, and makes it the opponents turn. Code for this
     // was inspired by the drag and drop code used in assignment 1
 
-    public class Deck {
+    public class Deck extends ImageView {
 
         private char currentPieceOrientation;
         private final int boardCoordX = (BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10;
@@ -127,8 +149,6 @@ public class Board extends Application {
         private int homeX, homeY;
         private final int SIZE_OF_DECK = 46; // this is not the number of pieces in the deck, it is the physical size of the icon
 
-        private ImageView deckFX(double size, int x, int y) { return new FXDraggablePiece(currentPieceType,size,x,y); }
-
         //the draggable part of the deck - this class was inspired by the draggable functionality implemented
         //in the source code for assignment one
 
@@ -141,6 +161,7 @@ public class Board extends Application {
                 //to the board
                 Image deckImage = new Image(BoardState.class.getResource(URI_BASE + pieceType + ".png").toString());
                 setImage(deckImage);
+                root.getChildren().add(this);
 
                 setLayoutX(homeX);
                 setLayoutY(homeY);
@@ -281,7 +302,7 @@ public class Board extends Application {
 
        // }
 
-        public ImageView makeDeck(Colour alignment, int x, int y) {
+        public Deck(Colour alignment, int x, int y) {
             char[] deck;
             homeX = x;
             homeY = y;
@@ -300,19 +321,13 @@ public class Board extends Application {
 
             currentPieceOrientation = 'A';
             currentPieceType = pieceArray[0];
+            new FXDraggablePiece(currentPieceType,SIZE_OF_DECK,x,y);
 
-            return deckFX(SIZE_OF_DECK, homeX, homeY);
-
-        }
-
-        public void getNextPiece() {
-
-            //occurs when the next piece needs to be shown
-            // set currentPiece
-
+            //return deckFX(SIZE_OF_DECK, homeX, homeY);
 
         }
 
+        //algorithm that shuffles the deck
         private char[] shuffle(char[] list) {
 
             Random random = new Random();
