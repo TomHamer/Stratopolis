@@ -3,6 +3,7 @@ package comp1110.ass2;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.ArrayList;
+import comp1110.ass2.gui.Board;
 
 
 /**
@@ -150,7 +151,9 @@ public class StratoGame {
      //* @param opponentsPiece The piece your opponent will be asked to play next ('A' to 'T' or 0 if last move).
      * @return A string indicating a valid tile placement that represents your move.
      */
-    static ArrayList<String> generatePossibleMoves(BoardState board, boolean redIsPlaying) {
+
+    //generates all the possible moves, regardless of which player has what piece
+    public static ArrayList<String> generateAllPossibleMoves(BoardState board, boolean redIsPlaying) {
         ArrayList<String> toReturn = new ArrayList<>();
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         for (char i : alphabet.toCharArray()) {
@@ -158,14 +161,14 @@ public class StratoGame {
                 for (char k : "ABCD".toCharArray()) {
                     if (redIsPlaying)
                         for (char p : "ABCDEFGHIJ".toCharArray()) {
-                            String newMove = i + j + k + p + "";
+                            String newMove = ""+i + j + p +k;
                             if (board.IsValidMove(newMove)) {
                                 toReturn.add(newMove);
                             }
                         }
                     else {
                         for (char p : "KLMNOPQRST".toCharArray()) {
-                            String newMove = i + j + k + p + "";
+                            String newMove = "" + i + j + p + k;
                             if (board.IsValidMove(newMove)) {
                                 toReturn.add(newMove);
                             }
@@ -177,8 +180,31 @@ public class StratoGame {
         return toReturn;
     }
 
+    //generates all possible moves, given a piece that can be placed
+    public static ArrayList<String> generateAllPossibleMoves(BoardState board, boolean redIsPlaying,char piece) {
+        ArrayList<String> toReturn = new ArrayList<>();
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        for (char i : alphabet.toCharArray()) {
+            for (char j : alphabet.toCharArray()) {
+                for (char k : "ABCD".toCharArray()) {
+                    String newMove = ""+i + j + piece + k;
+                    if (board.IsValidMove(newMove)) {
+                        toReturn.add(newMove);
+                    }
+                }
+            }
+        }
+
+
+        return toReturn;
+
+
+    }
+
+
+    //simply using an easy player to generate a random move
     static String generateMove(String placement, char piece, char opponentsPiece) {
-        // FIXME Task 10: generate a valid move
+        //Board.EasyPlayer ep = new Board.EasyPlayer(true);
         return null;
     }
 }
