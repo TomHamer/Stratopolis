@@ -15,6 +15,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import  java.io.*;
 import  sun.audio.*;
+import java.io.File;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -37,21 +38,29 @@ public class Board extends Application {
     private boolean soundOn = false;
 
 
+    public class Player {
+
+    }
 
 
 
 
-
-    // FIXME Task 8: Implement a basic playable Strato Game in JavaFX that only allows pieces to be placed in valid places
-
-    // FIXME Task 9: Implement scoring
-
-    // FIXME Task 11: Implement a game that can play valid moves (even if they are weak moves)
-
-    // FIXME Task 12: Implement a game that can play good moves
 
     public void addPlacement(String placement) {
         boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
+    }
+
+
+    // FIXME For Jingyi: Implement a system that uses the following functions, writing to the "savedGame.txt" to save files
+    //clears the text file
+    public void newGame() {}
+    //writes the text file
+    public void saveGame() {}
+
+    //allows the user to save the game by writing the gameState into a textfile
+    public String boardToText() {
+        //this will need - placement, piece arrays for both decks, whether the two are AI or human and their difficulty
+        return null;
     }
 
 
@@ -87,6 +96,17 @@ public class Board extends Application {
         root.getChildren().add(displayBoard);
         displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
+        //creates two new decks
+        Deck RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y);
+        Deck LDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y);
+
+
+        // FIXME For Jingyi: make this sound system work
+
+        //It needs to be such that when the user presses 'M' the music starts, and then when the
+        //user presses 'M' again the music stops
+
+        //creates a new input stream for sound system
         InputStream in = null;
         try {
             in = new FileInputStream("src/comp1110.ass2/gui/assets/bensound-goinghigher.mp3");
@@ -95,11 +115,7 @@ public class Board extends Application {
             e.printStackTrace();
         }
 
-        //creates two new decks
-        Deck RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y);
-        Deck LDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y);
-
-
+        //event handler for sound system
         scene.setOnKeyPressed(event -> {
             if(event.getCharacter().equals("m")) {
                 if(soundOn) {
@@ -148,6 +164,10 @@ public class Board extends Application {
 
         private int homeX, homeY;
         private final int SIZE_OF_DECK = 46; // this is not the number of pieces in the deck, it is the physical size of the icon
+
+        public char[] getPieceArray() {
+            return pieceArray;
+        }
 
         //the draggable part of the deck - this class was inspired by the draggable functionality implemented
         //in the source code for assignment one
@@ -319,11 +339,10 @@ public class Board extends Application {
             //shuffle the deck
             pieceArray = shuffle(deck);
 
+            //make the piece at the front of the deck appear on screen by initialising a new FXDraggablePiece
             currentPieceOrientation = 'A';
             currentPieceType = pieceArray[0];
             new FXDraggablePiece(currentPieceType,SIZE_OF_DECK,x,y);
-
-            //return deckFX(SIZE_OF_DECK, homeX, homeY);
 
         }
 
@@ -339,10 +358,6 @@ public class Board extends Application {
                 list[rand] = list[i];
                 list[i] = temp;
 
-                //char elem1 =  list[i];
-                //char elem2 =  list[rand];
-                //list[rand] = elem1;
-                //list[i] = elem2;
             }
 
 
