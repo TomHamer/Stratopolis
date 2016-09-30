@@ -10,6 +10,7 @@ import comp1110.ass2.gui.Board;
  * Created by Tom on 20/08/2016.
  */
 
+// Has been moved to an inner class of Board, but file is still here
 //A deck consists of a list of tiles,
 
 public class Deck {
