@@ -114,8 +114,7 @@ public class Board extends Application {
         RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y,leftBotIsAI); // the red deck
         GDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y,rightBotIsAI); // the green deck
 
-        showHint(true);
-
+        /*
         if(leftBotIsAI && rightBotIsAI) {
             //sets up the AI based on what the player wants
             EasyPlayer ep1 = new EasyPlayer(true);
@@ -132,6 +131,7 @@ public class Board extends Application {
 
             }
         }
+        */
 
 
 
