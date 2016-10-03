@@ -1,25 +1,23 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.BoardState;
+import comp1110.ass2.Colour;
 import comp1110.ass2.StratoGame;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import comp1110.ass2.Colour;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import  java.io.*;
-import  sun.audio.*;
-import java.io.File;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Arrays;
+import java.util.Random;
 
 public class Board extends Application {
 
@@ -36,8 +34,7 @@ public class Board extends Application {
     private boolean greensTurn = true;
     private AudioStream AS;
     private boolean soundOn = false;
-
-
+    private File f = new File("src/savedGame.txt");
     public class Player {
 
     }
@@ -53,15 +50,40 @@ public class Board extends Application {
 
     // FIXME For Jingyi: Implement a system that uses the following functions, writing to the "savedGame.txt" to save files
     //clears the text file
-    public void newGame() {}
+    public void newGame() throws IOException {
+        f.delete();
+        f.createNewFile();
+    }
     //writes the text file
-    public void saveGame() {}
+    public void saveGame() {
+
+    }
 
     //allows the user to save the game by writing the gameState into a textfile
     public String boardToText() {
         //this will need - placement, piece arrays for both decks, whether the two are AI or human and their difficulty
         return null;
     }
+    String readfinal = "";//to record the stuff in txt
+    FileReader fr;
+    String r;//read a line at a time
+    public void read() {
+        try {
+        fr = new FileReader(f);
+        BufferedReader bufread = new BufferedReader(fr);
+        try {
+            while ((r = bufread.readLine()) != null) {
+                readfinal = readfinal + r;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 
     public void start(Stage primaryStage) {
@@ -117,7 +139,7 @@ public class Board extends Application {
 
         //event handler for sound system
         scene.setOnKeyPressed(event -> {
-            if(event.getCharacter().equals("m")) {
+            if(event.getCharacter().equals("m")||event.getCharacter().equals("M")) {
                 if(soundOn) {
                     AudioPlayer.player.stop(AS);
                     soundOn = false;

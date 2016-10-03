@@ -1,8 +1,6 @@
 package comp1110.ass2;
 
 import javafx.scene.Group;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -475,5 +473,57 @@ public class BoardState {
 
     public String GetBoard() {
         return state;
+    }
+    @Override
+    public String toString() {
+        String str ="";
+        for ( int i = 0; i < 26; i++) {
+            for ( int j = 0; j < 26; j++){
+                str = str + board[i][j].Height() + board[i][j].Alignment().toString();
+            }
+        }
+        return str;
+    }
+    public void fromString(String str){
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int count = 0;
+        Character c;
+        while (count <= str.length() && i <= 25 ){
+            c = str.charAt(count);
+            if ( c >= '0' && c <= '9' ) {
+                if (str.charAt(count + 1) <= '9') {
+                    board[i][j].Setheight((int) str.charAt(count + 1) - (int) '0' + c * 10 - (int) '0' * 10);
+                    count++;
+                } else   board[i][j].Setheight((int) c - (int) '0');
+                count++;
+                c = str.charAt(count);
+                switch (c) {
+                    case 'R':{
+                        board[i][j].Setalignment(Colour.R);
+                        break;
+                    }
+                    case 'G':{
+                        board[i][j].Setalignment(Colour.G);
+                        break;
+                    }
+                    case 'N':{
+                        board[i][j].Setalignment(Colour.N);
+                        break;
+                    }
+                    case 'W':{
+                        board[i][j].Setalignment(Colour.W);
+                        break;
+                    }
+                }
+                j++;
+                if ( j >= 26 ){
+                    j = 0;
+                    i++;
+                }
+            }
+            count++;
+        }
     }
 }
