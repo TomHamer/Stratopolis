@@ -202,9 +202,15 @@ public class StratoGame {
     }
 
 
-    //simply using an easy player to generate a random move
     static String generateMove(String placement, char piece, char opponentsPiece) {
-        //Board.EasyPlayer ep = new Board.EasyPlayer(true);
-        return null;
+        char[] redDeck = new char[] {'A','B','C','D','E','F','G','H','I','J'};
+        boolean playerIsRed = false;
+        for(char i:redDeck) {
+            if(piece == i) {
+                playerIsRed = true; // find if the player is red or green
+            }
+        }
+        return generateAllPossibleMoves(new BoardState(placement),playerIsRed,piece).get(0); // return the first randomly generated move
+
     }
 }
