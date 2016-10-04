@@ -7,6 +7,8 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.media.AudioClip;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -14,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.animation.*;
 import  java.io.*;
+
 
 import javafx.util.Duration;
 import  sun.audio.*;
@@ -128,7 +131,7 @@ public class Board extends Application {
                 //pair[0] for the green player
                 //pair[1] for the red player
                 RDeck.placePiece(ep1.getBestMove(boardState, RDeck.getCurrentPiece()));
-                GDeck.placePiece(ep2.getBestMove(boardState, GDeck.getCurrentPiece()));
+                GDeck.placePiece(mp.getBestMove(boardState, GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
 
 
             }
@@ -143,22 +146,18 @@ public class Board extends Application {
         //user presses 'M' again the music stops
 
         //creates a new input stream for sound system
-        InputStream in = null;
-        try {
-            in = new FileInputStream(Board.class.getResource("assets/bensound-goinghigher.mp3").toString());
-            AS = new AudioStream(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+            final AudioClip in = new AudioClip(Board.class.getResource("assets/bensound-goinghigher.mp3").toString());
+
 
         //event handler for sound system
         scene.setOnKeyPressed(event -> {
-            if(event.getCharacter().equals("m")) {
+            if(event.getCode() == KeyCode.M) {
                 if(soundOn) {
-                    AudioPlayer.player.stop(AS);
+                    in.stop();
                     soundOn = false;
                 } else {
-                    AudioPlayer.player.start(AS);
+                    in.play();
                     soundOn = true;
                 }
             }
