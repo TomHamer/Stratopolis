@@ -67,7 +67,7 @@ public class Board extends Application {
 
     public void start(Stage primaryStage) {
 
-
+        //move to a different "game setup function"?
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
 
         primaryStage.setTitle("Stratopolis");
@@ -98,7 +98,7 @@ public class Board extends Application {
         displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
 
-        // FIXME For Calum: Implement this so it all works
+        // FIXME For Calum: Implement this so it all works and the user selects it
 
         //player selects what kind of game they want
 
@@ -128,7 +128,7 @@ public class Board extends Application {
                 //pair[0] for the green player
                 //pair[1] for the red player
                 RDeck.placePiece(ep1.getBestMove(boardState, RDeck.getCurrentPiece()));
-                GDeck.placePiece(mp.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
+                GDeck.placePiece(ep2.getBestMove(boardState, GDeck.getCurrentPiece()));
 
 
             }
@@ -143,9 +143,9 @@ public class Board extends Application {
         //user presses 'M' again the music stops
 
         //creates a new input stream for sound system
-        /*InputStream in = null;
+        InputStream in = null;
         try {
-            in = new FileInputStream("src/comp1110.ass2/gui/assets/bensound-goinghigher.mp3");
+            in = new FileInputStream(Board.class.getResource("assets/bensound-goinghigher.mp3").toString());
             AS = new AudioStream(in);
         } catch (IOException e) {
             e.printStackTrace();
@@ -162,7 +162,7 @@ public class Board extends Application {
                     soundOn = true;
                 }
             }
-        });*/
+        });
     }
 
     public void hideHint() {
@@ -624,7 +624,7 @@ public class Board extends Application {
 
 
 
-
+    //impossible player does not work yet
     public class ImpossiblePlayer {
         private boolean redIsPlaying;
         private final int LOOKAHEAD = 2;
@@ -728,7 +728,7 @@ public class Board extends Application {
     }
 
     private int evaluateBoard(BoardState board, boolean isRedsTurn) {
-        return board.BoardScore(isRedsTurn)-board.BoardScore(!isRedsTurn); // opposite because the parameter is "green"
+        return board.BoardScore(!isRedsTurn)-board.BoardScore(isRedsTurn); // opposite because the parameter is "green"
     }
 
 }
