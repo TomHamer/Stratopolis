@@ -45,7 +45,7 @@ public class Board extends Application {
     private boolean soundOn = false;
     private Deck RDeck;
     private Deck GDeck;
-    private Group hint = new Group();
+    private Group hint = null;
 
 
 
@@ -120,22 +120,6 @@ public class Board extends Application {
         GDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y,rightBotIsAI); // the green deck
 
 
-        if(leftBotIsAI && rightBotIsAI) {
-            //sets up the AI based on what the player wants
-            EasyPlayer ep1 = new EasyPlayer(true);
-            MediumPlayer mp = new MediumPlayer(false);
-            EasyPlayer ep2 = new EasyPlayer(false);
-
-
-            for (int piecesPlayed = 0; piecesPlayed < 10; piecesPlayed++) {
-                //pair[0] for the green player
-                //pair[1] for the red player
-                RDeck.placePiece(ep1.getBestMove(boardState, RDeck.getCurrentPiece()));
-                GDeck.placePiece(mp.getBestMove(boardState, GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
-
-
-            }
-        }
 
 
 
@@ -157,8 +141,27 @@ public class Board extends Application {
                     in.stop();
                     soundOn = false;
                 } else {
+
                     in.play();
                     soundOn = true;
+
+                    /*if(leftBotIsAI && rightBotIsAI) { 
+                        //sets up the AI based on what the player wants
+                        EasyPlayer ep1 = new EasyPlayer(false);
+                        MediumPlayer mp = new MediumPlayer(true);
+                        EasyPlayer ep2 = new EasyPlayer(true);
+
+
+                        for (int piecesPlayed = 0; piecesPlayed < 20; piecesPlayed++) {
+                            //pair[0] for the green player
+                            //pair[1] for the red player
+
+                            RDeck.placePiece(ep2.getBestMove(boardState, RDeck.getCurrentPiece()));
+                            GDeck.placePiece(ep1.getBestMove(boardState, GDeck.getCurrentPiece()));
+
+
+                        }
+                    }*/
                 }
             }
         });
@@ -166,77 +169,54 @@ public class Board extends Application {
 
     public void hideHint() {
 
-        hint = new Group(); // clear the hint group
-
+        hint = null; // clear the hint group
     }
     // shows a hint, given by an easy AI
     public void showHint(boolean forRedPlayer) {
+        hideHint();
+        if(hint ==null) {
+            EasyPlayer ep = new EasyPlayer(forRedPlayer);
+            String moveToShow;
 
-        EasyPlayer ep = new EasyPlayer(forRedPlayer);
-        String moveToShow;
+            if (forRedPlayer) {
+                moveToShow = ep.getBestMove(boardState, RDeck.getCurrentPiece());
+            } else {
+                moveToShow = ep.getBestMove(boardState, GDeck.getCurrentPiece());
+            }
 
-        if (forRedPlayer) {
-            moveToShow = ep.getBestMove(boardState, RDeck.getCurrentPiece());
-        } else {
-            moveToShow = ep.getBestMove(boardState, GDeck.getCurrentPiece());
-        }
+            if(boardState.IsValidMove(moveToShow)) {
+                System.out.println(moveToShow + " was determined valid");
+            }
 
-        Pieces piece = new Pieces(moveToShow);
+            //initialise the hint
+            hint = new Group();
 
-        for (int i = 0; i < 3; i++) {
-            int x = piece.coords[i][0];
-            int y = piece.coords[i][1];
+            Pieces piece = new Pieces(moveToShow);
 
-            Group toAdd = (new Tile()).TileFX(SQUARE_SIZE);
-            toAdd.relocate(x * SQUARE_SIZE, y * SQUARE_SIZE);
-            root.getChildren().add(toAdd);
-            hint.getChildren().add(toAdd);
+            for (int i = 0; i < 3; i++) {
+                int x = piece.coords[i][0];
+                int y = piece.coords[i][1];
 
+                Colour colour = piece.colours[i];
+
+                Tile newTile = new Tile();
+                newTile.Stack(colour);
+
+                Group toAdd = (newTile).TileFX(SQUARE_SIZE);
+                toAdd.relocate(x * SQUARE_SIZE, y * SQUARE_SIZE);
+                hint.getChildren().add(toAdd);
+
+
+            }
 
             //make this hint object flash - this javafx code was inspired by
             // http://stackoverflow.com/questions/23190049/how-to-make-a-text-content-disappear-after-some-time-in-javafx
 
-
-            Timeline blink = new Timeline(
-                    new KeyFrame(
-                            Duration.seconds(0),
-                            new KeyValue(
-                                    toAdd.opacityProperty(),
-                                    1,
-                                    Interpolator.DISCRETE
-                            )
-                    ),
-                    new KeyFrame(
-                            Duration.seconds(0.5),
-                            new KeyValue(
-                                    toAdd.opacityProperty(),
-                                    0,
-                                    Interpolator.DISCRETE
-                            )
-                    ),
-                    new KeyFrame(
-                            Duration.seconds(1),
-                            new KeyValue(
-                                    toAdd.opacityProperty(),
-                                    1,
-                                    Interpolator.DISCRETE
-                            )
-                    )
-            );
-
-                FadeTransition fade = new FadeTransition(Duration.seconds(2), toAdd);
-                fade.setFromValue(1);
-                fade.setToValue(0);
-
-                SequentialTransition blinkThenFade = new SequentialTransition(
-                        blink,
-                        fade
-                );
-
-
-            blink.setCycleCount(3);
-
-                blinkThenFade.play();
+            root.getChildren().add(hint);
+            FadeTransition fade = new FadeTransition(Duration.seconds(6), hint);
+            fade.setFromValue(0.7);
+            fade.setToValue(0);
+            fade.play();
 
 
         }
@@ -304,16 +284,18 @@ public class Board extends Application {
 
             //update the placement on the board
 
-            addPlacement(newPiece);
-            System.out.println("Added " + newPiece);
+
             if (pieceArray.length > 1) {
 
                 //take the piece that has been placed out of the piece array that can
+
+                addPlacement(newPiece);
+                System.out.println("Added " + newPiece);
                 pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
                 currentPieceType = pieceArray[0];
 
-                //updates the image of the board, since the placement has been updated
                 this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+                //this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
 
 
             } else {
@@ -477,9 +459,9 @@ public class Board extends Application {
 
             //generate a new deck
             if (!green) {
-                deck = new char[] {'A','B','C','D','E','F','G','H','I','J'};
+                deck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
             } else  {
-                deck = new char[] {'K','L','M','N','O','P','Q','R','S','T'};
+                deck = new char[] {'K','L','M','N','O','P','Q','R','S','T','K','L','M','N','O','P','Q','R','S','T'};
             }
 
             //shuffle the deck
@@ -633,8 +615,10 @@ public class Board extends Application {
             this.redIsPlaying = redIsPlaying;
         }
 
-        public char getNextDeckPiece(Deck deck) { //works out the next deck piece that would be optimal
-            return bestNextPiece;
+        public void rearrangeForBestDeck(Deck deck) { //works out the next deck piece that would be optimal
+            char[] currentDeck = deck.pieceArray;
+
+            //rearrange the deck
         }
 
         //gets the best move
