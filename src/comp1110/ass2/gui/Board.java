@@ -42,6 +42,7 @@ public class Board extends Application {
     private boolean soundOn = false;
     private Deck RDeck;
     private Deck GDeck;
+    private Group hint = new Group();
 
 
 
@@ -97,6 +98,7 @@ public class Board extends Application {
         displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
 
+        // FIXME For Calum: Implement this so it all works
 
         //player selects what kind of game they want
 
@@ -114,7 +116,7 @@ public class Board extends Application {
         RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y,leftBotIsAI); // the red deck
         GDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y,rightBotIsAI); // the green deck
 
-        /*
+
         if(leftBotIsAI && rightBotIsAI) {
             //sets up the AI based on what the player wants
             EasyPlayer ep1 = new EasyPlayer(true);
@@ -131,7 +133,7 @@ public class Board extends Application {
 
             }
         }
-        */
+
 
 
 
@@ -165,13 +167,12 @@ public class Board extends Application {
 
     public void hideHint() {
 
-
-
+        hint = new Group(); // clear the hint group
 
     }
     // shows a hint, given by an easy AI
     public void showHint(boolean forRedPlayer) {
-        Tile[][] hint;
+
         EasyPlayer ep = new EasyPlayer(forRedPlayer);
         String moveToShow;
 
@@ -190,6 +191,7 @@ public class Board extends Application {
             Group toAdd = (new Tile()).TileFX(SQUARE_SIZE);
             toAdd.relocate(x * SQUARE_SIZE, y * SQUARE_SIZE);
             root.getChildren().add(toAdd);
+            hint.getChildren().add(toAdd);
 
 
             //make this hint object flash - this javafx code was inspired by
@@ -291,14 +293,15 @@ public class Board extends Application {
 
 
 
-
+        //UNSAFE, does not check if the piece is placed in a valid position
         private void placePiece(String newPiece) {
 
             if(isAI) {
+                // FIXME For Calum: Implement animation when the AI places a piece
                 //animation code here
             }
 
-            hideHint();
+            hideHint(); // hide the hint
 
             //update the placement on the board
 
@@ -518,8 +521,8 @@ public class Board extends Application {
         //keeps track of whether this particular instance of AI is playing as red or as green
         private boolean redIsPlaying;
 
-        public EasyPlayer(boolean redIsPlayin) {
-            redIsPlaying = redIsPlayin;
+        public EasyPlayer(boolean redIsPlaying) {
+            this.redIsPlaying = redIsPlaying;
         }
 
         //gets the best move through what is essentially a 1-recursion-depth minimax algorithm
@@ -558,8 +561,8 @@ public class Board extends Application {
     public class MediumPlayer{
         private boolean redIsPlaying;
 
-        public MediumPlayer(boolean redIsPlayin) {
-            redIsPlaying = redIsPlayin;
+        public MediumPlayer(boolean redIsPlaying) {
+            this.redIsPlaying = redIsPlaying;
         }
 
 
@@ -622,16 +625,21 @@ public class Board extends Application {
 
 
 
-    /*public class ImpossiblePlayer {
+    public class ImpossiblePlayer {
         private boolean redIsPlaying;
         private final int LOOKAHEAD = 2;
+        private char bestNextPiece;
+
         public ImpossiblePlayer(boolean redIsPlaying) {
             this.redIsPlaying = redIsPlaying;
         }
-        public double valueOfBestMove(BoardState board,int lookahead) {
-            return evaluateTree(new BoardState(board.GetBoard() + getBestMove(board,lookahead)),lookahead,redIsPlaying);
+
+        public char getNextDeckPiece(Deck deck) { //works out the next deck piece that would be optimal
+            return bestNextPiece;
         }
-        public String getBestMove(BoardState board,int lookahead) {
+
+        //gets the best move
+        public String getBestMove(BoardState board,int lookahead, char currentDeckPiece, char opponentDeckPiece) {
             ArrayList<BoardState> possibleBoards = generateNextBoards(board,redIsPlaying);
             BoardState bestBoard = possibleBoards.get(0);
             int moveNumber = 0;
@@ -644,11 +652,14 @@ public class Board extends Application {
             return StratoGame.generateAllPossibleMoves(board,redIsPlaying).get(moveNumber);
         }
 
+
         //returns a 4 character piece which is the best piece next to be given to the computer
-        public String findBestNextPiece(String ownPiece, String oppositionPiece, BoardState ) {
+        public String findBestNextPiece(String ownPiece, String oppositionPiece, BoardState board) {
 
+            //set best next piece
+            return "AAAA";
         }
-
+        //lookahead will be 3
         public int evaluateTree(BoardState board, int lookahead,boolean isRedsTurn) {
             if(lookahead>0) {
                 ArrayList<BoardState> boards = generateNextBoards(board, isRedsTurn);
@@ -683,7 +694,7 @@ public class Board extends Application {
             return toReturn;
         }
 
-    }*/
+    }
 
     //finds the index of the maximum value of a list of ints
     private int getMaxIndex(int[] ints) {
