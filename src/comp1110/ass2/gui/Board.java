@@ -1,21 +1,25 @@
 package comp1110.ass2.gui;
 
-import comp1110.ass2.BoardState;
-import comp1110.ass2.StratoGame;
+import comp1110.ass2.*;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import comp1110.ass2.Colour;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import javafx.animation.*;
 import  java.io.*;
+
+import javafx.util.Duration;
 import  sun.audio.*;
 import java.io.File;
+import java.util.concurrent.TimeUnit;
+import javafx.animation.FadeTransition;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -36,12 +40,8 @@ public class Board extends Application {
     private boolean greensTurn = true;
     private AudioStream AS;
     private boolean soundOn = false;
-
-
-    public class Player {
-
-    }
-
+    private Deck RDeck;
+    private Deck GDeck;
 
 
 
@@ -96,9 +96,43 @@ public class Board extends Application {
         root.getChildren().add(displayBoard);
         displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
-        //creates two new decks
-        Deck RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y);
-        Deck LDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y);
+
+
+        //player selects what kind of game they want
+
+        //Do they want AI?
+        boolean leftBotIsAI;
+        boolean rightBotIsAI;
+
+        //for now set both true
+        leftBotIsAI = true;
+        rightBotIsAI = true;
+
+        //how hard should the AI be? Easy, medium or impossible
+
+        //creates two new decks based on what the player wants
+        RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y,leftBotIsAI); // the red deck
+        GDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y,rightBotIsAI); // the green deck
+
+        /*
+        if(leftBotIsAI && rightBotIsAI) {
+            //sets up the AI based on what the player wants
+            EasyPlayer ep1 = new EasyPlayer(true);
+            MediumPlayer mp = new MediumPlayer(false);
+            EasyPlayer ep2 = new EasyPlayer(false);
+
+
+            for (int piecesPlayed = 0; piecesPlayed < 10; piecesPlayed++) {
+                //pair[0] for the green player
+                //pair[1] for the red player
+                RDeck.placePiece(ep1.getBestMove(boardState, RDeck.getCurrentPiece()));
+                GDeck.placePiece(mp.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
+
+
+            }
+        }
+        */
+
 
 
         // FIXME For Jingyi: make this sound system work
@@ -107,7 +141,7 @@ public class Board extends Application {
         //user presses 'M' again the music stops
 
         //creates a new input stream for sound system
-        InputStream in = null;
+        /*InputStream in = null;
         try {
             in = new FileInputStream("src/comp1110.ass2/gui/assets/bensound-goinghigher.mp3");
             AS = new AudioStream(in);
@@ -126,8 +160,93 @@ public class Board extends Application {
                     soundOn = true;
                 }
             }
-        });
+        });*/
     }
+
+    public void hideHint() {
+
+
+
+
+    }
+    // shows a hint, given by an easy AI
+    public void showHint(boolean forRedPlayer) {
+        Tile[][] hint;
+        EasyPlayer ep = new EasyPlayer(forRedPlayer);
+        String moveToShow;
+
+        if (forRedPlayer) {
+            moveToShow = ep.getBestMove(boardState, RDeck.getCurrentPiece());
+        } else {
+            moveToShow = ep.getBestMove(boardState, GDeck.getCurrentPiece());
+        }
+
+        Pieces piece = new Pieces(moveToShow);
+
+        for (int i = 0; i < 3; i++) {
+            int x = piece.coords[i][0];
+            int y = piece.coords[i][1];
+
+            Group toAdd = (new Tile()).TileFX(SQUARE_SIZE);
+            toAdd.relocate(x * SQUARE_SIZE, y * SQUARE_SIZE);
+            root.getChildren().add(toAdd);
+
+
+            //make this hint object flash - this javafx code was inspired by
+            // http://stackoverflow.com/questions/23190049/how-to-make-a-text-content-disappear-after-some-time-in-javafx
+
+
+            Timeline blink = new Timeline(
+                    new KeyFrame(
+                            Duration.seconds(0),
+                            new KeyValue(
+                                    toAdd.opacityProperty(),
+                                    1,
+                                    Interpolator.DISCRETE
+                            )
+                    ),
+                    new KeyFrame(
+                            Duration.seconds(0.5),
+                            new KeyValue(
+                                    toAdd.opacityProperty(),
+                                    0,
+                                    Interpolator.DISCRETE
+                            )
+                    ),
+                    new KeyFrame(
+                            Duration.seconds(1),
+                            new KeyValue(
+                                    toAdd.opacityProperty(),
+                                    1,
+                                    Interpolator.DISCRETE
+                            )
+                    )
+            );
+
+                FadeTransition fade = new FadeTransition(Duration.seconds(2), toAdd);
+                fade.setFromValue(1);
+                fade.setToValue(0);
+
+                SequentialTransition blinkThenFade = new SequentialTransition(
+                        blink,
+                        fade
+                );
+
+
+            blink.setCycleCount(3);
+
+                blinkThenFade.play();
+
+
+        }
+    }
+
+
+
+
+
+
+
 
     public static int getBoardWidth() {
         return BOARD_WIDTH;
@@ -158,6 +277,7 @@ public class Board extends Application {
         private String toString;
         private char[] pieceArray;
         private boolean green;
+        private boolean isAI;
         //private Board board;
 
         private static final String URI_BASE = "gui/assets/";
@@ -168,6 +288,50 @@ public class Board extends Application {
         public char[] getPieceArray() {
             return pieceArray;
         }
+
+
+
+
+        private void placePiece(String newPiece) {
+
+            if(isAI) {
+                //animation code here
+            }
+
+            hideHint();
+
+            //update the placement on the board
+
+            addPlacement(newPiece);
+            System.out.println("Added " + newPiece);
+            if (pieceArray.length > 1) {
+
+                //take the piece that has been placed out of the piece array that can
+                pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
+                currentPieceType = pieceArray[0];
+
+                //updates the image of the board, since the placement has been updated
+                this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+
+
+            } else {
+
+                this.setImage(null);
+
+                if (!green) {
+                    // game over case
+                }
+            }
+
+            //update score boxes
+            greenScore.setText("" + boardState.BoardScore(true));
+            redScore.setText("" + boardState.BoardScore(false));
+
+            greensTurn = !greensTurn;
+        }
+
+
+
 
         //the draggable part of the deck - this class was inspired by the draggable functionality implemented
         //in the source code for assignment one
@@ -191,7 +355,7 @@ public class Board extends Application {
 
                 // scroll to change orientation
                 setOnScroll(event -> {
-                    if (greensTurn == green) {
+                    if (greensTurn == green && !isAI) { // if the deck is an AI deck then the dragging is not needed
                         double rotation = this.getRotate();
                         //rotates the piece by adding 90 to the rotation and taking %360 to deal
                         //with rotations over 360 degrees
@@ -211,7 +375,7 @@ public class Board extends Application {
                 // mouse press indicates begin of drag. Here we update the coordinates of mouseX and MouseY
                 // so that they correspond to the piece
                 setOnMousePressed(event -> {
-                    if (green == greensTurn) {
+                    if (green == greensTurn && !isAI) {
                         mouseX = event.getSceneX();
                         mouseY = event.getSceneY();
                     }
@@ -221,7 +385,10 @@ public class Board extends Application {
                 // with the mouse coordinates so the user can drag it directly onto the board
                 setOnMouseDragged(event -> {
                     //check
-                    if (green == greensTurn) {
+                    if (green == greensTurn && !isAI) {
+
+                        //make it so that if the mouse hovers over a valid position the position lights up
+
                         double movementX = event.getSceneX() - mouseX;
                         double movementY = event.getSceneY() - mouseY;
                         setLayoutX(getLayoutX() + movementX);
@@ -235,7 +402,7 @@ public class Board extends Application {
                 //code to place the piece - the mouse button has been released
                 setOnMouseReleased(event -> {
                     //check whose turn it is
-                    if (green == greensTurn) {
+                    if (green == greensTurn && !isAI) {
                         //these calculations were inspired by assignment 1
                         int xDrop = (int) this.getLayoutX();
                         int yDrop = (int) this.getLayoutY();
@@ -273,32 +440,9 @@ public class Board extends Application {
                             String newPiece = "" + xLetter + yLetter + currentPieceType + currentPieceOrientation;
 
                             if (boardState.IsValidMove(newPiece)) {
-                                //update the placement on the board
-                                addPlacement(newPiece);
-                                if (pieceArray.length > 1) {
-
-                                    //take the piece that has been placed out of the piece array that can
-                                    pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
-                                    currentPieceType = pieceArray[0];
-
-                                    //updates the image of the board, since the placement has been updated
-                                    this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
 
 
-                                } else {
-                                    this.setImage(null);
-
-                                    if (!green) {
-                                        // game over case
-                                    }
-                                }
-
-                                //update score boxes
-                                greenScore.setText("" + boardState.BoardScore(true));
-                                redScore.setText("" + boardState.BoardScore(false));
-
-                                greensTurn = !greensTurn;
-
+                                placePiece(newPiece);
 
                             }
                         }
@@ -318,22 +462,22 @@ public class Board extends Application {
             return pieceArray[0];
         }
 
-       // public Deck(Colour alignment, int x, int y) {
+        public boolean getAI() { return isAI;}
 
-       // }
 
-        public Deck(Colour alignment, int x, int y) {
+        public Deck(Colour alignment, int x, int y, boolean isAi) {
             char[] deck;
             homeX = x;
             homeY = y;
+            isAI = isAi;
 
             green = Colour.G == alignment;
 
             //generate a new deck
             if (!green) {
-                deck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
+                deck = new char[] {'A','B','C','D','E','F','G','H','I','J'};
             } else  {
-                deck = new char[] {'K','L','M','N','O','P','Q','R','S','T','K','L','M','N','O','P','Q','R','S','T'};
+                deck = new char[] {'K','L','M','N','O','P','Q','R','S','T'};
             }
 
             //shuffle the deck
@@ -374,8 +518,8 @@ public class Board extends Application {
         //keeps track of whether this particular instance of AI is playing as red or as green
         private boolean redIsPlaying;
 
-        public EasyPlayer(boolean redIsPlaying) {
-            redIsPlaying = redIsPlaying;
+        public EasyPlayer(boolean redIsPlayin) {
+            redIsPlaying = redIsPlayin;
         }
 
         //gets the best move through what is essentially a 1-recursion-depth minimax algorithm
@@ -401,8 +545,9 @@ public class Board extends Application {
             //maps out all the possible moves
             for(int i = 0; i<movesList.size();i++) {
                 if (board.IsValidMove(movesList.get(i))) {
-                    board.PlaceTile(movesList.get(i));
-                    toReturn.add(board);
+                    BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                    tBoard.PlaceTile(movesList.get(i));
+                    toReturn.add(tBoard);
                 }
             }
             return toReturn;
@@ -411,11 +556,10 @@ public class Board extends Application {
 
     }
     public class MediumPlayer{
-
         private boolean redIsPlaying;
 
-        public MediumPlayer(boolean redIsPlaying) {
-            redIsPlaying = redIsPlaying;
+        public MediumPlayer(boolean redIsPlayin) {
+            redIsPlaying = redIsPlayin;
         }
 
 
@@ -426,7 +570,7 @@ public class Board extends Application {
             int moveNumber = 0;
             //looks through the boards, evaluating each with a static evaluation function
             for(int i = 0; i<possibleBoards.size();i++) {
-                //test which baord is best, and then find the best one
+                //finds the board that maximises "evaluate tree"
                 if(evaluateTree(bestBoard, redIsPlaying, deckPiece, opponentDeckPiece) < evaluateTree(possibleBoards.get(i), redIsPlaying, deckPiece, opponentDeckPiece)) {
                     bestBoard = possibleBoards.get(i);
                     moveNumber = i;
@@ -435,42 +579,43 @@ public class Board extends Application {
             //finally, takes the index of the best move that is found
             return StratoGame.generateAllPossibleMoves(board,redIsPlaying,deckPiece).get(moveNumber);
         }
-
+        //generate the next boards through using the list of moves generated in StratoGame.java
         private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {
             ArrayList<BoardState> toReturn = new ArrayList<>();
-            ArrayList<String> movesList = StratoGame.generateAllPossibleMoves(board,isRedsTurn,deckPiece);
+            ArrayList<String> movesList = StratoGame.generateAllPossibleMoves(board, isRedsTurn, deckPiece);
 
-            for(int i = 0; i<movesList.size();i++) {
+            for (int i = 0; i < movesList.size(); i++) {
                 if (board.IsValidMove(movesList.get(i))) {
-                    board.PlaceTile(movesList.get(i));
-                    toReturn.add(board);
+                    BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                    tBoard.PlaceTile(movesList.get(i));
+                    toReturn.add(tBoard);
                 }
             }
+
             return toReturn;
         }
 
-
-        //simple minimax algorithm
+        //finds the board that minimises the other player's ability to play a good move
         public int evaluateTree(BoardState board, boolean isRedsTurn, char playersDeckPiece, char opponentsDeckPiece) {
-            //generate the first tier boards
             int maxi = 0;
 
-                ArrayList secondTierBoards = generateNextBoards(board,isRedsTurn,playersDeckPiece);
-                //here update second tier boards by itterating through all the possibilities
-                for(int j = 0;j<secondTierBoards.size();j++) {
-                    //find the maximum value that occurs here
-                    int boardValue = evaluateBoard((BoardState) secondTierBoards.get(j),redIsPlaying);
-                    if(boardValue>maxi) {
-                        maxi = boardValue;
-                    }
+            ArrayList secondTierBoards = generateNextBoards(board,isRedsTurn,opponentsDeckPiece);
+            //here update second tier boards by iterating through all the possibilities
+            for(int j = 0;j<secondTierBoards.size();j++) {
+                //find the maximum value that occurs here
+                int boardValue = evaluateBoard((BoardState) secondTierBoards.get(j),!isRedsTurn);
+                if(boardValue<maxi) {
+                    maxi = boardValue;
                 }
+            }
 
             return maxi; //the maximum value that was found
 
 
         }
-
-
+        private int evaluateBoard(BoardState board, boolean isRedsTurn) {
+            return board.BoardScore(!isRedsTurn)-board.BoardScore(isRedsTurn);
+        }
     }
 
 
@@ -539,6 +684,8 @@ public class Board extends Application {
         }
 
     }*/
+
+    //finds the index of the maximum value of a list of ints
     private int getMaxIndex(int[] ints) {
         int maxIndex = 0;
         for (int i = 0; i<ints.length; i++) {
@@ -548,6 +695,7 @@ public class Board extends Application {
         }
         return maxIndex;
     }
+    //finds the maximum of a list of ints
     private int maximum(int[] ints) {
         int max = ints[0];
         for (int anInt : ints) {
@@ -557,6 +705,7 @@ public class Board extends Application {
         }
         return max;
     }
+    //finds the minimum of a list of ints
     private int minimum(int[] ints) {
         int min = ints[0];
         for (int anInt : ints) {
@@ -568,7 +717,7 @@ public class Board extends Application {
     }
 
     private int evaluateBoard(BoardState board, boolean isRedsTurn) {
-        return board.BoardScore(!isRedsTurn);
+        return board.BoardScore(isRedsTurn)-board.BoardScore(!isRedsTurn); // opposite because the parameter is "green"
     }
 
 }
