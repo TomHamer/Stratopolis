@@ -1,9 +1,6 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.*;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -14,16 +11,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.animation.*;
-import  java.io.*;
-
-
 import javafx.util.Duration;
 import  sun.audio.*;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 import javafx.animation.FadeTransition;
-
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
@@ -35,7 +27,7 @@ public class Board extends Application {
     private static final int SQUARE_SIZE = 23;
     private static final int DECK_COORD_X = 50;
     private static final int DECK_COORD_Y = 50;
-    private final BoardState boardState = new BoardState("MMUA");
+    private BoardState boardState = new BoardState("MMUA");
     private Group root = new Group();
     private Group current = null;
     private Group displayBoard;
@@ -57,9 +49,42 @@ public class Board extends Application {
 
     // FIXME For Jingyi: Implement a system that uses the following functions, writing to the "savedGame.txt" to save files
     //clears the text file
-    public void newGame() {}
+    public void newGame() {
+    }
     //writes the text file
-    public void saveGame() {}
+    public void saveGame() {
+        //need to save
+
+        //types of the players, out of EasyPlayer, MediumPlayer, HardPlayer, Human player
+
+        //whos turn it is
+
+        //placement on board
+
+    }
+    public void loadGame() {
+        boolean redWasEasy;
+        boolean greenWasEasy;
+        boolean redWasMedium;
+        boolean greenWasMedium;
+        boolean redWasImpossible;
+        boolean greenWasImpossible;
+        boolean redWasHuman;
+        boolean greenWasHuman;
+        String placement = "";
+        boolean redsTurn;
+
+        //assign the above values through reading in the text file
+
+
+        boardState = new BoardState(placement);
+
+
+
+
+
+
+    }
 
     //allows the user to save the game by writing the gameState into a textfile
     public String boardToText() {
@@ -123,8 +148,7 @@ public class Board extends Application {
 
 
 
-
-        // FIXME For Jingyi: make this sound system work
+        // FIXME For Jingyi: this sound system now works - suggest another idea?
 
         //It needs to be such that when the user presses 'M' the music starts, and then when the
         //user presses 'M' again the music stops
@@ -140,28 +164,33 @@ public class Board extends Application {
                 if(soundOn) {
                     in.stop();
                     soundOn = false;
+
                 } else {
 
                     in.play();
                     soundOn = true;
-
-                    /*if(leftBotIsAI && rightBotIsAI) { 
+                    if(leftBotIsAI && rightBotIsAI) {
                         //sets up the AI based on what the player wants
                         EasyPlayer ep1 = new EasyPlayer(false);
-                        MediumPlayer mp = new MediumPlayer(true);
+                        HardPlayer ip = new HardPlayer(true);
                         EasyPlayer ep2 = new EasyPlayer(true);
+                        MediumPlayer mp = new MediumPlayer(false);
+                        MediumPlayer mp2 = new MediumPlayer(true);
 
 
-                        for (int piecesPlayed = 0; piecesPlayed < 20; piecesPlayed++) {
+                        for (int piecesPlayed = 0; piecesPlayed < 3; piecesPlayed++) {
                             //pair[0] for the green player
                             //pair[1] for the red player
-
-                            RDeck.placePiece(ep2.getBestMove(boardState, RDeck.getCurrentPiece()));
                             GDeck.placePiece(ep1.getBestMove(boardState, GDeck.getCurrentPiece()));
+                            RDeck.placePiece(mp2.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+
+
 
 
                         }
-                    }*/
+                    }
+
+
                 }
             }
         });
@@ -182,10 +211,6 @@ public class Board extends Application {
                 moveToShow = ep.getBestMove(boardState, RDeck.getCurrentPiece());
             } else {
                 moveToShow = ep.getBestMove(boardState, GDeck.getCurrentPiece());
-            }
-
-            if(boardState.IsValidMove(moveToShow)) {
-                System.out.println(moveToShow + " was determined valid");
             }
 
             //initialise the hint
@@ -209,9 +234,7 @@ public class Board extends Application {
 
             }
 
-            //make this hint object flash - this javafx code was inspired by
-            // http://stackoverflow.com/questions/23190049/how-to-make-a-text-content-disappear-after-some-time-in-javafx
-
+            //make this object fade out
             root.getChildren().add(hint);
             FadeTransition fade = new FadeTransition(Duration.seconds(6), hint);
             fade.setFromValue(0.7);
@@ -494,76 +517,79 @@ public class Board extends Application {
     }
 
 
-    //----------------------------------------------------------------------------------------------------
-    //AI code begins here
-    //----------------------------------------------------------------------------------------------------
+    public class HardPlayer {
+        boolean redIsPlaying;
+        comp1110.ass2.Deck deck;
+        char opponentDeckPiece;
+        private final int MAX_LOOKAHEAD = 2;
+        private String recommendedDeck = "";
 
-    public class EasyPlayer {
-        //keeps track of whether this particular instance of AI is playing as red or as green
-        private boolean redIsPlaying;
 
-        public EasyPlayer(boolean redIsPlaying) {
+        public HardPlayer(boolean redIsPlaying) {
             this.redIsPlaying = redIsPlaying;
         }
 
-        //gets the best move through what is essentially a 1-recursion-depth minimax algorithm
-        public String getBestMove(BoardState board, char deckPiece) {
-            //generates all possible boards that could come from moves that are available to the AI
-            ArrayList<BoardState> possibleBoards = generateNextBoards(board,redIsPlaying,deckPiece);
+        public String getBestMove(BoardState board, char currentDeckPiece, char opponentDeckPiece) {
+            this.opponentDeckPiece = opponentDeckPiece;
+            ArrayList<BoardState> possibleBoards = generateNextBoards(board, redIsPlaying, currentDeckPiece);
             BoardState bestBoard = possibleBoards.get(0);
             int moveNumber = 0;
-            //looks through the boards, evaluating each with a static evaluation function
-            for(int i = 0; i<possibleBoards.size();i++) {
-                if(evaluateBoard(bestBoard, redIsPlaying)<evaluateBoard(possibleBoards.get(i),redIsPlaying)) {
+            for (int i = 0; i < possibleBoards.size(); i++) {
+                if (alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying)
+                        < alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying)) {
                     bestBoard = possibleBoards.get(i);
                     moveNumber = i;
                 }
             }
-            //finally, takes the index of the best move that is found
-            return StratoGame.generateAllPossibleMoves(board,redIsPlaying,deckPiece).get(moveNumber);
+            return StratoGame.generateAllPossibleMoves(board, redIsPlaying, currentDeckPiece).get(moveNumber);
         }
-        //generates an arraylist of boards
-        private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {
-            ArrayList<BoardState> toReturn = new ArrayList<>();
-            ArrayList<String> movesList = StratoGame.generateAllPossibleMoves(board,isRedsTurn,deckPiece);
-            //maps out all the possible moves
-            for(int i = 0; i<movesList.size();i++) {
-                if (board.IsValidMove(movesList.get(i))) {
-                    BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                    tBoard.PlaceTile(movesList.get(i));
-                    toReturn.add(tBoard);
+
+
+
+        //minimax alpha-beta algorithm
+        private int alphaBeta(BoardState board, int alpha, int beta, int lookahead, boolean maximiseForRed) {
+            int bestValue;
+
+            ArrayList nextBoards = new ArrayList<>();
+            if(lookahead == MAX_LOOKAHEAD) {
+                nextBoards = generateNextBoards(board, maximiseForRed, opponentDeckPiece);
+            } else {
+                if(maximiseForRed) {
+                    nextBoards = generateNextBoards(board, true, RDeck.getPieceArray()[1]);
+                } else {
+                    nextBoards = generateNextBoards(board, false, GDeck.getPieceArray()[1]);
                 }
             }
-            return toReturn;
-        }
+            if (lookahead == 0) {
+                bestValue = evaluateBoard(board,maximiseForRed);
+            }
+            else if (maximiseForRed) {
+                bestValue = alpha;
 
-
-    }
-    public class MediumPlayer{
-        private boolean redIsPlaying;
-
-        public MediumPlayer(boolean redIsPlaying) {
-            this.redIsPlaying = redIsPlaying;
-        }
-
-
-        public String getBestMove(BoardState board, char deckPiece, char opponentDeckPiece) {
-            //generates all possible boards that could come from moves that are available to the AI
-            ArrayList<BoardState> possibleBoards = generateNextBoards(board,redIsPlaying,deckPiece);
-            BoardState bestBoard = possibleBoards.get(0);
-            int moveNumber = 0;
-            //looks through the boards, evaluating each with a static evaluation function
-            for(int i = 0; i<possibleBoards.size();i++) {
-                //finds the board that maximises "evaluate tree"
-                if(evaluateTree(bestBoard, redIsPlaying, deckPiece, opponentDeckPiece) < evaluateTree(possibleBoards.get(i), redIsPlaying, deckPiece, opponentDeckPiece)) {
-                    bestBoard = possibleBoards.get(i);
-                    moveNumber = i;
+                for (int i=0; i<nextBoards.size(); i++) {
+                    int childValue = alphaBeta((BoardState) nextBoards.get(i), bestValue, beta, lookahead-1, false);
+                    bestValue = Math.max(bestValue, childValue);
+                    if (beta <= bestValue) {
+                        break;
+                    }
                 }
             }
-            //finally, takes the index of the best move that is found
-            return StratoGame.generateAllPossibleMoves(board,redIsPlaying,deckPiece).get(moveNumber);
+            else {
+                bestValue = beta;
+
+                for (int i=0; i<nextBoards.size(); i++) {
+                    int childValue = alphaBeta((BoardState) nextBoards.get(i), alpha, bestValue,lookahead-1, true);
+                    bestValue = Math.min(bestValue, childValue);
+                    if (bestValue <= alpha) {
+                        break;
+                    }
+                }
+            }
+            return bestValue;
         }
-        //generate the next boards through using the list of moves generated in StratoGame.java
+
+
+
         private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {
             ArrayList<BoardState> toReturn = new ArrayList<>();
             ArrayList<String> movesList = StratoGame.generateAllPossibleMoves(board, isRedsTurn, deckPiece);
@@ -579,139 +605,12 @@ public class Board extends Application {
             return toReturn;
         }
 
-        //finds the board that minimises the other player's ability to play a good move
-        public int evaluateTree(BoardState board, boolean isRedsTurn, char playersDeckPiece, char opponentsDeckPiece) {
-            int maxi = 0;
-
-            ArrayList secondTierBoards = generateNextBoards(board,isRedsTurn,opponentsDeckPiece);
-            //here update second tier boards by iterating through all the possibilities
-            for(int j = 0;j<secondTierBoards.size();j++) {
-                //find the maximum value that occurs here
-                int boardValue = evaluateBoard((BoardState) secondTierBoards.get(j),!isRedsTurn);
-                if(boardValue<maxi) {
-                    maxi = boardValue;
-                }
-            }
-
-            return maxi; //the maximum value that was found
-
-
-        }
         private int evaluateBoard(BoardState board, boolean isRedsTurn) {
             return board.BoardScore(!isRedsTurn)-board.BoardScore(isRedsTurn);
         }
-    }
 
-
-
-
-    //impossible player does not work yet
-    public class ImpossiblePlayer {
-        private boolean redIsPlaying;
-        private final int LOOKAHEAD = 2;
-        private char bestNextPiece;
-
-        public ImpossiblePlayer(boolean redIsPlaying) {
-            this.redIsPlaying = redIsPlaying;
-        }
-
-        public void rearrangeForBestDeck(Deck deck) { //works out the next deck piece that would be optimal
-            char[] currentDeck = deck.pieceArray;
-
-            //rearrange the deck
-        }
-
-        //gets the best move
-        public String getBestMove(BoardState board,int lookahead, char currentDeckPiece, char opponentDeckPiece) {
-            ArrayList<BoardState> possibleBoards = generateNextBoards(board,redIsPlaying);
-            BoardState bestBoard = possibleBoards.get(0);
-            int moveNumber = 0;
-            for(int i = 0; i<possibleBoards.size();i++) {
-                if(evaluateTree(bestBoard, lookahead, redIsPlaying)<evaluateTree(possibleBoards.get(i), lookahead, redIsPlaying)) {
-                    bestBoard = possibleBoards.get(i);
-                    moveNumber = i;
-                }
-            }
-            return StratoGame.generateAllPossibleMoves(board,redIsPlaying).get(moveNumber);
-        }
-
-
-        //returns a 4 character piece which is the best piece next to be given to the computer
-        public String findBestNextPiece(String ownPiece, String oppositionPiece, BoardState board) {
-
-            //set best next piece
-            return "AAAA";
-        }
-        //lookahead will be 3
-        public int evaluateTree(BoardState board, int lookahead,boolean isRedsTurn) {
-            if(lookahead>0) {
-                ArrayList<BoardState> boards = generateNextBoards(board, isRedsTurn);
-                int[] nextEvals = new int[boards.size()];
-                for(int i = 0; i<nextEvals.length; i++) {
-                    nextEvals[i] = evaluateTree(boards.get(i),lookahead-1,!isRedsTurn);
-                }
-                if(isRedsTurn && redIsPlaying || !isRedsTurn && !redIsPlaying) {
-                    //maximise
-                    return maximum(nextEvals);
-                } else {
-                    //minimise
-                    return minimum(nextEvals);
-                }
-
-            } else {
-
-                return evaluateBoard(board,isRedsTurn);
-
-            }
-        }
-
-        private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn) {
-            ArrayList<BoardState> toReturn = new ArrayList<>();
-            ArrayList<String> movesList = StratoGame.generateAllPossibleMoves(board,isRedsTurn);
-            for(String i:movesList) {
-                if (board.IsValidMove(i)) {
-                    board.PlaceTile(i);
-                    toReturn.add(board);
-                }
-            }
-            return toReturn;
-        }
 
     }
 
-    //finds the index of the maximum value of a list of ints
-    private int getMaxIndex(int[] ints) {
-        int maxIndex = 0;
-        for (int i = 0; i<ints.length; i++) {
-            if (ints[maxIndex] < ints[i]) {
-                maxIndex = i;
-            }
-        }
-        return maxIndex;
-    }
-    //finds the maximum of a list of ints
-    private int maximum(int[] ints) {
-        int max = ints[0];
-        for (int anInt : ints) {
-            if (max < anInt) {
-                max = anInt;
-            }
-        }
-        return max;
-    }
-    //finds the minimum of a list of ints
-    private int minimum(int[] ints) {
-        int min = ints[0];
-        for (int anInt : ints) {
-            if (min > anInt) {
-                min = anInt;
-            }
-        }
-        return min;
-    }
-
-    private int evaluateBoard(BoardState board, boolean isRedsTurn) {
-        return board.BoardScore(!isRedsTurn)-board.BoardScore(isRedsTurn); // opposite because the parameter is "green"
-    }
 
 }
