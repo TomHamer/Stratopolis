@@ -123,7 +123,6 @@ public class Board extends Application {
         greenScore.relocate(DECK_COORD_X, DECK_COORD_Y + 50);
         redScore.relocate(DECK_COORD_X + 50, DECK_COORD_Y + 50);
 
-
         displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
 
 
