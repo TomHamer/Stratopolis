@@ -13,16 +13,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import  sun.audio.*;
-
 import java.io.*;
-import java.lang.reflect.Array;
-import java.util.concurrent.TimeUnit;
 import javafx.animation.FadeTransition;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
 
-import static com.apple.eio.FileManager.getResource;
 
 public class Board extends Application {
 
