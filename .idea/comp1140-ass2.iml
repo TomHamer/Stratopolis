@@ -28,5 +28,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="la4j-0.4.0-sources.jar" level="project" />
   </component>
 </module>
