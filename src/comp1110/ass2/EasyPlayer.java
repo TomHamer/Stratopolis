@@ -21,18 +21,18 @@ public class EasyPlayer {
         int moveNumber = 0;
         //looks through the boards, evaluating each with a static evaluation function
         for(int i = 0; i<possibleBoards.size();i++) {
-            if(evaluateBoard(bestBoard, redIsPlaying)<evaluateBoard(possibleBoards.get(i),redIsPlaying)) {
+            if(evaluateBoard(bestBoard, !redIsPlaying)<evaluateBoard(possibleBoards.get(i),!redIsPlaying)) {
                 bestBoard = possibleBoards.get(i);
                 moveNumber = i;
             }
         }
         //finally, takes the index of the best move that is found
-        return StratoGame.generateAllPossibleMoves(board,redIsPlaying,deckPiece).get(moveNumber);
+        return board.generateAllPossibleMoves(redIsPlaying,deckPiece).get(moveNumber);
     }
     //generates an arraylist of boards
     private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {
         ArrayList<BoardState> toReturn = new ArrayList<>();
-        ArrayList<String> movesList = StratoGame.generateAllPossibleMoves(board,isRedsTurn,deckPiece);
+        ArrayList<String> movesList = board.generateAllPossibleMoves(isRedsTurn,deckPiece);
         //maps out all the possible moves
         for(int i = 0; i<movesList.size();i++) {
             if (board.IsValidMove(movesList.get(i))) {

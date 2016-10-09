@@ -27,12 +27,12 @@ public class MediumPlayer{
             }
         }
         //finally, takes the index of the best move that is found
-        return StratoGame.generateAllPossibleMoves(board,redIsPlaying,deckPiece).get(moveNumber);
+        return board.generateAllPossibleMoves(redIsPlaying,deckPiece).get(moveNumber);
     }
     //generate the next boards through using the list of moves generated in StratoGame.java
     private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {
         ArrayList<BoardState> toReturn = new ArrayList<>();
-        ArrayList<String> movesList = StratoGame.generateAllPossibleMoves(board, isRedsTurn, deckPiece);
+        ArrayList<String> movesList = board.generateAllPossibleMoves(isRedsTurn, deckPiece);
 
         for (int i = 0; i < movesList.size(); i++) {
             if (board.IsValidMove(movesList.get(i))) {
@@ -49,7 +49,7 @@ public class MediumPlayer{
     public int evaluateTree(BoardState board, boolean isRedsTurn, char playersDeckPiece, char opponentsDeckPiece) {
         int maxi = 0;
 
-        ArrayList secondTierBoards = generateNextBoards(board,isRedsTurn,opponentsDeckPiece);
+        ArrayList secondTierBoards = generateNextBoards(board,!isRedsTurn,opponentsDeckPiece);
         //here update second tier boards by iterating through all the possibilities
         for(int j = 0;j<secondTierBoards.size();j++) {
             //find the maximum value that occurs here

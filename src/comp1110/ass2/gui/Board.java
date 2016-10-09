@@ -13,12 +13,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import  sun.audio.*;
-import java.io.File;
+
+import java.io.*;
+import java.lang.reflect.Array;
 import java.util.concurrent.TimeUnit;
 import javafx.animation.FadeTransition;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
+
+import static com.apple.eio.FileManager.getResource;
 
 public class Board extends Application {
 
@@ -38,6 +42,7 @@ public class Board extends Application {
     private Deck RDeck;
     private Deck GDeck;
     private Group hint = null;
+    private int boardIndex;
 
 
 
@@ -123,6 +128,7 @@ public class Board extends Application {
 
 
         root.getChildren().add(displayBoard);
+        boardIndex = root.getChildren().indexOf(displayBoard);
         displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
 
@@ -166,28 +172,98 @@ public class Board extends Application {
                     soundOn = false;
 
                 } else {
+                    PrintWriter writer = null;
+                    try {
+                        writer = new PrintWriter(new FileWriter(String.valueOf(Board.class.getResource("assets/Samples.txt")),true));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                     in.play();
                     soundOn = true;
                     if(leftBotIsAI && rightBotIsAI) {
                         //sets up the AI based on what the player wants
-                        EasyPlayer ep1 = new EasyPlayer(false);
-                        HardPlayer ip = new HardPlayer(true);
-                        EasyPlayer ep2 = new EasyPlayer(true);
+                        EasyPlayer ep1 = new EasyPlayer(true);
+                        HardPlayer ip = new HardPlayer(false);
+                        EasyPlayer ep2 = new EasyPlayer(false);
                         MediumPlayer mp = new MediumPlayer(false);
                         MediumPlayer mp2 = new MediumPlayer(true);
 
+                       // int NO_OF_GAMES = 1;
 
-                        for (int piecesPlayed = 0; piecesPlayed < 3; piecesPlayed++) {
-                            //pair[0] for the green player
-                            //pair[1] for the red player
-                            GDeck.placePiece(ep1.getBestMove(boardState, GDeck.getCurrentPiece()));
-                            RDeck.placePiece(mp2.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+                        for (int i = 0; i < 1; i++) {
+                            boardState = new BoardState("MMUA");
+                            root.getChildren().remove(boardIndex);
+                            displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
+                            displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
+                            root.getChildren().add(displayBoard);
+                            boardIndex = root.getChildren().indexOf(displayBoard);
+
+                            ArrayList<String> boards = new ArrayList<>();
+                            ArrayList<Integer> outcomes = new ArrayList<>();
+
+                            //generate a new deck
+                            char[] Rdeck;
+                            char[] Gdeck;
+
+                                Rdeck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
+
+                                Gdeck = new char[] {'K','L','M','N','O','P','Q','R','S','T','K','L','M','N','O','P','Q','R','S','T'};
+
+
+                            //shuffle the deck
+                            char[] RpieceArray = shuffle(Rdeck);
+                            char[] GpieceArray = shuffle(Gdeck);
+
+
+                            RDeck.pieceArray = RpieceArray;
+                            GDeck.pieceArray = GpieceArray;
 
 
 
+                            for (int piecesPlayed = 0; piecesPlayed < 20; piecesPlayed++) {
+                                //pair[0] for the green player
+                                //pair[1] for the red player
+                                RDeck.placePiece(mp2.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+                                boards.add(boardState.GetBoard());
+                                GDeck.placePiece(ep2.getBestMove(boardState, GDeck.getCurrentPiece()));
+                                boards.add(boardState.GetBoard());
+
+
+
+
+                                if (piecesPlayed == 19) {
+                                    if (boardState.BoardScore(true) < boardState.BoardScore(false)) {
+                                       // System.out.println("green won");
+                                        //go back and assign 1 to all of greens moves and -1 to all of reds moves
+                                        for(int boardNumber = 0; boardNumber<boards.size();boardNumber++) {
+                                            //since green went first assign every even number 1 and every odd -1
+                                            if(boardNumber%2 == 0) {
+                                                outcomes.add(-1);
+                                            } else {
+                                                outcomes.add(1);
+                                            }
+                                        }
+                                    } else {
+                                        //System.out.println("red won");
+                                        for(int boardNumber = 0; boardNumber<boards.size();boardNumber++) {
+                                            //since green went first assign every even number -1 and every odd 1
+                                            if(boardNumber%2 == 0) {
+                                                outcomes.add(1);
+                                            } else {
+                                                outcomes.add(-1);
+                                            }
+                                        }
+                                    }
+                                }
+
+
+                            }
+                            System.out.println(boards);
+                            System.out.println(outcomes);
 
                         }
+
                     }
 
 
@@ -197,7 +273,6 @@ public class Board extends Application {
     }
 
     public void hideHint() {
-
         hint = null; // clear the hint group
     }
     // shows a hint, given by an easy AI
@@ -213,7 +288,7 @@ public class Board extends Application {
                 moveToShow = ep.getBestMove(boardState, GDeck.getCurrentPiece());
             }
 
-            //initialise the hint
+            //initialise a new hint
             hint = new Group();
 
             Pieces piece = new Pieces(moveToShow);
@@ -282,6 +357,7 @@ public class Board extends Application {
         private char[] pieceArray;
         private boolean green;
         private boolean isAI;
+        private FXDraggablePiece icon;
         //private Board board;
 
         private static final String URI_BASE = "gui/assets/";
@@ -313,11 +389,11 @@ public class Board extends Application {
                 //take the piece that has been placed out of the piece array that can
 
                 addPlacement(newPiece);
-                System.out.println("Added " + newPiece);
+                System.out.println("added "+ newPiece);
                 pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
                 currentPieceType = pieceArray[0];
 
-                this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+                icon.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
                 //this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
 
 
@@ -493,36 +569,36 @@ public class Board extends Application {
             //make the piece at the front of the deck appear on screen by initialising a new FXDraggablePiece
             currentPieceOrientation = 'A';
             currentPieceType = pieceArray[0];
-            new FXDraggablePiece(currentPieceType,SIZE_OF_DECK,x,y);
+            icon = new FXDraggablePiece(currentPieceType,SIZE_OF_DECK,x,y);
 
         }
 
-        //algorithm that shuffles the deck
-        private char[] shuffle(char[] list) {
 
-            Random random = new Random();
+    }
+    //algorithm that shuffles the deck
+    private char[] shuffle(char[] list) {
 
-            for(int i = list.length - 1; i >= 0; i--) {
-                int rand = random.nextInt(i + 1);
+        Random random = new Random();
 
-                char temp = list[rand];
-                list[rand] = list[i];
-                list[i] = temp;
+        for(int i = list.length - 1; i >= 0; i--) {
+            int rand = random.nextInt(i + 1);
 
-            }
+            char temp = list[rand];
+            list[rand] = list[i];
+            list[i] = temp;
 
-
-            return list;
         }
+
+
+        return list;
     }
 
 
     public class HardPlayer {
         boolean redIsPlaying;
-        comp1110.ass2.Deck deck;
         char opponentDeckPiece;
         private final int MAX_LOOKAHEAD = 2;
-        private String recommendedDeck = "";
+
 
 
         public HardPlayer(boolean redIsPlaying) {
@@ -533,31 +609,31 @@ public class Board extends Application {
             this.opponentDeckPiece = opponentDeckPiece;
             ArrayList<BoardState> possibleBoards = generateNextBoards(board, redIsPlaying, currentDeckPiece);
             BoardState bestBoard = possibleBoards.get(0);
+            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
             int moveNumber = 0;
             for (int i = 0; i < possibleBoards.size(); i++) {
-                if (alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying)
-                        < alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying)) {
-                    bestBoard = possibleBoards.get(i);
+                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
+                if (bestBoardVal < testValue)  {
+                    bestBoardVal = testValue;
                     moveNumber = i;
                 }
             }
-            return StratoGame.generateAllPossibleMoves(board, redIsPlaying, currentDeckPiece).get(moveNumber);
+            return board.generateAllPossibleMoves(redIsPlaying, currentDeckPiece).get(moveNumber);
         }
 
 
-
-        //minimax alpha-beta algorithm
+        //minimax alpha-beta algorithmm
         private int alphaBeta(BoardState board, int alpha, int beta, int lookahead, boolean maximiseForRed) {
             int bestValue;
 
-            ArrayList nextBoards = new ArrayList<>();
+            ArrayList nextBoards;
             if(lookahead == MAX_LOOKAHEAD) {
-                nextBoards = generateNextBoards(board, maximiseForRed, opponentDeckPiece);
+                nextBoards = generateNextBoards(board,maximiseForRed, opponentDeckPiece);
             } else {
                 if(maximiseForRed) {
-                    nextBoards = generateNextBoards(board, true, RDeck.getPieceArray()[1]);
+                    nextBoards = generateNextBoards(board, true, RDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
                 } else {
-                    nextBoards = generateNextBoards(board, false, GDeck.getPieceArray()[1]);
+                    nextBoards = generateNextBoards(board, false, GDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
                 }
             }
             if (lookahead == 0) {
@@ -592,7 +668,7 @@ public class Board extends Application {
 
         private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {
             ArrayList<BoardState> toReturn = new ArrayList<>();
-            ArrayList<String> movesList = StratoGame.generateAllPossibleMoves(board, isRedsTurn, deckPiece);
+            ArrayList<String> movesList = board.generateAllPossibleMoves(isRedsTurn, deckPiece);
 
             for (int i = 0; i < movesList.size(); i++) {
                 if (board.IsValidMove(movesList.get(i))) {

@@ -6,6 +6,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 
 /**
  * Created by calum on 8/15/2016.
@@ -46,6 +49,8 @@ public class BoardState {
             this.PlaceTile(start.substring(i, i+4));
         }
     }
+
+    public Tile[][] getBoard() {return board;}
 
     // Determine if a given move is valid on the board
     public boolean IsValidMove (String move) {
@@ -476,4 +481,63 @@ public class BoardState {
     public String GetBoard() {
         return state;
     }
+
+    //generates all the possible moves for a given boardstate and deckpiece3
+    public ArrayList<String> generateAllPossibleMoves(boolean redIsPlaying, char piece) {
+        //automatically remove duplicates by using a hashset
+        HashSet<String> hs = new HashSet<>();
+
+        String bString = this.GetBoard();
+        HashSet<char[]> coords = new HashSet<>();
+           for(int i = 0; i<bString.length();i+=4) {
+               Pieces p = new Pieces(bString.substring(i, i + 4));
+               //again using a hashset to guard against duplicates
+
+               for (int[] c : p.coords) {
+                   //retrieve a list of x and y coords that bound the shape
+                   coords.add(new char[]{(char) (c[0] + 66), (char) (c[1] + 66)});
+                   coords.add(new char[]{(char) (c[0] + 65), (char) (c[1] + 66)});
+                   coords.add(new char[]{(char) (c[0] + 64), (char) (c[1] + 66)});
+                   coords.add(new char[]{(char) (c[0] + 66), (char) (c[1] + 65)});
+                   coords.add(new char[]{(char) (c[0] + 64), (char) (c[1] + 65)});
+                   coords.add(new char[]{(char) (c[0] + 66), (char) (c[1] + 64)});
+                   coords.add(new char[]{(char) (c[0] + 65), (char) (c[1] + 64)});
+                   coords.add(new char[]{(char) (c[0] + 64), (char) (c[1] + 64)});
+               }
+           }
+
+
+           //code to get the (flattened) list of all tiles. Colour here is irrelevant
+           //the variable board gives a list of tiles
+
+
+                for(char[] cor:coords) {
+                    for(char o:"ABCD".toCharArray()) {
+                        String pieceToTry = ""+ cor[0]+cor[1]+piece+o;
+
+                        if(this.IsValidMove(pieceToTry)) {
+                        //then add to a hashmap
+                        hs.add(pieceToTry);
+
+                        }
+
+                    }
+                }
+
+
+
+
+        //convert to arraylist
+        ArrayList<String> toReturn = new ArrayList<>();
+        toReturn.addAll(hs);
+        return toReturn;
+    }
+
+
+
+
+
+
+
+
 }
