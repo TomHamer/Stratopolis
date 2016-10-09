@@ -23,6 +23,8 @@ public class Deck {
     private char[] pieceArray;
     private Board board;
 
+    private int piecesMarker = 0;
+
     private static final String URI_BASE = "gui/assets/";
 
     private int homeX, homeY;
@@ -122,8 +124,9 @@ public class Deck {
 
 
                         board.addPlacement(newPiece);
-                        pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
-                        currentPieceType = pieceArray[0];
+                        //pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
+                        piecesMarker++;
+                        currentPieceType = pieceArray[piecesMarker];
 
                         this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
                         System.out.println("successfully placed a piece!");

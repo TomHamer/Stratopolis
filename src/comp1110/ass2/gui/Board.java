@@ -7,6 +7,9 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -30,8 +33,10 @@ public class Board extends Application {
     private static final int BOARD_WIDTH = 933;
     private static final int BOARD_HEIGHT = 700;
     private static final int SQUARE_SIZE = 23;
-    private static final int DECK_COORD_X = 50;
-    private static final int DECK_COORD_Y = 50;
+    private static final int DECK_COORD_G_X = 55;
+    private static final int DECK_COORD_G_Y = 50;
+    private static final int DECK_COORD_R_X = BOARD_WIDTH - 101;
+    private static final int DECK_COORD_R_Y = 50;
     private final BoardState boardState = new BoardState("MMUA");
     private Group root = new Group();
     private Group current = null;
@@ -42,6 +47,7 @@ public class Board extends Application {
     private boolean soundOn = false;
     private Deck RDeck;
     private Deck GDeck;
+    private Text remainingG, remainingR;
 
 
 
@@ -67,27 +73,61 @@ public class Board extends Application {
     public void start(Stage primaryStage) {
 
 
-        Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
+        Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT, Color.BLACK);
 
         primaryStage.setTitle("Stratopolis");
         primaryStage.setWidth(415);
         primaryStage.setHeight(200);
+        primaryStage.setX(250);
+        primaryStage.setY(100);
 
         primaryStage.sizeToScene();
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        greenScore = new Text("1");
-        redScore = new Text("1");
+        for (double x = -100; x < BOARD_WIDTH; x += 300) {
+            for (double y = 0; y < BOARD_HEIGHT; y += 140) {
+                Rectangle toAdd = new Rectangle(x - 150 * (((int) (y / 140)) % 2) + 3, y + 3, 294, 134);
+                toAdd.setFill(Color.DIMGRAY);
+                root.getChildren().add(toAdd);
+            }
+        }
+
+        greenScore = new Text("Score: 1");
+        redScore = new Text("Score: 1");
+
+        Rectangle greenBox = new Rectangle(DECK_COORD_G_X - SQUARE_SIZE * 1.5, DECK_COORD_G_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 200);
+        greenBox.setArcHeight(15);
+        greenBox.setArcWidth(15);
+        greenBox.setStroke(Color.BLACK);
+        greenBox.setFill(Color.DARKGREEN);
+        greenBox.setStrokeWidth(3);
+        root.getChildren().add(greenBox);
+
+        Rectangle redBox = new Rectangle(DECK_COORD_R_X - SQUARE_SIZE * 1.5, DECK_COORD_R_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 200);
+        redBox.setArcHeight(15);
+        redBox.setArcWidth(15);
+        redBox.setStroke(Color.BLACK);
+        redBox.setFill(Color.DARKRED);
+        redBox.setStrokeWidth(3);
+        root.getChildren().add(redBox);
+
+        remainingG = new Text(DECK_COORD_G_X - SQUARE_SIZE * 1.2, DECK_COORD_G_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
+        remainingG.setFont(new Font(11));
+        root.getChildren().add(remainingG);
+
+        remainingR = new Text(DECK_COORD_R_X - SQUARE_SIZE * 1.2, DECK_COORD_R_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
+        remainingR.setFont(new Font(11));
+        root.getChildren().add(remainingR);
 
         root.getChildren().add(greenScore);
         root.getChildren().add(redScore);
 
-        greenScore.setFont(new Font(20));
-        redScore.setFont(new Font(20));
+        greenScore.setFont(new Font(18));
+        redScore.setFont(new Font(18));
 
-        greenScore.relocate(DECK_COORD_X, DECK_COORD_Y + 50);
-        redScore.relocate(DECK_COORD_X + 50, DECK_COORD_Y + 50);
+        greenScore.relocate(DECK_COORD_G_X - SQUARE_SIZE / 2, DECK_COORD_G_Y + 50);
+        redScore.relocate(DECK_COORD_R_X - SQUARE_SIZE / 2, DECK_COORD_R_Y + 50);
 
 
         displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
@@ -105,14 +145,14 @@ public class Board extends Application {
         boolean rightBotIsAI;
 
         //for now set both true
-        leftBotIsAI = true;
-        rightBotIsAI = true;
+        leftBotIsAI = false;
+        rightBotIsAI = false;
 
         //how hard should the AI be? Easy, medium or impossible
 
         //creates two new decks based on what the player wants
-        RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y,leftBotIsAI); // the red deck
-        GDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y,rightBotIsAI); // the green deck
+        RDeck = new Deck(Colour.R,DECK_COORD_R_X, DECK_COORD_R_Y,leftBotIsAI); // the red deck
+        GDeck = new Deck(Colour.G,DECK_COORD_G_X, DECK_COORD_G_Y,rightBotIsAI); // the green deck
 
         /*
         if(leftBotIsAI && rightBotIsAI) {
@@ -268,17 +308,17 @@ public class Board extends Application {
     //it updates the boardstate to include the new piece, and makes it the opponents turn. Code for this
     // was inspired by the drag and drop code used in assignment 1
 
-    public class Deck extends ImageView {
+    public class Deck {
 
         private char currentPieceOrientation;
         private final int boardCoordX = (BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10;
         private final int boardCoordY = (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10;
         private char currentPieceType;
-        private String toString;
         private char[] pieceArray;
         private boolean green;
         private boolean isAI;
         //private Board board;
+
 
         private static final String URI_BASE = "gui/assets/";
 
@@ -292,43 +332,7 @@ public class Board extends Application {
 
 
 
-        private void placePiece(String newPiece) {
 
-            if(isAI) {
-                //animation code here
-            }
-
-            hideHint();
-
-            //update the placement on the board
-
-            addPlacement(newPiece);
-            System.out.println("Added " + newPiece);
-            if (pieceArray.length > 1) {
-
-                //take the piece that has been placed out of the piece array that can
-                pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
-                currentPieceType = pieceArray[0];
-
-                //updates the image of the board, since the placement has been updated
-                this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
-
-
-            } else {
-
-                this.setImage(null);
-
-                if (!green) {
-                    // game over case
-                }
-            }
-
-            //update score boxes
-            greenScore.setText("" + boardState.BoardScore(true));
-            redScore.setText("" + boardState.BoardScore(false));
-
-            greensTurn = !greensTurn;
-        }
 
 
 
@@ -339,6 +343,7 @@ public class Board extends Application {
         private class FXDraggablePiece extends ImageView {
             //the mouse coordinates X and Y
             double mouseX, mouseY;
+            private int piecesMarker = 0;
 
             FXDraggablePiece (char pieceType, double size, int x, int y) {
                 //retrieves the image for the piece and then sets the image for the deck, for the user to drag
@@ -378,6 +383,7 @@ public class Board extends Application {
                     if (green == greensTurn && !isAI) {
                         mouseX = event.getSceneX();
                         mouseY = event.getSceneY();
+                        setOpacity(0.5);
                     }
 
                 });
@@ -402,6 +408,7 @@ public class Board extends Application {
                 //code to place the piece - the mouse button has been released
                 setOnMouseReleased(event -> {
                     //check whose turn it is
+                    setOpacity(1.0);
                     if (green == greensTurn && !isAI) {
                         //these calculations were inspired by assignment 1
                         int xDrop = (int) this.getLayoutX();
@@ -456,6 +463,52 @@ public class Board extends Application {
                     event.consume();
                 });
             }
+
+            private void placePiece(String newPiece) {
+
+                if(isAI) {
+                    //animation code here
+                }
+
+                hideHint();
+
+                //update the placement on the board
+
+                addPlacement(newPiece);
+                System.out.println("Added " + newPiece);
+                if (piecesMarker < 19) {
+
+                    //take the piece that has been placed out of the piece array that can
+                    //pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
+                    piecesMarker++;
+                    currentPieceType = pieceArray[piecesMarker];
+                    System.out.println(currentPieceType);
+
+                    if (green) {
+                        remainingG.setText("Pieces Remaining: " + (20 - piecesMarker));
+                    } else {
+                        remainingR.setText("Pieces Remaining: " + (20 - piecesMarker));
+                    }
+
+                    //updates the image of the board, since the placement has been updated
+                    setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+
+
+                } else {
+
+                    this.setImage(null);
+
+                    if (!green) {
+                        // game over case
+                    }
+                }
+
+                //update score boxes
+                greenScore.setText("Score: " + boardState.BoardScore(true));
+                redScore.setText("Score: " + boardState.BoardScore(false));
+
+                greensTurn = !greensTurn;
+            }
         }
 
         public char getCurrentPiece() {
@@ -475,9 +528,9 @@ public class Board extends Application {
 
             //generate a new deck
             if (!green) {
-                deck = new char[] {'A','B','C','D','E','F','G','H','I','J'};
+                deck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
             } else  {
-                deck = new char[] {'K','L','M','N','O','P','Q','R','S','T'};
+                deck = new char[] {'K','L','M','N','O','P','Q','R','S','T','K','L','M','N','O','P','Q','R','S','T'};
             }
 
             //shuffle the deck

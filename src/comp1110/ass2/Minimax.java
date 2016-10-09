@@ -1,9 +1,12 @@
 package comp1110.ass2;
+
 import comp1110.ass2.BoardState;
 import java.util.ArrayList;
 /**
  * Created by Tom on 8/09/2016.
  */
+
+/*
 public class Minimax extends Brain {
     private boolean redIsPlaying;
     private final int LOOKAHEAD = 2;
@@ -78,3 +81,4 @@ public class Minimax extends Brain {
         return min;
     }
 }
+*/

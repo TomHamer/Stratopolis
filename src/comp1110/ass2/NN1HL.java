@@ -3,7 +3,7 @@ package comp1110.ass2;
 /**
  * Created by Tom on 25/09/2016.
  */
-
+/*
 import org.la4j.*;
 import org.la4j.Matrix;
 import org.la4j.Vector;
@@ -217,3 +217,4 @@ public class NN1HL {
     }
 
 
+*/
