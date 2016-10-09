@@ -1,16 +1,20 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.*;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.media.AudioClip;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.animation.*;
+import  java.io.*;
+
 import javafx.util.Duration;
 import  sun.audio.*;
 
@@ -31,7 +35,7 @@ public class Board extends Application {
     private static final int SQUARE_SIZE = 23;
     private static final int DECK_COORD_X = 50;
     private static final int DECK_COORD_Y = 50;
-    private BoardState boardState = new BoardState("MMUA");
+    private final BoardState boardState = new BoardState("MMUA");
     private Group root = new Group();
     private Group current = null;
     private Group displayBoard;
@@ -54,8 +58,7 @@ public class Board extends Application {
 
     // FIXME For Jingyi: Implement a system that uses the following functions, writing to the "savedGame.txt" to save files
     //clears the text file
-    public void newGame() {
-    }
+    public void newGame() {}
     //writes the text file
     public void saveGame() {
         //need to save
@@ -131,7 +134,6 @@ public class Board extends Application {
         displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
 
-        // FIXME For Calum: Implement this so it all works and the user selects it
 
         //player selects what kind of game they want
 
@@ -149,27 +151,47 @@ public class Board extends Application {
         RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y,leftBotIsAI); // the red deck
         GDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y,rightBotIsAI); // the green deck
 
+        /*
+        if(leftBotIsAI && rightBotIsAI) {
+            //sets up the AI based on what the player wants
+            EasyPlayer ep1 = new EasyPlayer(true);
+            MediumPlayer mp = new MediumPlayer(false);
+            EasyPlayer ep2 = new EasyPlayer(false);
+
+
+            for (int piecesPlayed = 0; piecesPlayed < 10; piecesPlayed++) {
+                //pair[0] for the green player
+                //pair[1] for the red player
+                RDeck.placePiece(ep1.getBestMove(boardState, RDeck.getCurrentPiece()));
+                GDeck.placePiece(mp.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
+
+
+            }
+        }
+        */
 
 
 
-
-        // FIXME For Jingyi: this sound system now works - suggest another idea?
+        // FIXME For Jingyi: make this sound system work
 
         //It needs to be such that when the user presses 'M' the music starts, and then when the
         //user presses 'M' again the music stops
 
         //creates a new input stream for sound system
-
-            final AudioClip in = new AudioClip(Board.class.getResource("assets/bensound-goinghigher.mp3").toString());
-
+        /*InputStream in = null;
+        try {
+            in = new FileInputStream("src/comp1110.ass2/gui/assets/bensound-goinghigher.mp3");
+            AS = new AudioStream(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //event handler for sound system
         scene.setOnKeyPressed(event -> {
-            if(event.getCode() == KeyCode.M) {
+            if(event.getCharacter().equals("m")) {
                 if(soundOn) {
-                    in.stop();
+                    AudioPlayer.player.stop(AS);
                     soundOn = false;
-
                 } else {
                     PrintWriter writer = null;
                     try {
