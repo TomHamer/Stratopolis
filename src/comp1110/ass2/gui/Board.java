@@ -1,20 +1,16 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.*;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.media.AudioClip;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.animation.*;
-import  java.io.*;
-
 import javafx.util.Duration;
 import  sun.audio.*;
 import java.io.*;
@@ -31,7 +27,7 @@ public class Board extends Application {
     private static final int SQUARE_SIZE = 23;
     private static final int DECK_COORD_X = 50;
     private static final int DECK_COORD_Y = 50;
-    private final BoardState boardState = new BoardState("MMUA");
+    private BoardState boardState = new BoardState("MMUA");
     private Group root = new Group();
     private Group current = null;
     private Group displayBoard;
@@ -54,7 +50,8 @@ public class Board extends Application {
 
     // FIXME For Jingyi: Implement a system that uses the following functions, writing to the "savedGame.txt" to save files
     //clears the text file
-    public void newGame() {}
+    public void newGame() {
+    }
     //writes the text file
     public void saveGame() {
         //need to save
@@ -130,6 +127,7 @@ public class Board extends Application {
         displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
 
 
+        // FIXME For Calum: Implement this so it all works and the user selects it
 
         //player selects what kind of game they want
 
@@ -147,47 +145,27 @@ public class Board extends Application {
         RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y,leftBotIsAI); // the red deck
         GDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y,rightBotIsAI); // the green deck
 
-        /*
-        if(leftBotIsAI && rightBotIsAI) {
-            //sets up the AI based on what the player wants
-            EasyPlayer ep1 = new EasyPlayer(true);
-            MediumPlayer mp = new MediumPlayer(false);
-            EasyPlayer ep2 = new EasyPlayer(false);
-
-
-            for (int piecesPlayed = 0; piecesPlayed < 10; piecesPlayed++) {
-                //pair[0] for the green player
-                //pair[1] for the red player
-                RDeck.placePiece(ep1.getBestMove(boardState, RDeck.getCurrentPiece()));
-                GDeck.placePiece(mp.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
-
-
-            }
-        }
-        */
 
 
 
-        // FIXME For Jingyi: make this sound system work
+
+        // FIXME For Jingyi: this sound system now works - suggest another idea?
 
         //It needs to be such that when the user presses 'M' the music starts, and then when the
         //user presses 'M' again the music stops
 
         //creates a new input stream for sound system
-        /*InputStream in = null;
-        try {
-            in = new FileInputStream("src/comp1110.ass2/gui/assets/bensound-goinghigher.mp3");
-            AS = new AudioStream(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        final AudioClip in = new AudioClip(Board.class.getResource("assets/bensound-goinghigher.mp3").toString());
+
 
         //event handler for sound system
         scene.setOnKeyPressed(event -> {
-            if(event.getCharacter().equals("m")) {
+            if(event.getCode() == KeyCode.M) {
                 if(soundOn) {
-                    AudioPlayer.player.stop(AS);
+                    in.stop();
                     soundOn = false;
+
                 } else {
                     PrintWriter writer = null;
                     try {
@@ -206,7 +184,7 @@ public class Board extends Application {
                         MediumPlayer mp = new MediumPlayer(false);
                         MediumPlayer mp2 = new MediumPlayer(true);
 
-                       // int NO_OF_GAMES = 1;
+                        // int NO_OF_GAMES = 1;
 
                         for (int i = 0; i < 1; i++) {
                             boardState = new BoardState("MMUA");
@@ -223,9 +201,9 @@ public class Board extends Application {
                             char[] Rdeck;
                             char[] Gdeck;
 
-                                Rdeck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
+                            Rdeck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
 
-                                Gdeck = new char[] {'K','L','M','N','O','P','Q','R','S','T','K','L','M','N','O','P','Q','R','S','T'};
+                            Gdeck = new char[] {'K','L','M','N','O','P','Q','R','S','T','K','L','M','N','O','P','Q','R','S','T'};
 
 
                             //shuffle the deck
@@ -251,7 +229,7 @@ public class Board extends Application {
 
                                 if (piecesPlayed == 19) {
                                     if (boardState.BoardScore(true) < boardState.BoardScore(false)) {
-                                       // System.out.println("green won");
+                                        // System.out.println("green won");
                                         //go back and assign 1 to all of greens moves and -1 to all of reds moves
                                         for(int boardNumber = 0; boardNumber<boards.size();boardNumber++) {
                                             //since green went first assign every even number 1 and every odd -1
