@@ -22,8 +22,8 @@ public class NN1HL {
 
         private Matrix inputs;
         private Matrix outputs;
-        public Matrix alphas;
-        public Matrix betas;
+        private Matrix alphas;
+        private Matrix betas;
         private Matrix biases;
         private int M; //dimension of the hidden layer
         private int K; //dimension of the output layer
@@ -86,8 +86,6 @@ public class NN1HL {
         }
 
         private void backProp() {
-
-
 
             //update betas
             for(int k = 0;k<K;k++) {

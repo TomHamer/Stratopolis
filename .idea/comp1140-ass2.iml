@@ -21,13 +21,13 @@
     </orderEntry>
     <orderEntry type="module-library">
       <library>
-        <CLASSES />
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Downloads/jcommon-1.0.23/jcommon-1.0.23.jar!/" />
+        </CLASSES>
         <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/Downloads/la4j-master-2.jar!/la4j-master-2/src/main/java" />
-          <root url="jar://$USER_HOME$/Downloads/la4j-master-2.jar!/la4j-master-2/src/test/java" />
-        </SOURCES>
+        <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="la4j-0.4.0-sources.jar" level="project" />
   </component>
 </module>

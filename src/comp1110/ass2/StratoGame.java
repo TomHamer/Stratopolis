@@ -1,6 +1,8 @@
 package comp1110.ass2;
 
+import java.lang.reflect.Array;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
 import comp1110.ass2.gui.Board;
@@ -142,6 +144,10 @@ public class StratoGame {
         //return 0;
     }
 
+
+
+
+
     /**
      * Generate a valid move that follows from: the given placement, a piece to
      * play, and the piece the opponent will play next.
@@ -179,13 +185,97 @@ public class StratoGame {
         }
         return toReturn;
     }
+    //this implementation will give some duplicate moves, but that isnt an issue
+    public static ArrayList<String> generateMoves(BoardState board, boolean redIsPlaying,char piece) {
+
+
+
+
+
+
+
+
+
+        //start with MMUA
+        String[] rectangle;
+        Set<String> hs = new HashSet<>();
+
+        ArrayList<String> toReturn = new ArrayList<>();
+        for(int i = 0;i<board.GetBoard().length();i+=4) {
+            String bString = board.GetBoard().substring(i,i+4);
+            BoardState toCheck = new BoardState(bString);
+            hs.addAll(generateAllPossibleMoves(toCheck,redIsPlaying,piece));
+        }
+
+        toReturn.addAll(hs);
+        return(toReturn);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //generates a string of the x axis followed by y axis, which bound the area that pieces can be placed validly
+    public static String[] generateRectangle(BoardState board) {
+        String currentString = board.GetBoard();
+        char leftBoundX = 'M';
+        char rightBoundX = 'M';
+        char lowerBoundY = 'M';
+        char upperBoundY = 'M';
+        for(int i = 0; i<currentString.length();i+=4) {
+            char testBoundx = currentString.toCharArray()[i];
+            char testBoundy = currentString.toCharArray()[i+1];
+            if(testBoundx<leftBoundX){
+                leftBoundX = testBoundx;
+            }
+            if(testBoundx>rightBoundX) {
+                rightBoundX = testBoundx;
+            }
+            if(testBoundy<lowerBoundY) {
+                lowerBoundY = testBoundy;
+            }
+            if(testBoundy>upperBoundY) {
+                upperBoundY = testBoundy;
+            }
+        }
+
+        //need to add two to each bound to make absolutely sure all valid spaces are covered
+        leftBoundX-=2;
+        lowerBoundY-=2;
+        upperBoundY+=2;
+        rightBoundX+=2;
+
+
+        String xAlphabet = "";
+        String yAlphabet = "";
+
+        for(int i = (int) Character.toUpperCase(leftBoundX); i<(int) Character.toUpperCase(rightBoundX); i++) {
+            xAlphabet = xAlphabet + (char) i;
+        }
+        for(int i = (int) Character.toUpperCase(lowerBoundY); i<(int) Character.toUpperCase(upperBoundY); i++) {
+            yAlphabet = yAlphabet + (char) i;
+        }
+
+
+        return new String[] {yAlphabet,xAlphabet};
+    }
 
     //generates all possible moves, given a piece that can be placed
     public static ArrayList<String> generateAllPossibleMoves(BoardState board, boolean redIsPlaying,char piece) {
         ArrayList<String> toReturn = new ArrayList<>();
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        for (char i : alphabet.toCharArray()) {
-            for (char j : alphabet.toCharArray()) {
+        String[] alphabets = generateRectangle(board);
+        String xAlphabet = alphabets[0];
+        String yAlphabet = alphabets[1];
+        for (char i : xAlphabet.toCharArray()) {
+            for (char j : yAlphabet.toCharArray()) {
                 for (char k : "ABCD".toCharArray()) {
                     String newMove = ""+i + j + piece + k;
                     if (board.IsValidMove(newMove)) {
@@ -202,7 +292,7 @@ public class StratoGame {
     }
 
 
-    static String generateMove(String placement, char piece, char opponentsPiece) {
+    public static String generateMove(String placement, char piece, char opponentsPiece) {
         char[] redDeck = new char[] {'A','B','C','D','E','F','G','H','I','J'};
         boolean playerIsRed = false;
         for(char i:redDeck) {
@@ -210,7 +300,8 @@ public class StratoGame {
                 playerIsRed = true; // find if the player is red or green
             }
         }
-        return generateAllPossibleMoves(new BoardState(placement),playerIsRed,piece).get(0); // return the first randomly generated move
+        return generateMoves(new BoardState(placement),playerIsRed,piece).get(0); // return the first randomly generated move
 
     }
+
 }
