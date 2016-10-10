@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
 
-import static com.apple.eio.FileManager.getResource;
+//import static com.apple.eio.FileManager.getResource;
 
 public class Board extends Application {
 
@@ -41,7 +41,7 @@ public class Board extends Application {
     private static final int DECK_COORD_G_Y = 50;
     private static final int DECK_COORD_R_X = BOARD_WIDTH - 101;
     private static final int DECK_COORD_R_Y = 50;
-    private final BoardState boardState = new BoardState("MMUA");
+    private BoardState boardState = new BoardState("MMUA");
     private Group root = new Group();
     private Group current = null;
     private Group displayBoard;
@@ -55,13 +55,9 @@ public class Board extends Application {
     private Group hint = null;
     private int boardIndex;
 
-
-
-
     public void addPlacement(String placement) {
         boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
     }
-
 
     // FIXME For Jingyi: Implement a system that uses the following functions, writing to the "savedGame.txt" to save files
     //clears the text file
@@ -75,7 +71,6 @@ public class Board extends Application {
         //whos turn it is
 
         //placement on board
-
     }
     public void loadGame() {
         boolean redWasEasy;
@@ -91,14 +86,7 @@ public class Board extends Application {
 
         //assign the above values through reading in the text file
 
-
         boardState = new BoardState(placement);
-
-
-
-
-
-
     }
 
     //allows the user to save the game by writing the gameState into a textfile
@@ -106,7 +94,6 @@ public class Board extends Application {
         //this will need - placement, piece arrays for both decks, whether the two are AI or human and their difficulty
         return null;
     }
-
 
     public void start(Stage primaryStage) {
 
@@ -164,18 +151,14 @@ public class Board extends Application {
         greenScore.setFont(new Font(18));
         redScore.setFont(new Font(18));
 
-        greenScore.relocate(DECK_COORD_G_X - SQUARE_SIZE / 2, DECK_COORD_G_Y + 50);
-        redScore.relocate(DECK_COORD_R_X - SQUARE_SIZE / 2, DECK_COORD_R_Y + 50);
-
+        greenScore.relocate(DECK_COORD_G_X - SQUARE_SIZE / 2, DECK_COORD_G_Y + SQUARE_SIZE * 2.5);
+        redScore.relocate(DECK_COORD_R_X - SQUARE_SIZE / 2, DECK_COORD_R_Y + SQUARE_SIZE * 2.5);
 
         displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
-
 
         root.getChildren().add(displayBoard);
         boardIndex = root.getChildren().indexOf(displayBoard);
         displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
-
-
 
         //player selects what kind of game they want
 
@@ -332,7 +315,7 @@ public class Board extends Application {
 
                 }
             }
-        });
+        });*/
     }
 
     public void hideHint() {
@@ -462,7 +445,7 @@ public class Board extends Application {
 
             } else {
 
-                this.setImage(null);
+                icon.setImage(null);
 
                 if (!green) {
                     // game over case
