@@ -163,8 +163,8 @@ public class Board extends Application {
         boolean rightBotIsAI;
 
         //for now set both true
-        leftBotIsAI = true;
-        rightBotIsAI = true;
+        leftBotIsAI = false;
+        rightBotIsAI = false;
 
         //how hard should the AI be? Easy, medium or impossible
 
@@ -380,6 +380,8 @@ public class Board extends Application {
         private boolean green;
         private boolean isAI;
         private FXDraggablePiece icon;
+        private int piecesMarker = 0;
+
         //private Board board;
 
 
@@ -407,14 +409,14 @@ public class Board extends Application {
             //update the placement on the board
 
 
-            if (pieceArray.length > 1) {
+            if (piecesMarker < 19) {
 
                 //take the piece that has been placed out of the piece array that can
 
                 addPlacement(newPiece);
                 System.out.println("added "+ newPiece);
-                pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
-                currentPieceType = pieceArray[0];
+                piecesMarker++;
+                currentPieceType = pieceArray[piecesMarker];
 
                 icon.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
                 //this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
@@ -422,6 +424,7 @@ public class Board extends Application {
 
             } else {
 
+                addPlacement(newPiece);
                 icon.setImage(null);
 
                 if (!green) {
@@ -430,8 +433,8 @@ public class Board extends Application {
             }
 
             //update score boxes
-            greenScore.setText("" + boardState.BoardScore(true));
-            redScore.setText("" + boardState.BoardScore(false));
+            greenScore.setText("Score: " + boardState.BoardScore(true));
+            redScore.setText("Score: " + boardState.BoardScore(false));
 
             greensTurn = !greensTurn;
         }
@@ -445,7 +448,6 @@ public class Board extends Application {
         private class FXDraggablePiece extends ImageView {
             //the mouse coordinates X and Y
             double mouseX, mouseY;
-            private int piecesMarker = 0;
 
             FXDraggablePiece (char pieceType, double size, int x, int y) {
                 //retrieves the image for the piece and then sets the image for the deck, for the user to drag
@@ -567,14 +569,14 @@ public class Board extends Application {
             }
         }
 
-        public char getCurrentPiece() {
-            return pieceArray[0];
+        char getCurrentPiece() {
+            return pieceArray[piecesMarker];
         }
 
         public boolean getAI() { return isAI;}
 
 
-        public Deck(Colour alignment, int x, int y, boolean isAi) {
+        Deck(Colour alignment, int x, int y, boolean isAi) {
             char[] deck;
             homeX = x;
             homeY = y;
@@ -648,7 +650,7 @@ public class Board extends Application {
         }
 
 
-        //minimax alpha-beta algorithmm
+        //minimax alpha-beta algorithm
         private int alphaBeta(BoardState board, int alpha, int beta, int lookahead, boolean maximiseForRed) {
             int bestValue;
 
@@ -696,10 +698,10 @@ public class Board extends Application {
             ArrayList<BoardState> toReturn = new ArrayList<>();
             ArrayList<String> movesList = board.generateAllPossibleMoves(isRedsTurn, deckPiece);
 
-            for (int i = 0; i < movesList.size(); i++) {
-                if (board.IsValidMove(movesList.get(i))) {
+            for (String s : movesList) {
+                if (board.IsValidMove(s)) {
                     BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                    tBoard.PlaceTile(movesList.get(i));
+                    tBoard.PlaceTile(s);
                     toReturn.add(tBoard);
                 }
             }

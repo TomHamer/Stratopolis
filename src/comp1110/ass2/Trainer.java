@@ -1,4 +1,4 @@
-package comp1110.ass2;
+/*package comp1110.ass2;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 /**
  * Created by Tom on 25/09/2016.
  */
+/*
 public class Trainer {
 
     private static final String URI_BASE = "gui/assets/";
@@ -153,7 +154,7 @@ public class Trainer {
 
 
     }
-
+*/
 
 
 
