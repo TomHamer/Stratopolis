@@ -21,7 +21,7 @@ public class EasyPlayer {
         int moveNumber = 0;
         //looks through the boards, evaluating each with a static evaluation function
         for(int i = 0; i<possibleBoards.size();i++) {
-            if(evaluateBoard(bestBoard, !redIsPlaying)<evaluateBoard(possibleBoards.get(i),!redIsPlaying)) {
+            if(evaluateBoard(bestBoard, redIsPlaying)<evaluateBoard(possibleBoards.get(i),redIsPlaying)) {
                 bestBoard = possibleBoards.get(i);
                 moveNumber = i;
             }

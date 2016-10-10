@@ -59,7 +59,7 @@ public class MediumPlayer{
             }
         }
 
-        return maxi; //the maximum value that was found
+        return -maxi; //the maximum value that was found, but return negative, as this is the best move that was found for the opposite player
 
 
     }
