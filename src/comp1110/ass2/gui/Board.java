@@ -179,10 +179,12 @@ public class Board extends Application {
                     if(leftBotIsAI && rightBotIsAI) {
                         //sets up the AI based on what the player wants
                         EasyPlayer ep1 = new EasyPlayer(true);
-                        HardPlayer ip = new HardPlayer(false);
+                        //HardPlayer ip = new HardPlayer(false);
                         EasyPlayer ep2 = new EasyPlayer(false);
                         MediumPlayer mp = new MediumPlayer(false);
                         MediumPlayer mp2 = new MediumPlayer(true);
+                        NN1HL n = new NN1HL(8,676,1,0.001);
+                        IntellegentPlayer ip = new IntellegentPlayer(n);
 
                         // int NO_OF_GAMES = 1;
 
@@ -215,13 +217,12 @@ public class Board extends Application {
                             GDeck.pieceArray = GpieceArray;
 
 
-
                             for (int piecesPlayed = 0; piecesPlayed < 20; piecesPlayed++) {
                                 //pair[0] for the green player
                                 //pair[1] for the red player
                                 RDeck.placePiece(mp2.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
                                 boards.add(boardState.GetBoard());
-                                GDeck.placePiece(ep2.getBestMove(boardState, GDeck.getCurrentPiece()));
+                                GDeck.placePiece(ip.getBestMove(boardState, GDeck.getCurrentPiece()));
                                 boards.add(boardState.GetBoard());
 
 

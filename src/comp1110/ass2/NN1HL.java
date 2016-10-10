@@ -4,19 +4,20 @@ package comp1110.ass2;
  * Created by Tom on 25/09/2016.
  */
 
-import org.la4j.*;
-import org.la4j.Matrix;
-import org.la4j.Vector;
-import org.la4j.vector.dense.BasicVector;
-import org.la4j.matrix.dense.Basic1DMatrix;
+import comp1110.ass2.la4j.Matrix;
+import comp1110.ass2.la4j.Vector;
+import comp1110.ass2.la4j.vector.dense.BasicVector;
+import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 
 
 //neural network with one hidden layer
+//completely my own implementation of a vanilla 1 hidden layer neural network
+//backpropagation equations taken from Essentials of Statistical Machine Learning (Trevor Hastie)
 
 public class NN1HL {
 
-        private final double LEARNING_RATE = 0.002;
-        private final double WEIGHT_ESTIMATION_CONSTANT = 0.01;
+        private double learningRate;
+        private final double WEIGHT_ESTIMATION_CONSTANT = 0.0001;
         private final double BIAS_CONSTANT = 0;
         private double ACCEPTABLE_ERROR_RATE;
 
@@ -28,6 +29,18 @@ public class NN1HL {
         private int M; //dimension of the hidden layer
         private int K; //dimension of the output layer
         private int P; //dimension of the input layer
+
+
+        public Matrix getAlphas() {
+            return alphas;
+        }
+        public Matrix getBetas() {
+            return betas;
+        }
+        public int getK() { return K;}
+        public int getM() {return M;}
+        public int getP() {return P;}
+
 
         //generate a value close to 0
         private double generateWeight() {
@@ -48,29 +61,39 @@ public class NN1HL {
             this.alphas = generateAlphas(WEIGHT_ESTIMATION_CONSTANT);
             this.betas = generateBetas(WEIGHT_ESTIMATION_CONSTANT);
             this.biases = generateBiases(BIAS_CONSTANT);
+            System.out.println("Current error: "+getError());
+            System.out.println("training");
+            System.out.println("The alphas were: ");
+            System.out.println(alphas);
+            System.out.println("The betas were: ");
+            System.out.println(betas);
+
             while(getError()>ACCEPTABLE_ERROR_RATE ) {
+
                 backProp();
                 System.out.println(getError());
             }
 
 
         }
-        private double getError() {
+        //feeds through all the values of
+        public double getError() {
             double errorSum = 0;
             for (int n = 0; n<inputs.rows();n++) {
                 for(int k= 0; k<K;k++) {
-                    errorSum+=Math.pow((outputs.get(n,k)-feedForward(inputs.getRow(n)).get(k)),2);
+                    errorSum+=Math.pow(outputs.get(n,k)-feedForward(inputs.getRow(n)).get(k), 2);
                 }
             }
             return Math.sqrt(errorSum);
         }
 
 
-
-        public NN1HL(int dimensionOfHiddenLayer, int dimensionOfInput, int dimensionOfOutput) {
+        //initialises the neural network
+        public NN1HL(int dimensionOfHiddenLayer, int dimensionOfInput, int dimensionOfOutput, double learningRate) {
             this.M = dimensionOfHiddenLayer;
             this.P = dimensionOfInput;
             this.K = dimensionOfOutput;
+            this.learningRate = learningRate;
         }
 
         private Vector calculatezVector(Vector x) {
@@ -100,7 +123,7 @@ public class NN1HL {
 
                     }
                     double prior = betas.get(m,k);
-                    betas.set(m,k, prior-LEARNING_RATE*derivativeSum);
+                    betas.set(m,k, prior-learningRate*derivativeSum);
                 }
             }
 
@@ -111,6 +134,7 @@ public class NN1HL {
                     for (int n = 0; n < inputs.rows(); n++) {
                         double innerSum = 0;
                         for (int k = 0; k < K; k++) {
+                            //decided in the end not to use softmax in place of the identity function
                             double softmaxDifferential = 1; //diffsoftmax(betas.transpose().multiply(calculatezVector(inputs.getColumn(n))),k);
                             innerSum += 2 * (outputs.get(n, k) - feedForward(inputs.getRow(n)).get(k)) * softmaxDifferential * betas.get(m, k) * diffSigmoid(alphas.getColumn(m).innerProduct(inputs.getRow(n))) * inputs.get(n, l);
                         }
@@ -118,7 +142,7 @@ public class NN1HL {
                     }
 
                     double prior = alphas.get(l, m);
-                    alphas.set(l, m, prior - LEARNING_RATE * derivativeSum);
+                    alphas.set(l, m, prior - learningRate * derivativeSum);
 
                 }
 
