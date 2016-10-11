@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import comp1110.ass2.la4j.Matrix;
 import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 
-
-
-
 /**
  * Created by Tom on 25/09/2016.
  */
@@ -15,7 +12,7 @@ import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 public class Trainer {
 
     private static final String URI_BASE = "gui/assets/";
-    private static Matrix toInput = new Basic1DMatrix(27760,676);
+    private static Matrix toInput = new Basic1DMatrix(27760,676); //this matrix is cancer
     private static Matrix toOutput = new Basic1DMatrix(27760,1);
     private static ArrayList<Double> inp = new ArrayList<>();
     private static ArrayList<Double> out = new ArrayList<>();
@@ -45,12 +42,9 @@ public class Trainer {
         }
         toOutput = Matrix.from1DArray(27760,1, target);
 
-
-        NN1HL nn = new NN1HL(8,676,1,0.002);
-
+        NN1HL nn = new NN1HL(8,676,1,0.0001);
 
         nn.train(toInput,toOutput,100);
-
 
     }
     //parses data from the
@@ -130,7 +124,8 @@ public class Trainer {
                         //create a column vector
                         //add each element to the matrix
                     } else {
-                        out.add(Double.parseDouble(analysed));
+                        //the reason why this needs to be negative is that the data was actually collected wrogning
+                        out.add(-Double.parseDouble(analysed));
 
 
 
