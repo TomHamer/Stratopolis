@@ -1,10 +1,8 @@
 package comp1110.ass2;
 
 import java.lang.reflect.Array;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.ArrayList;
+import java.util.*;
+
 import comp1110.ass2.gui.Board;
 
 
@@ -300,7 +298,10 @@ public class StratoGame {
                 playerIsRed = true; // find if the player is red or green
             }
         }
-        return generateMoves(new BoardState(placement),playerIsRed,piece).get(0); // return the first randomly generated move
+        Random rand = new Random();
+        ArrayList<String> mList = generateMoves(new BoardState(placement),playerIsRed,piece);
+        int r = rand.nextInt(mList.size());
+        return mList.get(r); // return the first randomly generated move
 
     }
 

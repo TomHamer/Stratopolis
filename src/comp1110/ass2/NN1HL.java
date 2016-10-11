@@ -9,16 +9,16 @@ import comp1110.ass2.la4j.Vector;
 import comp1110.ass2.la4j.vector.dense.BasicVector;
 import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 
-
+//this file is entirely the work of Tom Hamer
 //neural network with one hidden layer
-//completely my own implementation of a vanilla 1 hidden layer neural network
+//completely my own java implementation of a 1 hidden layer neural network
 //backpropagation equations taken from Essentials of Statistical Machine Learning (Trevor Hastie)
 
 public class NN1HL {
 
         private double learningRate;
-        private final double WEIGHT_ESTIMATION_CONSTANT = 0.0001;
-        private final double BIAS_CONSTANT = 0;
+        private final double WEIGHT_ESTIMATION_CONSTANT = 0.00000001;
+        private final double BIAS_CONSTANT = 0.001;
         private double ACCEPTABLE_ERROR_RATE;
 
         private Matrix inputs;
@@ -37,9 +37,9 @@ public class NN1HL {
         public Matrix getBetas() {
             return betas;
         }
-        public int getK() { return K;}
-        public int getM() {return M;}
-        public int getP() {return P;}
+        public int getK() { return K;} //gets the dimension of the output
+        public int getM() {return M;} //gets dimension of hidden layer
+        public int getP() {return P;} // gets dimension of input
 
 
         //generate a value close to 0
@@ -62,16 +62,16 @@ public class NN1HL {
             this.betas = generateBetas(WEIGHT_ESTIMATION_CONSTANT);
             this.biases = generateBiases(BIAS_CONSTANT);
             System.out.println("Current error: "+getError());
-            System.out.println("training");
-            System.out.println("The alphas were: ");
-            System.out.println(alphas);
-            System.out.println("The betas were: ");
-            System.out.println(betas);
 
             while(getError()>ACCEPTABLE_ERROR_RATE ) {
 
                 backProp();
-                System.out.println(getError());
+                System.out.println("Current error: "+getError());
+                System.out.println("training");
+                System.out.println("The alphas were: ");
+                System.out.println(alphas);
+                System.out.println("The betas were: ");
+                System.out.println(betas);
             }
 
 

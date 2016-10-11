@@ -169,100 +169,13 @@ public class Board extends Application {
                 } else {
                     PrintWriter writer = null;
                     try {
-                        writer = new PrintWriter(new FileWriter(String.valueOf(Board.class.getResource("assets/Samples.txt")),true));
+                        writer = new PrintWriter(new FileWriter(String.valueOf(Board.class.getResource("assets/Samples.txt")), true));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
                     in.play();
                     soundOn = true;
-                    if(leftBotIsAI && rightBotIsAI) {
-                        //sets up the AI based on what the player wants
-                        EasyPlayer ep1 = new EasyPlayer(true);
-                        //HardPlayer ip = new HardPlayer(false);
-                        EasyPlayer ep2 = new EasyPlayer(false);
-                        MediumPlayer mp = new MediumPlayer(false);
-                        MediumPlayer mp2 = new MediumPlayer(true);
-                        NN1HL n = new NN1HL(8,676,1,0.001);
-                        IntellegentPlayer ip = new IntellegentPlayer(n);
-
-                        // int NO_OF_GAMES = 1;
-
-                        for (int i = 0; i < 1; i++) {
-                            boardState = new BoardState("MMUA");
-                            root.getChildren().remove(boardIndex);
-                            displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
-                            displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
-                            root.getChildren().add(displayBoard);
-                            boardIndex = root.getChildren().indexOf(displayBoard);
-
-                            ArrayList<String> boards = new ArrayList<>();
-                            ArrayList<Integer> outcomes = new ArrayList<>();
-
-                            //generate a new deck
-                            char[] Rdeck;
-                            char[] Gdeck;
-
-                            Rdeck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
-
-                            Gdeck = new char[] {'K','L','M','N','O','P','Q','R','S','T','K','L','M','N','O','P','Q','R','S','T'};
-
-
-                            //shuffle the deck
-                            char[] RpieceArray = shuffle(Rdeck);
-                            char[] GpieceArray = shuffle(Gdeck);
-
-
-                            RDeck.pieceArray = RpieceArray;
-                            GDeck.pieceArray = GpieceArray;
-
-
-                            for (int piecesPlayed = 0; piecesPlayed < 20; piecesPlayed++) {
-                                //pair[0] for the green player
-                                //pair[1] for the red player
-                                RDeck.placePiece(mp2.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
-                                boards.add(boardState.GetBoard());
-                                GDeck.placePiece(ip.getBestMove(boardState, GDeck.getCurrentPiece()));
-                                boards.add(boardState.GetBoard());
-
-
-
-
-                                if (piecesPlayed == 19) {
-                                    if (boardState.BoardScore(true) < boardState.BoardScore(false)) {
-                                        // System.out.println("green won");
-                                        //go back and assign 1 to all of greens moves and -1 to all of reds moves
-                                        for(int boardNumber = 0; boardNumber<boards.size();boardNumber++) {
-                                            //since green went first assign every even number 1 and every odd -1
-                                            if(boardNumber%2 == 0) {
-                                                outcomes.add(-1);
-                                            } else {
-                                                outcomes.add(1);
-                                            }
-                                        }
-                                    } else {
-                                        //System.out.println("red won");
-                                        for(int boardNumber = 0; boardNumber<boards.size();boardNumber++) {
-                                            //since green went first assign every even number -1 and every odd 1
-                                            if(boardNumber%2 == 0) {
-                                                outcomes.add(1);
-                                            } else {
-                                                outcomes.add(-1);
-                                            }
-                                        }
-                                    }
-                                }
-
-
-                            }
-                            System.out.println(boards);
-                            System.out.println(outcomes);
-
-                        }
-
-                    }
-
-
                 }
             }
         });
@@ -605,10 +518,10 @@ public class Board extends Application {
             this.opponentDeckPiece = opponentDeckPiece;
             ArrayList<BoardState> possibleBoards = generateNextBoards(board, redIsPlaying, currentDeckPiece);
             BoardState bestBoard = possibleBoards.get(0);
-            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
+            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
             int moveNumber = 0;
             for (int i = 0; i < possibleBoards.size(); i++) {
-                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
+                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
                 if (bestBoardVal < testValue)  {
                     bestBoardVal = testValue;
                     moveNumber = i;
@@ -621,15 +534,17 @@ public class Board extends Application {
         //minimax alpha-beta algorithmm
         private int alphaBeta(BoardState board, int alpha, int beta, int lookahead, boolean maximiseForRed) {
             int bestValue;
+            ArrayList<String> movesList;
 
-            ArrayList nextBoards;
+
+
             if(lookahead == MAX_LOOKAHEAD) {
-                nextBoards = generateNextBoards(board,maximiseForRed, opponentDeckPiece);
+                movesList = board.generateAllPossibleMoves(maximiseForRed, opponentDeckPiece);
             } else {
                 if(maximiseForRed) {
-                    nextBoards = generateNextBoards(board, true, RDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
+                    movesList = board.generateAllPossibleMoves(true, RDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
                 } else {
-                    nextBoards = generateNextBoards(board, false, GDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
+                    movesList = board.generateAllPossibleMoves(false, GDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
                 }
             }
             if (lookahead == 0) {
@@ -638,8 +553,10 @@ public class Board extends Application {
             else if (maximiseForRed) {
                 bestValue = alpha;
 
-                for (int i=0; i<nextBoards.size(); i++) {
-                    int childValue = alphaBeta((BoardState) nextBoards.get(i), bestValue, beta, lookahead-1, false);
+                for (int i=0; i<movesList.size(); i++) {
+                    BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                    tBoard.PlaceTile(movesList.get(i));
+                    int childValue = alphaBeta(tBoard, bestValue, beta, lookahead-1, false);
                     bestValue = Math.max(bestValue, childValue);
                     if (beta <= bestValue) {
                         break;
@@ -649,8 +566,10 @@ public class Board extends Application {
             else {
                 bestValue = beta;
 
-                for (int i=0; i<nextBoards.size(); i++) {
-                    int childValue = alphaBeta((BoardState) nextBoards.get(i), alpha, bestValue,lookahead-1, true);
+                for (int i=0; i<movesList.size(); i++) {
+                    BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                    tBoard.PlaceTile(movesList.get(i));
+                    int childValue = alphaBeta(tBoard, alpha, bestValue,lookahead-1, true);
                     bestValue = Math.min(bestValue, childValue);
                     if (bestValue <= alpha) {
                         break;
@@ -683,6 +602,97 @@ public class Board extends Application {
 
 
     }
+    //plays games over and over again and prints them to the log
+    private void play_n_sample(int numberOfGames) {
+            //sets up the AI based on what the player wants
+            EasyPlayer ep1 = new EasyPlayer(true);
+            //HardPlayer ip = new HardPlayer(false);
+            EasyPlayer ep2 = new EasyPlayer(false);
+            MediumPlayer mp = new MediumPlayer(false);
+            MediumPlayer mp2 = new MediumPlayer(true);
+            NN1HL n = new NN1HL(8,676,1,0.001);
+            HardPlayer hp = new HardPlayer(false);
+            IntelligentPlayer ip = new IntelligentPlayer(n);
+
+            // int NO_OF_GAMES = 1;
+
+            for (int i = 0; i < 1; i++) {
+                boardState = new BoardState("MMUA");
+                root.getChildren().remove(boardIndex);
+                displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
+                displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
+                root.getChildren().add(displayBoard);
+                boardIndex = root.getChildren().indexOf(displayBoard);
+
+                ArrayList<String> boards = new ArrayList<>();
+                ArrayList<Integer> outcomes = new ArrayList<>();
+
+                //generate a new deck
+                char[] Rdeck;
+                char[] Gdeck;
+
+                Rdeck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
+
+                Gdeck = new char[] {'K','L','M','N','O','P','Q','R','S','T','K','L','M','N','O','P','Q','R','S','T'};
+
+
+                //shuffle the deck
+                char[] RpieceArray = shuffle(Rdeck);
+                char[] GpieceArray = shuffle(Gdeck);
+
+
+                RDeck.pieceArray = RpieceArray;
+                GDeck.pieceArray = GpieceArray;
+
+
+                for (int piecesPlayed = 0; piecesPlayed < 20; piecesPlayed++) {
+                    //pair[0] for the green player
+                    //pair[1] for the red player
+                    RDeck.placePiece(StratoGame.generateMove(boardState.GetBoard(), RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+                    boards.add(boardState.GetBoard());
+                    GDeck.placePiece(ip.getBestMove(boardState, GDeck.getCurrentPiece()));
+                    System.out.println(ip.getBestMove(boardState, GDeck.getCurrentPiece()) + "ip");
+                    boards.add(boardState.GetBoard());
+
+
+
+
+
+
+
+                    if (piecesPlayed == 19) {
+                        if (boardState.BoardScore(true) < boardState.BoardScore(false)) {
+                            // System.out.println("green won");
+                            //go back and assign 1 to all of greens moves and -1 to all of reds moves
+                            for(int boardNumber = 0; boardNumber<boards.size();boardNumber++) {
+                                //since green went first assign every even number 1 and every odd -1
+                                if(boardNumber%2 == 0) {
+                                    outcomes.add(-1);
+                                } else {
+                                    outcomes.add(1);
+                                }
+                            }
+                        } else {
+                            //System.out.println("red won");
+                            for(int boardNumber = 0; boardNumber<boards.size();boardNumber++) {
+                                //since green went first assign every even number -1 and every odd 1
+                                if(boardNumber%2 == 0) {
+                                    outcomes.add(1);
+                                } else {
+                                    outcomes.add(-1);
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+                System.out.println(boards);
+                System.out.println(outcomes);
+
+            }
+
+        }
 
 
 }

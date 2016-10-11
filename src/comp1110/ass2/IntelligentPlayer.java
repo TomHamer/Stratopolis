@@ -14,8 +14,8 @@ import comp1110.ass2.la4j.vector.dense.BasicVector;
  */
 
     //a player trained with a one-hidden-layer neural network to tell whether boards are good or bad
-    //only plays red
-public class IntellegentPlayer {
+    //only plays red!!
+public class IntelligentPlayer {
 
 
     private Matrix alphas;
@@ -25,8 +25,9 @@ public class IntellegentPlayer {
     private int K; //dimension of the output layer
     private int P; //dimension of the input layer
 
-    //this AI requires the user to pass in the architecture of the neural network
-    public IntellegentPlayer(NN1HL n) {
+    //this AI requires the user to pass in the architecture of the neural network, so that the player can feed
+    //the correct values forward
+    public IntelligentPlayer(NN1HL n) {
         //set M,K and P
         this.K = n.getK();
         this.P = n.getP();
@@ -39,7 +40,7 @@ public class IntellegentPlayer {
 
         //parse alphas
         try {
-            BufferedReader inputReader = new BufferedReader(new FileReader("out/production/comp1140-ass2/comp1110/ass2/gui/assets/alphas"));
+            BufferedReader inputReader = new BufferedReader(new FileReader("out/production/comp1140-ass2/comp1110/ass2/gui/assets/alphas.txt"));
             String inputLine;
             int pointNumber = 0;
             while ((inputLine = inputReader.readLine()) != null) {
@@ -54,7 +55,7 @@ public class IntellegentPlayer {
 
         //parse betas
         try {
-            BufferedReader inputReader = new BufferedReader(new FileReader("out/production/comp1140-ass2/comp1110/ass2/gui/assets/betas"));
+            BufferedReader inputReader = new BufferedReader(new FileReader("out/production/comp1140-ass2/comp1110/ass2/gui/assets/betas.txt"));
             String inputLine;
             int pointNumber = 0;
             while ((inputLine = inputReader.readLine()) != null) {
@@ -86,27 +87,27 @@ public class IntellegentPlayer {
                     moveNumber = i;
                 }
             }
+
             //finally, takes the index of the best move that is found
-            return board.generateAllPossibleMoves(true,deckPiece).get(moveNumber);
+            return board.generateAllPossibleMoves(false,deckPiece).get(moveNumber);
         }
 
         //generates an arraylist of boards
         private ArrayList<BoardState> generateNextBoards(BoardState board, char deckPiece) {
             ArrayList<BoardState> toReturn = new ArrayList<>();
             //always reds turn
-            ArrayList<String> movesList = board.generateAllPossibleMoves(true,deckPiece);
+            ArrayList<String> movesList = board.generateAllPossibleMoves(false,deckPiece);
             //maps out all the possible moves
             for(int i = 0; i<movesList.size();i++) {
-                if (board.IsValidMove(movesList.get(i))) {
                     BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
                     tBoard.PlaceTile(movesList.get(i));
                     toReturn.add(tBoard);
-                }
             }
             return toReturn;
         }
 
-    //always reds turn
+    //essentially the same as the feedforward algorithm from NN1HL
+    //vectorises the board and then feeds it through the alphas and betas to get a result
     private double evaluateBoard(BoardState board) {
         //vectorise the board
         BasicVector bvec = new BasicVector(676);
@@ -153,8 +154,7 @@ public class IntellegentPlayer {
         for(int k=0;k<K;k++) {
             Y.set(k,T.get(k));
         }
-
-        return Y.get(0);
+        return -Y.get(0);
 
     }
 

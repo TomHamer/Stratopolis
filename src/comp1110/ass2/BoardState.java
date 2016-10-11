@@ -16,7 +16,8 @@ import java.util.HashSet;
 
 /* Abstracts the board, represents it as an array of tiles which are individually
    manipulated by adding pieces. Allows checking for valid moves.
-   Written in its entirety by Calum Snowdon.
+   Written in its entirety by Calum Snowdon, except for the final function which efficiently finds possible moves
+   given a boardState, which was written by Tom Hamer.
  */
 
 public class BoardState {
@@ -482,7 +483,13 @@ public class BoardState {
         return state;
     }
 
-    //generates all the possible moves for a given boardstate and deckpiece3
+    //Written by Tom Hamer
+    //Efficient move search algorithm
+    //generates all the possible moves for a given boardstate and deckpiece
+    //we take each tile on the board and add the coordinates recieved by looking in every direction, hence minimising the
+    //search space we have to look through when analysing the orientation and whether the piece is valid
+    //NB: Moves where the origin of the piece was two tiles away from the tile were left out because that is generally
+    //a bad move, and also helps us decrease the search space.
     public ArrayList<String> generateAllPossibleMoves(boolean redIsPlaying, char piece) {
         //automatically remove duplicates by using a hashset
         HashSet<String> hs = new HashSet<>();
@@ -518,7 +525,6 @@ public class BoardState {
                         if(this.IsValidMove(pieceToTry)) {
                         //then add to a hashmap
                         hs.add(pieceToTry);
-
                         }
 
                     }
