@@ -4,6 +4,7 @@ import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -42,11 +43,16 @@ public class Tile {
 
         Group toReturn = new Group();
         toReturn.getChildren().add(new Square(alignment, size));
-        if (height > 1 &&  !(alignment == Colour.N)) {
+        if (height > 1) {
             Label l = new Label("" + height);
 
             l.setTranslateX(9 * size / 30);
             l.setFont(new Font(0.75*size));
+            if (alignment == Colour.N) {
+                l.setTextFill(Color.GRAY);
+            } else {
+                l.setTextFill(Color.BLACK);
+            }
             toReturn.getChildren().add(l);
         }
 

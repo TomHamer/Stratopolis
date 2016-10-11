@@ -6,6 +6,9 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.AudioClip;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -25,8 +28,10 @@ public class Board extends Application {
     private static final int BOARD_WIDTH = 933;
     private static final int BOARD_HEIGHT = 700;
     private static final int SQUARE_SIZE = 23;
-    private static final int DECK_COORD_X = 50;
-    private static final int DECK_COORD_Y = 50;
+    private static final int DECK_COORD_G_X = 55;
+    private static final int DECK_COORD_G_Y = 50;
+    private static final int DECK_COORD_R_X = BOARD_WIDTH - 101;
+    private static final int DECK_COORD_R_Y = 50;
     private BoardState boardState = new BoardState("MMUA");
     private Group root = new Group();
     private Group current = null;
@@ -37,16 +42,13 @@ public class Board extends Application {
     private boolean soundOn = false;
     private Deck RDeck;
     private Deck GDeck;
+    private Text remainingG, remainingR;
     private Group hint = null;
     private int boardIndex;
-
-
-
 
     public void addPlacement(String placement) {
         boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
     }
-
 
     // FIXME For Jingyi: Implement a system that uses the following functions, writing to the "savedGame.txt" to save files
     //clears the text file
@@ -77,14 +79,7 @@ public class Board extends Application {
 
         //assign the above values through reading in the text file
 
-
         boardState = new BoardState(placement);
-
-
-
-
-
-
     }
 
     //allows the user to save the game by writing the gameState into a textfile
@@ -93,34 +88,66 @@ public class Board extends Application {
         return null;
     }
 
-
     public void start(Stage primaryStage) {
 
-        //move to a different "game setup function"?
-        Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
+
+        Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT, Color.BLACK);
 
         primaryStage.setTitle("Stratopolis");
         primaryStage.setWidth(415);
         primaryStage.setHeight(200);
+        primaryStage.setX(250);
+        primaryStage.setY(100);
 
         primaryStage.sizeToScene();
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        greenScore = new Text("1");
-        redScore = new Text("1");
+        for (double x = -100; x < BOARD_WIDTH; x += 300) {
+            for (double y = 0; y < BOARD_HEIGHT; y += 140) {
+                Rectangle toAdd = new Rectangle(x - 150 * (((int) (y / 140)) % 2) + 3, y + 3, 294, 134);
+                toAdd.setFill(Color.DIMGRAY);
+                root.getChildren().add(toAdd);
+            }
+        }
+
+        greenScore = new Text("Score: 1");
+        redScore = new Text("Score: 1");
+
+        Rectangle greenBox = new Rectangle(DECK_COORD_G_X - SQUARE_SIZE * 1.5, DECK_COORD_G_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 200);
+        greenBox.setArcHeight(15);
+        greenBox.setArcWidth(15);
+        greenBox.setStroke(Color.BLACK);
+        greenBox.setFill(Color.DARKGREEN);
+        greenBox.setStrokeWidth(3);
+        root.getChildren().add(greenBox);
+
+        Rectangle redBox = new Rectangle(DECK_COORD_R_X - SQUARE_SIZE * 1.5, DECK_COORD_R_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 200);
+        redBox.setArcHeight(15);
+        redBox.setArcWidth(15);
+        redBox.setStroke(Color.BLACK);
+        redBox.setFill(Color.DARKRED);
+        redBox.setStrokeWidth(3);
+        root.getChildren().add(redBox);
+
+        remainingG = new Text(DECK_COORD_G_X - SQUARE_SIZE * 1.2, DECK_COORD_G_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
+        remainingG.setFont(new Font(11));
+        root.getChildren().add(remainingG);
+
+        remainingR = new Text(DECK_COORD_R_X - SQUARE_SIZE * 1.2, DECK_COORD_R_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
+        remainingR.setFont(new Font(11));
+        root.getChildren().add(remainingR);
 
         root.getChildren().add(greenScore);
         root.getChildren().add(redScore);
 
-        greenScore.setFont(new Font(20));
-        redScore.setFont(new Font(20));
+        greenScore.setFont(new Font(18));
+        redScore.setFont(new Font(18));
 
-        greenScore.relocate(DECK_COORD_X, DECK_COORD_Y + 50);
-        redScore.relocate(DECK_COORD_X + 50, DECK_COORD_Y + 50);
+        greenScore.relocate(DECK_COORD_G_X - SQUARE_SIZE / 2, DECK_COORD_G_Y + SQUARE_SIZE * 2.5);
+        redScore.relocate(DECK_COORD_R_X - SQUARE_SIZE / 2, DECK_COORD_R_Y + SQUARE_SIZE * 2.5);
 
         displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
-
 
         root.getChildren().add(displayBoard);
         boardIndex = root.getChildren().indexOf(displayBoard);
@@ -136,14 +163,14 @@ public class Board extends Application {
         boolean rightBotIsAI;
 
         //for now set both true
-        leftBotIsAI = true;
-        rightBotIsAI = true;
+        leftBotIsAI = false;
+        rightBotIsAI = false;
 
         //how hard should the AI be? Easy, medium or impossible
 
         //creates two new decks based on what the player wants
-        RDeck = new Deck(Colour.R,DECK_COORD_X, DECK_COORD_Y,leftBotIsAI); // the red deck
-        GDeck = new Deck(Colour.G,DECK_COORD_X + 50, DECK_COORD_Y,rightBotIsAI); // the green deck
+        RDeck = new Deck(Colour.R,DECK_COORD_R_X, DECK_COORD_R_Y,leftBotIsAI); // the red deck
+        GDeck = new Deck(Colour.G,DECK_COORD_G_X, DECK_COORD_G_Y,rightBotIsAI); // the green deck
 
 
 
@@ -262,12 +289,14 @@ public class Board extends Application {
         private final int boardCoordX = (BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10;
         private final int boardCoordY = (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10;
         private char currentPieceType;
-        private String toString;
         private char[] pieceArray;
         private boolean green;
         private boolean isAI;
         private FXDraggablePiece icon;
+        private int piecesMarker = 0;
+
         //private Board board;
+
 
         private static final String URI_BASE = "gui/assets/";
 
@@ -293,14 +322,14 @@ public class Board extends Application {
             //update the placement on the board
 
 
-            if (pieceArray.length > 1) {
+            if (piecesMarker < 19) {
 
                 //take the piece that has been placed out of the piece array that can
 
                 addPlacement(newPiece);
                 System.out.println("added "+ newPiece);
-                pieceArray = Arrays.copyOfRange(pieceArray, 1, pieceArray.length);
-                currentPieceType = pieceArray[0];
+                piecesMarker++;
+                currentPieceType = pieceArray[piecesMarker];
 
                 icon.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
                 //this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
@@ -308,7 +337,8 @@ public class Board extends Application {
 
             } else {
 
-                this.setImage(null);
+                addPlacement(newPiece);
+                icon.setImage(null);
 
                 if (!green) {
                     // game over case
@@ -316,8 +346,8 @@ public class Board extends Application {
             }
 
             //update score boxes
-            greenScore.setText("" + boardState.BoardScore(true));
-            redScore.setText("" + boardState.BoardScore(false));
+            greenScore.setText("Score: " + boardState.BoardScore(true));
+            redScore.setText("Score: " + boardState.BoardScore(false));
 
             greensTurn = !greensTurn;
         }
@@ -370,6 +400,7 @@ public class Board extends Application {
                     if (green == greensTurn && !isAI) {
                         mouseX = event.getSceneX();
                         mouseY = event.getSceneY();
+                        setOpacity(0.5);
                     }
 
                 });
@@ -394,6 +425,7 @@ public class Board extends Application {
                 //code to place the piece - the mouse button has been released
                 setOnMouseReleased(event -> {
                     //check whose turn it is
+                    setOpacity(1.0);
                     if (green == greensTurn && !isAI) {
                         //these calculations were inspired by assignment 1
                         int xDrop = (int) this.getLayoutX();
@@ -450,14 +482,14 @@ public class Board extends Application {
             }
         }
 
-        public char getCurrentPiece() {
-            return pieceArray[0];
+        char getCurrentPiece() {
+            return pieceArray[piecesMarker];
         }
 
         public boolean getAI() { return isAI;}
 
 
-        public Deck(Colour alignment, int x, int y, boolean isAi) {
+        Deck(Colour alignment, int x, int y, boolean isAi) {
             char[] deck;
             homeX = x;
             homeY = y;
@@ -531,7 +563,7 @@ public class Board extends Application {
         }
 
 
-        //minimax alpha-beta algorithmm
+        //minimax alpha-beta algorithm
         private int alphaBeta(BoardState board, int alpha, int beta, int lookahead, boolean maximiseForRed) {
             int bestValue;
             ArrayList<String> movesList;
@@ -585,10 +617,10 @@ public class Board extends Application {
             ArrayList<BoardState> toReturn = new ArrayList<>();
             ArrayList<String> movesList = board.generateAllPossibleMoves(isRedsTurn, deckPiece);
 
-            for (int i = 0; i < movesList.size(); i++) {
-                if (board.IsValidMove(movesList.get(i))) {
+            for (String s : movesList) {
+                if (board.IsValidMove(s)) {
                     BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                    tBoard.PlaceTile(movesList.get(i));
+                    tBoard.PlaceTile(s);
                     toReturn.add(tBoard);
                 }
             }

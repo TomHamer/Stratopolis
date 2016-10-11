@@ -205,6 +205,12 @@ public class BoardState {
         border.setStroke(Color.BLACK);
         display.getChildren().add(border);
 
+        Rectangle fill = new Rectangle(26 * squareSize + 17, 26 * squareSize + 17, Color.GRAY);
+        fill.relocate(-8.5, -8.5);
+        display.getChildren().add(fill);
+
+
+
         for (int x = 0; x < 26; x++) {
             for (int y = 0; y < 26; y++) {
                 Group toAdd = board[y][x].TileFX(squareSize);
