@@ -8,6 +8,8 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 
 /**
@@ -292,6 +294,92 @@ public class BoardState {
         return maxLength * height;
     }
 
+    // True if green is winning, false if red
+    public boolean BreakTie() {
+        Union[][] sets = new Union[26][26];
+
+        for (int i = 0; i < 26; i++) {
+            for (int j = 0; j < 26; j++) {
+                if (board[j][i].Alignment() != Colour.N && board[j][i].Alignment() != Colour.W) {
+                    sets[i][j] = new Union(board[i][j].Height(), board[j][i].Alignment());
+                }
+            }
+        }
+
+        // "Links together" adjacent tiles of the same colour with a Union type.
+        // Keeps track of the largest union created and returns the recorded value at the end.
+        for (int i = 0; i < 26; i++) {
+            for (int j = 0; j < 26; j++) {
+                if (board[j][i].Alignment() != Colour.N && board[j][i].Alignment() != Colour.W) {
+                    if (i < 25 && board[j][i+1].Alignment() == board[j][i].Alignment()) {
+                        if (sets[j][i].head != sets[j][i+1].head) {
+                            sets[j][i].Add(sets[j][i+1]);
+                            sets[j][i+1] = sets[j][i];
+                        }
+                    }
+
+                    if (j < 25 && board[j+1][i].Alignment() == board[j][i].Alignment()) {
+                        if (sets[j][i].head != sets[j+1][i].head) {
+                            sets[j][i].Add(sets[j+1][i]);
+                            sets[j+1][i] = sets[j][i];
+                        }
+                    }
+                }
+            }
+        }
+
+        Set<Union> regionsG = new HashSet<>();
+        Set<Union> regionsR = new HashSet<>();
+
+        boolean broken = false;
+
+        for (Union[] us : sets) {
+            for (Union u : us) {
+                if (u != null) {
+                    if (u.colour == Colour.G) {
+                        regionsG.add(u.head);
+                    } else {
+                        regionsR.add(u.head);
+                    }
+                }
+            }
+        }
+
+        while (!broken) {
+            if (regionsG.isEmpty() && regionsR.isEmpty()) {
+                Random rand = new Random();
+                return rand.nextBoolean();
+            } else if (regionsR.isEmpty()) {
+                return true;
+            } else if (regionsG.isEmpty()) {
+                return false;
+            }
+
+            Union maxG = new Union(0);
+            for (Union uG : regionsG) {
+                if (uG.length > maxG.length || (uG.length == maxG.length && uG.maxHeight > maxG.maxHeight)) {
+                    maxG = uG;
+                }
+            }
+
+            Union maxR = new Union(0);
+            for (Union uR : regionsR) {
+                if (uR.length > maxR.length || (uR.length == maxR.length && uR.maxHeight > maxR.maxHeight)) {
+                    maxR = uR;
+                }
+            }
+
+            if (maxG.length * maxG.maxHeight == maxR.length * maxG.maxHeight) {
+                regionsG.remove(maxG);
+                regionsR.remove(maxR);
+            } else {
+                return (maxG.length * maxG.maxHeight > maxR.length * maxG.maxHeight);
+            }
+        }
+
+        return true;
+    }
+
     private class Cores {
         private int availableCores = 4;
 
@@ -449,17 +537,27 @@ public class BoardState {
     // except each instance carries a pointer to both the next element of the list and
     // a pointer to the start of the list. It also has a length field, which is only really
     // used by the head of the union, which keeps track of how many elements the union has.
-    class Union {
+    private class Union {
         Union head; // The start of the list which the union is contained within
         Union next; // The next element in the list
         int length; // The number of elements in the list. NOTE: only kept valid for the head.
         int maxHeight;
+        Colour colour;
 
         public Union (int height) {
             head = this;
             next = null;
             length = 1;
             maxHeight = height;
+            colour = null;
+        }
+
+        public Union (int height, Colour col) {
+            head = this;
+            next = null;
+            length = 1;
+            maxHeight = height;
+            colour = col;
         }
 
         // Adds one union to the end of another one. Adding a union of length m to one of

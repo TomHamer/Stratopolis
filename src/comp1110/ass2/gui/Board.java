@@ -2,11 +2,15 @@ package comp1110.ass2.gui;
 
 import comp1110.ass2.*;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.AudioClip;
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -21,6 +25,11 @@ import javafx.animation.FadeTransition;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
+
+import static comp1110.ass2.gui.Board.PlayerMode.Human;
+import static comp1110.ass2.gui.Board.PlayerMode.Easy;
+import static comp1110.ass2.gui.Board.PlayerMode.Medium;
+import static comp1110.ass2.gui.Board.PlayerMode.Hard;
 
 
 public class Board extends Application {
@@ -44,7 +53,17 @@ public class Board extends Application {
     private Deck GDeck;
     private Text remainingG, remainingR;
     private Group hint = null;
+    private ToggleGroup greenOptions = new ToggleGroup();
+    private ToggleGroup redOptions   = new ToggleGroup();
     private int boardIndex;
+
+    private BooleanProperty gameStarted = new SimpleBooleanProperty(false);
+
+    private PlayerMode redMode = Human, greenMode = Human;
+
+    enum PlayerMode {
+        Human, Easy, Medium, Hard
+    }
 
     public void addPlacement(String placement) {
         boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
@@ -111,10 +130,10 @@ public class Board extends Application {
             }
         }
 
-        greenScore = new Text("Score: 1");
-        redScore = new Text("Score: 1");
+        greenScore = new Text();
+        redScore = new Text();
 
-        Rectangle greenBox = new Rectangle(DECK_COORD_G_X - SQUARE_SIZE * 1.5, DECK_COORD_G_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 200);
+        Rectangle greenBox = new Rectangle(DECK_COORD_G_X - SQUARE_SIZE * 1.5, DECK_COORD_G_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 220);
         greenBox.setArcHeight(15);
         greenBox.setArcWidth(15);
         greenBox.setStroke(Color.BLACK);
@@ -122,7 +141,7 @@ public class Board extends Application {
         greenBox.setStrokeWidth(3);
         root.getChildren().add(greenBox);
 
-        Rectangle redBox = new Rectangle(DECK_COORD_R_X - SQUARE_SIZE * 1.5, DECK_COORD_R_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 200);
+        Rectangle redBox = new Rectangle(DECK_COORD_R_X - SQUARE_SIZE * 1.5, DECK_COORD_R_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 220);
         redBox.setArcHeight(15);
         redBox.setArcWidth(15);
         redBox.setStroke(Color.BLACK);
@@ -130,13 +149,7 @@ public class Board extends Application {
         redBox.setStrokeWidth(3);
         root.getChildren().add(redBox);
 
-        remainingG = new Text(DECK_COORD_G_X - SQUARE_SIZE * 1.2, DECK_COORD_G_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
-        remainingG.setFont(new Font(11));
-        root.getChildren().add(remainingG);
 
-        remainingR = new Text(DECK_COORD_R_X - SQUARE_SIZE * 1.2, DECK_COORD_R_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
-        remainingR.setFont(new Font(11));
-        root.getChildren().add(remainingR);
 
         root.getChildren().add(greenScore);
         root.getChildren().add(redScore);
@@ -149,28 +162,109 @@ public class Board extends Application {
 
         displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
 
-        root.getChildren().add(displayBoard);
-        boardIndex = root.getChildren().indexOf(displayBoard);
-        displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
+        RadioButton humanG = new RadioButton();
+        humanG.setToggleGroup(greenOptions);
+        humanG.setText("Human");
+        humanG.setUserData(Human);
+        humanG.disableProperty().bind(gameStarted);
+        humanG.relocate(DECK_COORD_G_X - SQUARE_SIZE, DECK_COORD_G_Y + SQUARE_SIZE * 4);
+        humanG.setSelected(true);
 
+        RadioButton humanR = new RadioButton();
+        humanR.setToggleGroup(redOptions);
+        humanR.setText("Human");
+        humanR.setUserData(Human);
+        humanR.disableProperty().bind(gameStarted);
+        humanR.relocate(DECK_COORD_R_X - SQUARE_SIZE, DECK_COORD_R_Y + SQUARE_SIZE * 4);
+        humanR.setSelected(true);
+
+        RadioButton easyG = new RadioButton();
+        easyG.setToggleGroup(greenOptions);
+        easyG.setText("Easy AI");
+        easyG.disableProperty().bind(gameStarted);
+        easyG.relocate(DECK_COORD_G_X - SQUARE_SIZE, DECK_COORD_G_Y + SQUARE_SIZE * 5);
+        easyG.setUserData(Easy);
+
+        RadioButton easyR = new RadioButton();
+        easyR.setToggleGroup(redOptions);
+        easyR.setText("Easy AI");
+        easyR.disableProperty().bind(gameStarted);
+        easyR.relocate(DECK_COORD_R_X - SQUARE_SIZE, DECK_COORD_R_Y + SQUARE_SIZE * 5);
+        easyR.setUserData(Easy);
+
+        RadioButton mediumG = new RadioButton();
+        mediumG.setToggleGroup(greenOptions);
+        mediumG.setText("Medium AI");
+        mediumG.disableProperty().bind(gameStarted);
+        mediumG.relocate(DECK_COORD_G_X - SQUARE_SIZE, DECK_COORD_G_Y + SQUARE_SIZE * 6);
+        mediumG.setUserData(Medium);
+
+        RadioButton mediumR = new RadioButton();
+        mediumR.setToggleGroup(redOptions);
+        mediumR.setText("Medium AI");
+        mediumR.disableProperty().bind(gameStarted);
+        mediumR.relocate(DECK_COORD_R_X - SQUARE_SIZE, DECK_COORD_R_Y + SQUARE_SIZE * 6);
+        mediumR.setUserData(Medium);
+
+        RadioButton hardG = new RadioButton();
+        hardG.setToggleGroup(greenOptions);
+        hardG.setText("Hard AI");
+        hardG.disableProperty().bind(gameStarted);
+        hardG.relocate(DECK_COORD_G_X - SQUARE_SIZE, DECK_COORD_G_Y + SQUARE_SIZE * 7);
+        hardG.setUserData(Hard);
+
+        RadioButton hardR = new RadioButton();
+        hardR.setToggleGroup(redOptions);
+        hardR.setText("Hard AI");
+        hardR.disableProperty().bind(gameStarted);
+        hardR.relocate(DECK_COORD_R_X - SQUARE_SIZE, DECK_COORD_R_Y + SQUARE_SIZE * 7);
+        hardR.setUserData(Hard);
+
+        Button startGame = new Button();
+        startGame.setText("Begin Game");
+        startGame.disableProperty().bind(gameStarted);
+        startGame.relocate(DECK_COORD_R_X - SQUARE_SIZE, BOARD_HEIGHT - 50);
+
+        startGame.setOnMouseReleased(event -> {
+            gameStarted.setValue(true);
+            greenMode = (PlayerMode) greenOptions.getSelectedToggle().getUserData();
+            redMode   = (PlayerMode) redOptions.getSelectedToggle().getUserData();
+
+            root.getChildren().add(displayBoard);
+            boardIndex = root.getChildren().indexOf(displayBoard);
+            displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
+
+            //creates two new decks based on what the player wants
+            RDeck = new Deck(Colour.R,DECK_COORD_R_X, DECK_COORD_R_Y,false); // the red deck
+            GDeck = new Deck(Colour.G,DECK_COORD_G_X, DECK_COORD_G_Y,false); // the green deck
+
+            greenScore.setText("Score: 1");
+            redScore.setText("Score: 1");
+
+            remainingG = new Text(DECK_COORD_G_X - SQUARE_SIZE * 1.2, DECK_COORD_G_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
+            remainingG.setFont(new Font(11));
+            root.getChildren().add(remainingG);
+
+            remainingR = new Text(DECK_COORD_R_X - SQUARE_SIZE * 1.2, DECK_COORD_R_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
+            remainingR.setFont(new Font(11));
+            root.getChildren().add(remainingR);
+        });
+
+        root.getChildren().add(startGame);
+        root.getChildren().addAll(new RadioButton[] {humanG, easyG, mediumG, hardG, humanR, easyR, mediumR, hardR});
 
         // FIXME For Calum: Implement this so it all works and the user selects it
 
         //player selects what kind of game they want
 
         //Do they want AI?
-        boolean leftBotIsAI;
-        boolean rightBotIsAI;
+        boolean leftBotIsAI = false;
+        boolean rightBotIsAI = false;
 
         //for now set both true
-        leftBotIsAI = false;
-        rightBotIsAI = false;
 
         //how hard should the AI be? Easy, medium or impossible
 
-        //creates two new decks based on what the player wants
-        RDeck = new Deck(Colour.R,DECK_COORD_R_X, DECK_COORD_R_Y,leftBotIsAI); // the red deck
-        GDeck = new Deck(Colour.G,DECK_COORD_G_X, DECK_COORD_G_Y,rightBotIsAI); // the green deck
 
 
 
@@ -417,6 +511,11 @@ public class Board extends Application {
                 System.out.println("added "+ newPiece);
                 piecesMarker++;
                 currentPieceType = pieceArray[piecesMarker];
+                if (green) {
+                    remainingG.setText("Pieces Remaining: " + (20 - piecesMarker));
+                } else {
+                    remainingR.setText("Pieces Remaining: " + (20 - piecesMarker));
+                }
 
                 icon.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
                 //this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
