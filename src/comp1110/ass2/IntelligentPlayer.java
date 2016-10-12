@@ -15,6 +15,8 @@ import comp1110.ass2.la4j.vector.dense.BasicVector;
 
     //a player trained with a one-hidden-layer neural network to tell whether boards are good or bad
     //only plays red!!
+    //While this player is labelled "Intelligent" it really isn't! (lol)
+    //uses values that are printed out of the network
 public class IntelligentPlayer {
 
 

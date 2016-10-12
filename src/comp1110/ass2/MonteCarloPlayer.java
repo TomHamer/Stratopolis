@@ -9,13 +9,15 @@ import java.util.Random;
  * Created by Tom on 11/10/2016.
  */
 
-
+//Yet another attempt to get good AI
+//due to the high expense of generating random moves, this algorithm is ineffecive
+//Entirely the work of Tom Hamer ):
 //reference to https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/ for guidence on construction and theory for this algorithm
-
 public class MonteCarloPlayer {
-    private final int MAX_MOVES = 164;
-    private HashMap<PlayerStatePairing,Integer> plays;
-    private HashMap<PlayerStatePairing,Integer> wins;
+
+    private final int MAX_MOVES = 164; //the maximum number of moves in the game
+    private HashMap<PlayerStatePairing,Integer> plays; //a hashmap of all the states linked to the number of times the state has been played
+    private HashMap<PlayerStatePairing,Integer> wins; //a hashmap of all the states lined to the number of times the state has been won
     private boolean redIsPlaying;
     public ArrayList<State> states;
 

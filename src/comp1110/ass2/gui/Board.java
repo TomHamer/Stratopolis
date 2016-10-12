@@ -650,10 +650,10 @@ public class Board extends Application {
             this.opponentDeckPiece = opponentDeckPiece;
             ArrayList<BoardState> possibleBoards = generateNextBoards(board, redIsPlaying, currentDeckPiece);
             BoardState bestBoard = possibleBoards.get(0);
-            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
+            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
             int moveNumber = 0;
             for (int i = 0; i < possibleBoards.size(); i++) {
-                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
+                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
                 if (bestBoardVal < testValue)  {
                     bestBoardVal = testValue;
                     moveNumber = i;

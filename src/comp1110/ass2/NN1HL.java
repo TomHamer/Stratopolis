@@ -9,10 +9,14 @@ import comp1110.ass2.la4j.Vector;
 import comp1110.ass2.la4j.vector.dense.BasicVector;
 import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 
+
+//completely origional java implementation of a 1 hidden layer neural network. Did not copy psuedo code, or any other
+//resources except for basing the algorithm on backpropagation and feedforward equations which were taken from
+//from Essentials of Statistical Machine Learning (Trevor Hastie)
+
 //this file is entirely the work of Tom Hamer
-//neural network with one hidden layer
-//completely my own java implementation of a 1 hidden layer neural network
-//backpropagation equations taken from Essentials of Statistical Machine Learning (Trevor Hastie)
+//the validity of this network was checked using a test on pricing houses by housing data. However, when it attempted
+//to learn StratoGame, the network failed to converge
 
 public class NN1HL {
 
