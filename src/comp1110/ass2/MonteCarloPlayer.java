@@ -85,7 +85,7 @@ public class MonteCarloPlayer {
             //if the child exists
                 //get childRatio
 
-        return -maxVal;
+        return maxVal;
     }
 
     private void run_simulation(State s, char opponentDeckPiece) {
@@ -161,7 +161,7 @@ public class MonteCarloPlayer {
     }
 
     private boolean gameOverQuery(BoardState board) {
-        return board.GetBoard().length()==164; //a boardstate after a complete game has length 160
+            return board.GetBoard().length() == 168; //a boardstate after a complete game has length 160
     }
 
     public String getBestMove(BoardState board, char deckPiece, char opponentDeckPiece) {

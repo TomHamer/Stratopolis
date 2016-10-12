@@ -48,22 +48,29 @@ public class MediumPlayer{
     //finds the board that minimises the other player's ability to play a good move
     public int evaluateTree(BoardState board, boolean isRedsTurn, char playersDeckPiece, char opponentsDeckPiece) {
         int maxi = 0;
-
-        ArrayList secondTierBoards = generateNextBoards(board,!isRedsTurn,opponentsDeckPiece);
-        //here update second tier boards by iterating through all the possibilities
-        for(int j = 0;j<secondTierBoards.size();j++) {
-            //find the maximum value that occurs here
-            int boardValue = evaluateBoard((BoardState) secondTierBoards.get(j),!isRedsTurn);
-            if(boardValue<maxi) {
-                maxi = boardValue;
+        if(!(gameOverQuery(board))) {
+            ArrayList secondTierBoards = generateNextBoards(board, !isRedsTurn, opponentsDeckPiece);
+            //here update second tier boards by iterating through all the possibilities
+            for (int j = 0; j < secondTierBoards.size(); j++) {
+                //find the maximum value that occurs here
+                int boardValue = evaluateBoard((BoardState) secondTierBoards.get(j), !isRedsTurn);
+                if (boardValue > maxi) {
+                    maxi = boardValue;
+                }
             }
+        } else {
+            maxi = evaluateBoard(board, !isRedsTurn); //just evaluates the board if the game is over
         }
 
-        return -maxi; //the maximum value that was found, but return negative, as this is the best move that was found for the opposite player
+        return -maxi;
 
 
     }
     private int evaluateBoard(BoardState board, boolean isRedsTurn) {
         return board.BoardScore(!isRedsTurn)-board.BoardScore(isRedsTurn);
+    }
+
+    private boolean gameOverQuery(BoardState board) {
+        return board.GetBoard().length()==168; //a boardstate after a complete game has length 168
     }
 }

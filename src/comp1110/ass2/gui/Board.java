@@ -745,7 +745,7 @@ public class Board extends Application {
             NN1HL n = new NN1HL(8,676,1,0.001);
             HardPlayer hp = new HardPlayer(false);
             IntelligentPlayer ip = new IntelligentPlayer(n);
-            MonteCarloPlayer mcp = new MonteCarloPlayer(true);
+            MonteCarloPlayer mcp = new MonteCarloPlayer(false);
 
             // int NO_OF_GAMES = 1;
 
@@ -782,16 +782,10 @@ public class Board extends Application {
                     //pair[0] for the green player
                     //pair[1] for the red player
 
-                    RDeck.placePiece(mcp.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+                    GDeck.placePiece(ep2.getBestMove(boardState,GDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
-                    GDeck.placePiece(StratoGame.generateMove(boardState.GetBoard(), GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
+                    RDeck.placePiece(mp.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
-
-
-
-
-
-
 
                     if (piecesPlayed == 19) {
                         if (boardState.BoardScore(true) < boardState.BoardScore(false)) {
