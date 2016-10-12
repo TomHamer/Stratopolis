@@ -738,7 +738,7 @@ public class Board extends Application {
     private void play_n_sample(int numberOfGames) {
             //sets up the AI based on what the player wants
             EasyPlayer ep1 = new EasyPlayer(true);
-            //HardPlayer ip = new HardPlayer(false);
+            //HardPlayer hp = new HardPlayer(false);
             EasyPlayer ep2 = new EasyPlayer(false);
             MediumPlayer mp = new MediumPlayer(true);
             MediumPlayer mp2 = new MediumPlayer(true);
@@ -782,10 +782,13 @@ public class Board extends Application {
                     //pair[0] for the green player
                     //pair[1] for the red player
 
-                    GDeck.placePiece(ep2.getBestMove(boardState,GDeck.getCurrentPiece()));
+                    GDeck.placePiece(hp.getBestMove(boardState,GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
                     RDeck.placePiece(mp.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
+
+                    System.out.println("Red's score is currently "+boardState.BoardScore(true));
+                    System.out.println("Green's score is currently "+boardState.BoardScore(false));
 
                     if (piecesPlayed == 19) {
                         if (boardState.BoardScore(true) < boardState.BoardScore(false)) {

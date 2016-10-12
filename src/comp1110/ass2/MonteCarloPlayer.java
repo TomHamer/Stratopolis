@@ -58,7 +58,7 @@ public class MonteCarloPlayer {
         long startTime = System.currentTimeMillis(); //fetch starting time
         int games =0;
         states.add(state);
-        while((System.currentTimeMillis()-startTime)<10)
+        while((System.currentTimeMillis()-startTime)<1000)
         {
             run_simulation(state, opponentDeckPiece);
             games++;
@@ -66,7 +66,6 @@ public class MonteCarloPlayer {
         }
 
 
-        //Dissplay the number of calls of `run_simulation` and the time elapsed.
         double maxVal = -1000;
         ArrayList<String> moveList = state.boardState.generateAllPossibleMoves(!state.playingRed, opponentDeckPiece);
         for(String i:moveList) {
@@ -85,7 +84,7 @@ public class MonteCarloPlayer {
             //if the child exists
                 //get childRatio
 
-        return maxVal;
+        return -maxVal;
     }
 
     private void run_simulation(State s, char opponentDeckPiece) {
@@ -128,6 +127,7 @@ public class MonteCarloPlayer {
 
             PlayerStatePairing expandingKey = new PlayerStatePairing(state, redIsPlaying);
 
+            //expand the tree
             if (expand && !plays.containsKey(expandingKey)) {
                 expand = false;
                 plays.put(expandingKey, 0);
