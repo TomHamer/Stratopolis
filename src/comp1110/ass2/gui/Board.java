@@ -57,9 +57,12 @@ public class Board extends Application {
     private ToggleGroup redOptions   = new ToggleGroup();
     private int boardIndex;
 
+
     private BooleanProperty gameStarted = new SimpleBooleanProperty(false);
 
     private PlayerMode redMode = Human, greenMode = Human;
+
+
 
     enum PlayerMode {
         Human, Easy, Medium, Hard
@@ -248,6 +251,8 @@ public class Board extends Application {
             remainingR = new Text(DECK_COORD_R_X - SQUARE_SIZE * 1.2, DECK_COORD_R_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
             remainingR.setFont(new Font(11));
             root.getChildren().add(remainingR);
+
+            play_n_sample(1);
         });
 
         root.getChildren().add(startGame);
@@ -441,6 +446,7 @@ public class Board extends Application {
 
                 if (!green) {
                     // game over case
+
                 }
             }
 
@@ -610,12 +616,9 @@ public class Board extends Application {
             currentPieceOrientation = 'A';
             currentPieceType = pieceArray[0];
             icon = new FXDraggablePiece(currentPieceType,SIZE_OF_DECK,x,y);
-
         }
-
-
     }
-    //algorithm that shuffles the deck
+    //algorithm that shuffles the deck'
     private char[] shuffle(char[] list) {
 
         Random random = new Random();
@@ -638,8 +641,6 @@ public class Board extends Application {
         boolean redIsPlaying;
         char opponentDeckPiece;
         private final int MAX_LOOKAHEAD = 2;
-
-
 
         public HardPlayer(boolean redIsPlaying) {
             this.redIsPlaying = redIsPlaying;
@@ -739,15 +740,16 @@ public class Board extends Application {
             EasyPlayer ep1 = new EasyPlayer(true);
             //HardPlayer ip = new HardPlayer(false);
             EasyPlayer ep2 = new EasyPlayer(false);
-            MediumPlayer mp = new MediumPlayer(false);
+            MediumPlayer mp = new MediumPlayer(true);
             MediumPlayer mp2 = new MediumPlayer(true);
             NN1HL n = new NN1HL(8,676,1,0.001);
             HardPlayer hp = new HardPlayer(false);
             IntelligentPlayer ip = new IntelligentPlayer(n);
+            MonteCarloPlayer mcp = new MonteCarloPlayer(true);
 
             // int NO_OF_GAMES = 1;
 
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < numberOfGames; i++) {
                 boardState = new BoardState("MMUA");
                 root.getChildren().remove(boardIndex);
                 displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
@@ -779,10 +781,10 @@ public class Board extends Application {
                 for (int piecesPlayed = 0; piecesPlayed < 20; piecesPlayed++) {
                     //pair[0] for the green player
                     //pair[1] for the red player
-                    RDeck.placePiece(StratoGame.generateMove(boardState.GetBoard(), RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+
+                    RDeck.placePiece(mcp.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
-                    GDeck.placePiece(ip.getBestMove(boardState, GDeck.getCurrentPiece()));
-                    System.out.println(ip.getBestMove(boardState, GDeck.getCurrentPiece()) + "ip");
+                    GDeck.placePiece(StratoGame.generateMove(boardState.GetBoard(), GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
 
 
@@ -820,7 +822,7 @@ public class Board extends Application {
                 }
                 System.out.println(boards);
                 System.out.println(outcomes);
-
+                System.out.println(boardState.GetBoard());
             }
 
         }

@@ -19,7 +19,7 @@ import java.util.Set;
 /* Abstracts the board, represents it as an array of tiles which are individually
    manipulated by adding pieces. Allows checking for valid moves.
    Written in its entirety by Calum Snowdon, except for the final function which efficiently finds possible moves
-   given a boardState, which was written by Tom Hamer. 
+   given a boardState, which was written by Tom Hamer.
  */
 
 public class BoardState {
@@ -583,8 +583,15 @@ public class BoardState {
         }
     }
 
-    public String GetBoard() {
-        return state;
+    public String GetBoard()
+    {
+        String toReturn = "";
+        for(char i: state.toCharArray()) {
+            if(!(i=='n'||i=='l'||i=='u')) {
+                toReturn=toReturn + i;
+            }
+        }
+        return toReturn;
     }
 
     //Written by Tom Hamer
@@ -642,6 +649,7 @@ public class BoardState {
         toReturn.addAll(hs);
         return toReturn;
     }
+
 
 
 

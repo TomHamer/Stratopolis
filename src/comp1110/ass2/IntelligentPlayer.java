@@ -89,14 +89,14 @@ public class IntelligentPlayer {
             }
 
             //finally, takes the index of the best move that is found
-            return board.generateAllPossibleMoves(false,deckPiece).get(moveNumber);
+            return board.generateAllPossibleMoves(true,deckPiece).get(moveNumber);
         }
 
         //generates an arraylist of boards
         private ArrayList<BoardState> generateNextBoards(BoardState board, char deckPiece) {
             ArrayList<BoardState> toReturn = new ArrayList<>();
             //always reds turn
-            ArrayList<String> movesList = board.generateAllPossibleMoves(false,deckPiece);
+            ArrayList<String> movesList = board.generateAllPossibleMoves(true,deckPiece);
             //maps out all the possible moves
             for(int i = 0; i<movesList.size();i++) {
                     BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
