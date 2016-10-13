@@ -72,38 +72,7 @@ public class Board extends Application {
     public void addPlacement(String placement) {
         boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
     }
-
-    // FIXME For Jingyi: Implement a system that uses the following functions, writing to the "savedGame.txt" to save files
-    //clears the text file
-    public void newGame() {
-    }
-    //writes the text file
-    public void saveGame() {
-        //need to save
-
-        //types of the players, out of EasyPlayer, MediumPlayer, HardPlayer, Human player
-
-        //whos turn it is
-
-        //placement on board
-
-    }
-    public void loadGame() {
-        boolean redWasEasy;
-        boolean greenWasEasy;
-        boolean redWasMedium;
-        boolean greenWasMedium;
-        boolean redWasImpossible;
-        boolean greenWasImpossible;
-        boolean redWasHuman;
-        boolean greenWasHuman;
-        String placement = "";
-        boolean redsTurn;
-
-        //assign the above values through reading in the text file
-
-        boardState = new BoardState(placement);
-    }
+    
 
     //allows the user to save the game by writing the gameState into a textfile
     public String boardToText() {
