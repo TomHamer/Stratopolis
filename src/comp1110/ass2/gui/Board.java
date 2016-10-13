@@ -757,15 +757,16 @@ public class Board extends Application {
                     moveNumber = i;
                 }
             }
+            //get the last 4 characters of the best board string
             return possibleBoards.get(moveNumber).GetBoard().substring(possibleBoards.get(moveNumber).GetBoard().length()-4);
         }
 
 
         //minimax alpha-beta algorithm
         private int alphaBeta(BoardState board, int alpha, int beta, int lookahead, boolean maximiseForRed) {
+
             int bestValue;
             ArrayList<String> movesList;
-
 
             if (lookahead == 0  || gameOverQuery(board)) { //if we run out of lookaheads or the game is over we simply evaluate the board
                 bestValue = evaluateBoard(board, maximiseForRed);
@@ -773,18 +774,24 @@ public class Board extends Application {
                 if (lookahead == MAX_LOOKAHEAD) { //if we are on the first lookahead, use the opponent deck piece
                     movesList = board.generateAllPossibleMoves(maximiseForRed, opponentDeckPiece);
                 } else {
-                    if (maximiseForRed) { //here we get the next move on the movelist if the if we are not on the
+                    if (maximiseForRed) {
+                        //here is where the bot cheats: it looks ahead through the moves that it knows it will be able to make, given the deckpiece its opponent cant see
                         movesList = board.generateAllPossibleMoves(true, RDeck.getPieceArray()[RDeck.getPiecesMarker() + 1]);
                     } else {
                         movesList = board.generateAllPossibleMoves(false, GDeck.getPieceArray()[GDeck.getPiecesMarker() + 1]);
                     }
                 }
                 if (maximiseForRed) {
+                    //set the bestvalue to our alpha (since it is the best value discovered)
                     bestValue = alpha;
 
-                    for (String aMovesList : movesList) {
+                    //iterate through the moves list
+                    for (String aMove : movesList) {
+                        //generate a new boardstate to test the move (so we dont change the actual board)
                         BoardState tBoard = new BoardState(board.GetBoard());
-                        tBoard.PlaceTile(aMovesList);
+                        //place a tile on the board
+                        tBoard.PlaceTile(aMove);
+                        //find the alpha beta of the child value
                         int childValue = alphaBeta(tBoard, bestValue, beta, lookahead - 1, false);
                         bestValue = Math.max(bestValue, childValue);
                         if (beta <= bestValue) {
@@ -795,9 +802,9 @@ public class Board extends Application {
                 } else {
                     bestValue = beta;
 
-                    for (String aMovesList : movesList) {
+                    for (String aMove : movesList) {
                         BoardState tBoard = new BoardState(board.GetBoard());
-                        tBoard.PlaceTile(aMovesList);
+                        tBoard.PlaceTile(aMove);
                         int childValue = alphaBeta(tBoard, alpha, bestValue, lookahead - 1, true); //call alphabeta again with the new parameters
                         bestValue = Math.min(bestValue, childValue);
                         if (bestValue <= alpha) {
@@ -815,13 +822,10 @@ public class Board extends Application {
         private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {
             ArrayList<BoardState> toReturn = new ArrayList<>();
             ArrayList<String> movesList = board.generateAllPossibleMoves(isRedsTurn, deckPiece);
-
             for (String s : movesList) {
-                if (board.IsValidMove(s)) {
                     BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
                     tBoard.PlaceTile(s);
                     toReturn.add(tBoard);
-                }
             }
 
             return toReturn;
