@@ -10,6 +10,7 @@ public class EasyPlayer implements Player {
     //keeps track of whether this particular instance of AI is playing as red or as green
     private boolean redIsPlaying;
 
+
     public EasyPlayer(boolean redIsPlaying) {
         this.redIsPlaying = redIsPlaying;
     }
@@ -24,11 +25,10 @@ public class EasyPlayer implements Player {
         for(int i = 0; i<possibleBoards.size();i++) {
             if(evaluateBoard(bestBoard, redIsPlaying)<evaluateBoard(possibleBoards.get(i),redIsPlaying)) {
                 bestBoard = possibleBoards.get(i);
-                moveNumber = i;
             }
         }
-        //finally, takes the index of the best move that is found
-        return board.generateAllPossibleMoves(redIsPlaying,deckPiece).get(moveNumber);
+        //finally, return the last part of the string for the best board, which is the move that the player did
+        return bestBoard.GetBoard().substring(bestBoard.GetBoard().length() - 4);
     }
     //generates an arraylist of boards
     private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {

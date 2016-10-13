@@ -29,11 +29,9 @@ public class MonteCarloPlayer implements Player {
     private HashMap<PlayerStatePairing,Integer> plays; //a hashmap of all the states linked to the number of times the state has been played
     private HashMap<PlayerStatePairing,Integer> wins; //a hashmap of all the states lined to the number of times the state has been won
     private boolean redIsPlaying;
-    public ArrayList<State> states;
     private final double WAITING_TIME_MILLISECONDS = 10; //the waiting time for each branch to be explored
 
     public MonteCarloPlayer(boolean redIsPlaying) {
-        this.states = new ArrayList<>();
         this.redIsPlaying = redIsPlaying;
         this.plays = new HashMap<>();
         this.wins = new HashMap<>();
@@ -71,7 +69,6 @@ public class MonteCarloPlayer implements Player {
     private double get_play(State state, char opponentDeckPiece) {
         long startTime = System.currentTimeMillis(); //fetch starting time
         int games =0;
-        states.add(state);
         while((System.currentTimeMillis()-startTime)<WAITING_TIME_MILLISECONDS)
         {
             run_simulation(state, opponentDeckPiece);

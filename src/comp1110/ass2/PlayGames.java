@@ -3,28 +3,37 @@ package comp1110.ass2;
 import comp1110.ass2.gui.Board;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by Tom on 13/10/2016.
  */
 public class PlayGames {
-    /*public static void main(String[] args) {
-        Board board = new Board();
-        BoardState boardState = new BoardState("MMUA");
-        //sets up the AI based on what the player wants
+    public static void main(String[] args) {
+
+
+        //some examples you could use!
+
         EasyPlayer ep1 = new EasyPlayer(true);
         //HardPlayer hp = new HardPlayer(false);
         EasyPlayer ep2 = new EasyPlayer(false);
         MediumPlayer mp = new MediumPlayer(true);
         MediumPlayer mp2 = new MediumPlayer(false);
         NN1HL n = new NN1HL(8,676,1,0.001);
-        //Board.HardPlayer hp = new Board.HardPlayer(false);
         IntelligentPlayer ip = new IntelligentPlayer(n);
         MonteCarloPlayer mcp = new MonteCarloPlayer(true);
         RandomPlayer rand = new RandomPlayer(true);
 
-        // int NO_OF_GAMES = 1;
-        for (int i = 0; i < 1; i++) {
+        //create two players and run a game here
+        playGame(mcp,ip);
+    }
+
+
+
+    private static void playGame(Player greenPlayer,Player redPlayer) {
+        Board board = new Board();
+        BoardState boardState = new BoardState("MMUA");
+
 
 
             ArrayList<String> boards = new ArrayList<>();
@@ -44,18 +53,19 @@ public class PlayGames {
             char[] GpieceArray = shuffle(Gdeck);
 
 
-            RDeck.pieceArray = RpieceArray;
-            GDeck.pieceArray = GpieceArray;
-
-
+            int rpieceMarker = 0;
+            int gpieceMarker = 0;
             for (int piecesPlayed = 0; piecesPlayed < 20; piecesPlayed++) {
                 //pair[0] for the green player
                 //pair[1] for the red player
 
-                RDeck.placePiece(mcp.getBestMove(boardState,RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+                boardState = new BoardState(boardState.GetBoard() + redPlayer.getBestMove(boardState,RpieceArray[rpieceMarker],GpieceArray[gpieceMarker]));
                 boards.add(boardState.GetBoard());
-                GDeck.placePiece(ep2.getBestMove(boardState, GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
+                //red moved so add 1 to red piece marker
+                rpieceMarker++;
+                boardState = new BoardState(boardState.GetBoard() + greenPlayer.getBestMove(boardState,GpieceArray[gpieceMarker],RpieceArray[rpieceMarker]));
                 boards.add(boardState.GetBoard());
+                gpieceMarker++;
 
                 System.out.println("Red's score is currently "+boardState.BoardScore(false));
                 System.out.println("Green's score is currently "+boardState.BoardScore(true));
@@ -86,12 +96,28 @@ public class PlayGames {
                 }
 
 
-            }
+
             System.out.println(boards);
             System.out.println(outcomes);
             System.out.println(boardState.GetBoard());
         }
 
     }
-    }*/
+    private static char[] shuffle(char[] list) {
+
+        Random random = new Random();
+
+        for(int i = list.length - 1; i >= 0; i--) {
+            int rand = random.nextInt(i + 1);
+
+            char temp = list[rand];
+            list[rand] = list[i];
+            list[i] = temp;
+
+        }
+
+
+        return list;
+    }
+
 }
