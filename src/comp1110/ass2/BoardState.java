@@ -346,7 +346,7 @@ public class BoardState {
             }
         }
 
-        while (!broken) {
+        while (true) {
             if (regionsG.isEmpty() && regionsR.isEmpty()) {
                 Random rand = new Random();
                 return rand.nextBoolean();
@@ -377,8 +377,6 @@ public class BoardState {
                 return (maxG.length * maxG.maxHeight > maxR.length * maxG.maxHeight);
             }
         }
-
-        return true;
     }
 
     private class Cores {

@@ -1,11 +1,14 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.*;
+import javafx.animation.ParallelTransition;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
+import javafx.concurrent.Task;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -25,6 +28,7 @@ import javafx.animation.FadeTransition;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
+import java.util.concurrent.FutureTask;
 
 import static comp1110.ass2.gui.Board.PlayerMode.Human;
 import static comp1110.ass2.gui.Board.PlayerMode.Easy;
@@ -43,8 +47,8 @@ public class Board extends Application {
     private static final int DECK_COORD_R_Y = 50;
     private BoardState boardState = new BoardState("MMUA");
     private Group root = new Group();
-    private Group current = null;
     private Group displayBoard;
+    private Group titleScreen = new Group();
     private Text greenScore, redScore;
     private boolean greensTurn = true;
     private AudioStream AS;
@@ -56,6 +60,7 @@ public class Board extends Application {
     private ToggleGroup greenOptions = new ToggleGroup();
     private ToggleGroup redOptions   = new ToggleGroup();
     private int boardIndex;
+    private Player greenAI, redAI;
 
     private BooleanProperty gameStarted = new SimpleBooleanProperty(false);
 
@@ -132,6 +137,11 @@ public class Board extends Application {
 
         greenScore = new Text();
         redScore = new Text();
+
+
+
+
+
 
         Rectangle greenBox = new Rectangle(DECK_COORD_G_X - SQUARE_SIZE * 1.5, DECK_COORD_G_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 220);
         greenBox.setArcHeight(15);
@@ -230,13 +240,9 @@ public class Board extends Application {
             greenMode = (PlayerMode) greenOptions.getSelectedToggle().getUserData();
             redMode   = (PlayerMode) redOptions.getSelectedToggle().getUserData();
 
-            root.getChildren().add(displayBoard);
             boardIndex = root.getChildren().indexOf(displayBoard);
             displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
-
-            //creates two new decks based on what the player wants
-            RDeck = new Deck(Colour.R,DECK_COORD_R_X, DECK_COORD_R_Y,false); // the red deck
-            GDeck = new Deck(Colour.G,DECK_COORD_G_X, DECK_COORD_G_Y,false); // the green deck
+            root.getChildren().add(displayBoard);
 
             greenScore.setText("Score: 1");
             redScore.setText("Score: 1");
@@ -248,25 +254,55 @@ public class Board extends Application {
             remainingR = new Text(DECK_COORD_R_X - SQUARE_SIZE * 1.2, DECK_COORD_R_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
             remainingR.setFont(new Font(11));
             root.getChildren().add(remainingR);
+
+            switch (redMode) {
+                case Human:
+                    RDeck = new Deck(Colour.R,DECK_COORD_R_X, DECK_COORD_R_Y,false);
+                    break;
+
+                case Easy:
+                    redAI = new EasyPlayer(true);
+                    RDeck = new Deck(Colour.R,DECK_COORD_R_X, DECK_COORD_R_Y,true);
+                    break;
+
+                case Medium:
+                    redAI = new MediumPlayer(true);
+                    RDeck = new Deck(Colour.R,DECK_COORD_R_X, DECK_COORD_R_Y,true);
+                    break;
+
+                case Hard:
+                    redAI = new HardPlayer(true);
+                    RDeck = new Deck(Colour.R,DECK_COORD_R_X, DECK_COORD_R_Y,true);
+                    break;
+            }
+
+            switch (greenMode) {
+                case Human:
+                    GDeck = new Deck(Colour.G,DECK_COORD_G_X, DECK_COORD_G_Y,false);
+                    break;
+
+                case Easy:
+                    greenAI = new EasyPlayer(false);
+                    GDeck = new Deck(Colour.G,DECK_COORD_G_X, DECK_COORD_G_Y,true);
+                    GDeck.AIPlace(greenAI.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
+                    break;
+
+                case Medium:
+                    greenAI = new MediumPlayer(false);
+                    GDeck = new Deck(Colour.G,DECK_COORD_G_X, DECK_COORD_G_Y,true);
+                    GDeck.AIPlace(greenAI.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
+                    break;
+
+                case Hard:
+                    greenAI = new HardPlayer(false);
+                    GDeck = new Deck(Colour.G,DECK_COORD_G_X, DECK_COORD_G_Y,true);
+                    GDeck.AIPlace(greenAI.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
+                    break;
+            }
         });
 
         root.getChildren().add(startGame);
         root.getChildren().addAll(new RadioButton[] {humanG, easyG, mediumG, hardG, humanR, easyR, mediumR, hardR});
-
-        // FIXME For Calum: Implement this so it all works and the user selects it
-
-        //player selects what kind of game they want
-
-        //Do they want AI?
-        boolean leftBotIsAI = false;
-        boolean rightBotIsAI = false;
-
-        //for now set both true
-
-        //how hard should the AI be? Easy, medium or impossible
-
-
-
 
 
 
@@ -300,6 +336,21 @@ public class Board extends Application {
                 }
             }
         });
+
+        Rectangle titleBack = new Rectangle((BOARD_WIDTH - 400) / 2, BOARD_HEIGHT / 4, 400, 300);
+        titleBack.setArcWidth(15);
+        titleBack.setArcHeight(15);
+        titleBack.setFill(Color.GRAY);
+        titleBack.setStrokeWidth(3);
+        titleBack.setStroke(Color.BLACK);
+        titleScreen.getChildren().add(titleBack);
+
+        Text titleText = new Text("Welcome to Stratopolis!");
+        titleText.setFont(new Font(26));
+        titleText.relocate((BOARD_WIDTH - titleText.getLayoutBounds().getWidth()) / 2, BOARD_HEIGHT / 3);
+        titleScreen.getChildren().add(titleText);
+
+        root.getChildren().add(titleScreen);
     }
 
     public void hideHint() {
@@ -313,9 +364,9 @@ public class Board extends Application {
             String moveToShow;
 
             if (forRedPlayer) {
-                moveToShow = ep.getBestMove(boardState, RDeck.getCurrentPiece());
+                moveToShow = ep.getBestMove(boardState, RDeck.getCurrentPiece(), GDeck.getCurrentPiece());
             } else {
-                moveToShow = ep.getBestMove(boardState, GDeck.getCurrentPiece());
+                moveToShow = ep.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece());
             }
 
             //initialise a new hint
@@ -402,53 +453,100 @@ public class Board extends Application {
         }
 
 
+        void AIPlace(String newPiece) {
+            int xOff = 0, yOff = 0;
+
+            if (newPiece.charAt(3) < 'D' && newPiece.charAt(3) > 'A') {
+                xOff = -SQUARE_SIZE;
+            }
+            if (newPiece.charAt(3) > 'B') {
+                yOff = -SQUARE_SIZE;
+            }
+
+            icon.setOpacity(0.5);
+            TranslateTransition translation = new TranslateTransition(Duration.millis(1000), icon);
+            translation.setToX((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 + (newPiece.charAt(0) - 'A') * SQUARE_SIZE - homeX + xOff);
+            translation.setToY((BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 + (newPiece.charAt(1) - 'A') * SQUARE_SIZE - homeY + yOff);
+
+            RotateTransition rotation = new RotateTransition(Duration.millis(400), icon);
+            rotation.setByAngle((newPiece.charAt(3) - 'A') * 90);
+
+            ParallelTransition move = new ParallelTransition();
+            move.getChildren().addAll(translation, rotation);
+            move.setOnFinished(event -> {icon.setOpacity(1); placePiece(newPiece); icon.setRotate(0); icon.setTranslateX(0); icon.setTranslateY(0);});
+
+            move.play();
+        }
 
         //UNSAFE, does not check if the piece is placed in a valid position
-        private void placePiece(String newPiece) {
-
-            if(isAI) {
-                // FIXME For Calum: Implement animation when the AI places a piece
-                //animation code here
-            }
-
-            hideHint(); // hide the hint
-
-            //update the placement on the board
-
-
-            if (piecesMarker < 19) {
-
-                //take the piece that has been placed out of the piece array that can
-
-                addPlacement(newPiece);
-                System.out.println("added "+ newPiece);
-                piecesMarker++;
-                currentPieceType = pieceArray[piecesMarker];
-                if (green) {
-                    remainingG.setText("Pieces Remaining: " + (20 - piecesMarker));
-                } else {
-                    remainingR.setText("Pieces Remaining: " + (20 - piecesMarker));
-                }
-
-                icon.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
-                //this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
-
-
-            } else {
-
-                addPlacement(newPiece);
-                icon.setImage(null);
-
-                if (!green) {
-                    // game over case
-                }
-            }
+        void placePiece(String newPiece) {
 
             //update score boxes
-            greenScore.setText("Score: " + boardState.BoardScore(true));
-            redScore.setText("Score: " + boardState.BoardScore(false));
+            Task<Void> task = new Task<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    hideHint(); // hide the hint
 
-            greensTurn = !greensTurn;
+                    //update the placement on the board
+
+                    if (piecesMarker < 19) {
+                        //take the piece that has been placed out of the piece array that can
+
+                        System.out.println("added "+ newPiece);
+                        piecesMarker++;
+                        currentPieceType = pieceArray[piecesMarker];
+
+                        FutureTask<Void> UpdateUI = new FutureTask<>(() -> {
+                            addPlacement(newPiece);
+                            icon.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+                        }, null);
+
+                        Platform.runLater(UpdateUI);
+                        UpdateUI.get();
+
+                        //this.setImage(new Image(BoardState.class.getResource(URI_BASE + currentPieceType + ".png").toString()));
+
+
+                    } else {
+                        piecesMarker++;
+
+                        FutureTask<Void> UpdateUI = new FutureTask<>(() -> {
+                            addPlacement(newPiece);
+                            icon.setImage(null);
+                        }, null);
+
+                        Platform.runLater(UpdateUI);
+                        UpdateUI.get();
+
+                        if (!green) {
+                            // game over case
+                        }
+                    }
+
+                    FutureTask<Void> UpdateUI = new FutureTask<>(() -> {
+                        greenScore.setText("Score: " + boardState.BoardScore(true));
+                        redScore.setText("Score: " + boardState.BoardScore(false));
+
+                        if (green) {
+                            remainingG.setText("Pieces Remaining: " + (20 - piecesMarker));
+                        } else {
+                            remainingR.setText("Pieces Remaining: " + (20 - piecesMarker));
+                        }
+                    }, null);
+
+                    Platform.runLater(UpdateUI);
+                    UpdateUI.get();
+
+                    greensTurn = !greensTurn;
+                    if (greensTurn && GDeck.getAI() && GDeck.piecesMarker < 20) {
+                        GDeck.AIPlace(greenAI.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
+                    } else if (!greensTurn && RDeck.getAI() && RDeck.piecesMarker < 20) {
+                        RDeck.AIPlace(redAI.getBestMove(boardState, RDeck.getCurrentPiece(), GDeck.getCurrentPiece()));
+                    }
+                    return null;
+                }
+            };
+            new Thread(task).start();
         }
 
 
@@ -582,7 +680,11 @@ public class Board extends Application {
         }
 
         char getCurrentPiece() {
-            return pieceArray[piecesMarker];
+            if (piecesMarker < 20) {
+                return pieceArray[piecesMarker];
+            } else {
+                return 'n';
+            }
         }
 
         public boolean getAI() { return isAI;}
@@ -634,7 +736,7 @@ public class Board extends Application {
     }
 
 
-    public class HardPlayer {
+    public class HardPlayer implements Player {
         boolean redIsPlaying;
         char opponentDeckPiece;
         private final int MAX_LOOKAHEAD = 2;
@@ -781,8 +883,8 @@ public class Board extends Application {
                     //pair[1] for the red player
                     RDeck.placePiece(StratoGame.generateMove(boardState.GetBoard(), RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
-                    GDeck.placePiece(ip.getBestMove(boardState, GDeck.getCurrentPiece()));
-                    System.out.println(ip.getBestMove(boardState, GDeck.getCurrentPiece()) + "ip");
+                    GDeck.placePiece(ip.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
+                    System.out.println(ip.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()) + "ip");
                     boards.add(boardState.GetBoard());
 
 

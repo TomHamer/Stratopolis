@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by Tom on 1/10/2016.
  */
-public class MediumPlayer{
+public class MediumPlayer implements Player {
     private boolean redIsPlaying;
 
     public MediumPlayer(boolean redIsPlaying) {
@@ -26,8 +26,7 @@ public class MediumPlayer{
                 moveNumber = i;
             }
         }
-        //finally, takes the index of the best move that is found
-        return board.generateAllPossibleMoves(redIsPlaying,deckPiece).get(moveNumber);
+        return bestBoard.GetBoard().substring(bestBoard.GetBoard().length() - 4);
     }
     //generate the next boards through using the list of moves generated in StratoGame.java
     private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {

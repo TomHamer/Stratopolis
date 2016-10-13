@@ -15,7 +15,7 @@ import comp1110.ass2.la4j.vector.dense.BasicVector;
 
     //a player trained with a one-hidden-layer neural network to tell whether boards are good or bad
     //only plays red!!
-public class IntelligentPlayer {
+public class IntelligentPlayer implements Player {
 
 
     private Matrix alphas;
@@ -75,7 +75,7 @@ public class IntelligentPlayer {
     }
 
 
-        public String getBestMove(BoardState board, char deckPiece) {
+        public String getBestMove(BoardState board, char deckPiece, char opponentDeckPiece) {
             //generates all possible boards that could come from moves that are available to the AI
             ArrayList<BoardState> possibleBoards = generateNextBoards(board,deckPiece);
             BoardState bestBoard = possibleBoards.get(0);

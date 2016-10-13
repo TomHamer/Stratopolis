@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by Tom on 3/10/2016.
  */
-public class EasyPlayer {
+public class EasyPlayer implements Player {
     //keeps track of whether this particular instance of AI is playing as red or as green
     private boolean redIsPlaying;
 
@@ -14,7 +14,7 @@ public class EasyPlayer {
     }
 
     //gets the best move through what is essentially a 1-recursion-depth minimax algorithm
-    public String getBestMove(BoardState board, char deckPiece) {
+    public String getBestMove(BoardState board, char deckPiece, char opponentDeckPiece) {
         //generates all possible boards that could come from moves that are available to the AI
         ArrayList<BoardState> possibleBoards = generateNextBoards(board,redIsPlaying,deckPiece);
         BoardState bestBoard = possibleBoards.get(0);
