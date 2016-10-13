@@ -13,8 +13,11 @@ import comp1110.ass2.la4j.vector.dense.BasicVector;
  * Created by Tom on 9/10/2016.
  */
 
-    //a player trained with a one-hidden-layer neural network to tell whether boards are good or bad
-    //only plays red!!
+//a player trained with a one-hidden-layer neural network to tell whether boards are good or bad
+//only plays red!!
+//the values that this network was trained to converged to a very high error, and the bot does not
+//seem to perform much better than randomly selecting moves
+
 public class IntelligentPlayer implements Player {
 
 
@@ -75,7 +78,7 @@ public class IntelligentPlayer implements Player {
     }
 
 
-        public String getBestMove(BoardState board, char deckPiece, char opponentDeckPiece) {
+        public String getBestMove(BoardState board, char deckPiece,char opponentDeckPiece) {
             //generates all possible boards that could come from moves that are available to the AI
             ArrayList<BoardState> possibleBoards = generateNextBoards(board,deckPiece);
             BoardState bestBoard = possibleBoards.get(0);
@@ -89,14 +92,14 @@ public class IntelligentPlayer implements Player {
             }
 
             //finally, takes the index of the best move that is found
-            return board.generateAllPossibleMoves(false,deckPiece).get(moveNumber);
+            return board.generateAllPossibleMoves(true,deckPiece).get(moveNumber);
         }
 
         //generates an arraylist of boards
         private ArrayList<BoardState> generateNextBoards(BoardState board, char deckPiece) {
             ArrayList<BoardState> toReturn = new ArrayList<>();
             //always reds turn
-            ArrayList<String> movesList = board.generateAllPossibleMoves(false,deckPiece);
+            ArrayList<String> movesList = board.generateAllPossibleMoves(true,deckPiece);
             //maps out all the possible moves
             for(int i = 0; i<movesList.size();i++) {
                     BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
@@ -157,7 +160,7 @@ public class IntelligentPlayer implements Player {
         return -Y.get(0);
 
     }
-
+    //parses alphas in from the files
     private void processAlphas(String line, int pointNumber) {
         String toParse = "";
         boolean added = true;
@@ -181,7 +184,7 @@ public class IntelligentPlayer implements Player {
         betas.set(pointNumber,0,Double.parseDouble(line));
     }
 
-
+    //activation function
     private double sigmoid(double x) {
         return 1/(1 + Math.exp(-x));
     }

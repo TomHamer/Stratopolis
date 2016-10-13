@@ -28,6 +28,7 @@ public class StratoGame {
         System.out.println(b.BoardScore(true));
         end = System.nanoTime();
         System.out.println("Sequential time: " + (end - start));
+
         //System.out.println("Green score is: " + b.BoardScore(true));
         //System.out.println("Red  score  is: " + b.BoardScore(false));
     }
@@ -296,10 +297,11 @@ public class StratoGame {
         for(char i:redDeck) {
             if(piece == i) {
                 playerIsRed = true; // find if the player is red or green
+                break;
             }
         }
         Random rand = new Random();
-        ArrayList<String> mList = generateMoves(new BoardState(placement),playerIsRed,piece);
+        ArrayList<String> mList = (new BoardState(placement)).generateAllPossibleMoves(playerIsRed,piece);
         int r = rand.nextInt(mList.size());
         return mList.get(r); // return the first randomly generated move
 

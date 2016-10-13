@@ -51,7 +51,6 @@ public class Board extends Application {
     private Group titleScreen = new Group();
     private Text greenScore, redScore;
     private boolean greensTurn = true;
-    private AudioStream AS;
     private boolean soundOn = false;
     private Deck RDeck;
     private Deck GDeck;
@@ -353,7 +352,7 @@ public class Board extends Application {
         root.getChildren().add(titleScreen);
     }
 
-    public void hideHint() {
+    private void hideHint() {
         hint = null; // clear the hint group
     }
     // shows a hint, given by an easy AI
@@ -451,6 +450,7 @@ public class Board extends Application {
         public char[] getPieceArray() {
             return pieceArray;
         }
+        public int getPiecesMarker() {return piecesMarker;}
 
 
         void AIPlace(String newPiece) {
@@ -698,7 +698,7 @@ public class Board extends Application {
 
             green = Colour.G == alignment;
 
-            //generate a new deck
+            //create a new deck
             if (!green) {
                 deck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
             } else  {
@@ -712,12 +712,9 @@ public class Board extends Application {
             currentPieceOrientation = 'A';
             currentPieceType = pieceArray[0];
             icon = new FXDraggablePiece(currentPieceType,SIZE_OF_DECK,x,y);
-
         }
-
-
     }
-    //algorithm that shuffles the deck
+    //algorithm that shuffles the deck'
     private char[] shuffle(char[] list) {
 
         Random random = new Random();
@@ -741,8 +738,6 @@ public class Board extends Application {
         char opponentDeckPiece;
         private final int MAX_LOOKAHEAD = 2;
 
-
-
         public HardPlayer(boolean redIsPlaying) {
             this.redIsPlaying = redIsPlaying;
         }
@@ -751,11 +746,13 @@ public class Board extends Application {
             this.opponentDeckPiece = opponentDeckPiece;
             ArrayList<BoardState> possibleBoards = generateNextBoards(board, redIsPlaying, currentDeckPiece);
             BoardState bestBoard = possibleBoards.get(0);
-            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
+            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
             int moveNumber = 0;
             for (int i = 0; i < possibleBoards.size(); i++) {
-                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
-                if (bestBoardVal < testValue)  {
+                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
+                //since we are taking alpha-beta of "!redIsPlaying" we have to minimise on this node.
+                //so bestboardval is the minimum
+                if (bestBoardVal > testValue)  {
                     bestBoardVal = testValue;
                     moveNumber = i;
                 }
@@ -770,46 +767,47 @@ public class Board extends Application {
             ArrayList<String> movesList;
 
 
-
-            if(lookahead == MAX_LOOKAHEAD) {
-                movesList = board.generateAllPossibleMoves(maximiseForRed, opponentDeckPiece);
+            if (lookahead == 0  || gameOverQuery(board)) { //if we run out of lookaheads or the game is over we simply evaluate the board
+                bestValue = evaluateBoard(board, maximiseForRed);
             } else {
-                if(maximiseForRed) {
-                    movesList = board.generateAllPossibleMoves(true, RDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
+                if (lookahead == MAX_LOOKAHEAD) { //if we are on the first lookahead, use the opponent deck piece
+                    movesList = board.generateAllPossibleMoves(maximiseForRed, opponentDeckPiece);
                 } else {
-                    movesList = board.generateAllPossibleMoves(false, GDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
-                }
-            }
-            if (lookahead == 0) {
-                bestValue = evaluateBoard(board,maximiseForRed);
-            }
-            else if (maximiseForRed) {
-                bestValue = alpha;
-
-                for (int i=0; i<movesList.size(); i++) {
-                    BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                    tBoard.PlaceTile(movesList.get(i));
-                    int childValue = alphaBeta(tBoard, bestValue, beta, lookahead-1, false);
-                    bestValue = Math.max(bestValue, childValue);
-                    if (beta <= bestValue) {
-                        break;
+                    if (maximiseForRed) { //here we get the next move on the movelist if the if we are not on the
+                        movesList = board.generateAllPossibleMoves(true, RDeck.getPieceArray()[RDeck.getPiecesMarker() + 1]);
+                    } else {
+                        movesList = board.generateAllPossibleMoves(false, GDeck.getPieceArray()[GDeck.getPiecesMarker() + 1]);
                     }
                 }
-            }
-            else {
-                bestValue = beta;
+                if (maximiseForRed) {
+                    bestValue = alpha;
 
-                for (int i=0; i<movesList.size(); i++) {
-                    BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                    tBoard.PlaceTile(movesList.get(i));
-                    int childValue = alphaBeta(tBoard, alpha, bestValue,lookahead-1, true);
-                    bestValue = Math.min(bestValue, childValue);
-                    if (bestValue <= alpha) {
-                        break;
+                    for (String aMovesList : movesList) {
+                        BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                        tBoard.PlaceTile(aMovesList);
+                        int childValue = alphaBeta(tBoard, bestValue, beta, lookahead - 1, false);
+                        bestValue = Math.max(bestValue, childValue);
+                        if (beta <= bestValue) {
+                            //prune
+                            break;
+                        }
+                    }
+                } else {
+                    bestValue = beta;
+
+                    for (String aMovesList : movesList) {
+                        BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                        tBoard.PlaceTile(aMovesList);
+                        int childValue = alphaBeta(tBoard, alpha, bestValue, lookahead - 1, true); //call alphabeta again with the new parameters
+                        bestValue = Math.min(bestValue, childValue);
+                        if (bestValue <= alpha) {
+                            break;
+                        }
                     }
                 }
             }
             return bestValue;
+
         }
 
 
@@ -836,20 +834,22 @@ public class Board extends Application {
 
     }
     //plays games over and over again and prints them to the log
+    //used this for machine learning extension
     private void play_n_sample(int numberOfGames) {
             //sets up the AI based on what the player wants
             EasyPlayer ep1 = new EasyPlayer(true);
-            //HardPlayer ip = new HardPlayer(false);
+            //HardPlayer hp = new HardPlayer(false);
             EasyPlayer ep2 = new EasyPlayer(false);
-            MediumPlayer mp = new MediumPlayer(false);
-            MediumPlayer mp2 = new MediumPlayer(true);
+            MediumPlayer mp = new MediumPlayer(true);
+            MediumPlayer mp2 = new MediumPlayer(false);
             NN1HL n = new NN1HL(8,676,1,0.001);
             HardPlayer hp = new HardPlayer(false);
             IntelligentPlayer ip = new IntelligentPlayer(n);
+            MonteCarloPlayer mcp = new MonteCarloPlayer(false);
+            RandomPlayer rand = new RandomPlayer(true);
 
             // int NO_OF_GAMES = 1;
-
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < numberOfGames; i++) {
                 boardState = new BoardState("MMUA");
                 root.getChildren().remove(boardIndex);
                 displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
@@ -881,17 +881,14 @@ public class Board extends Application {
                 for (int piecesPlayed = 0; piecesPlayed < 20; piecesPlayed++) {
                     //pair[0] for the green player
                     //pair[1] for the red player
-                    RDeck.placePiece(StratoGame.generateMove(boardState.GetBoard(), RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+
+                    RDeck.placePiece(ep1.getBestMove(boardState,RDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
-                    GDeck.placePiece(ip.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()));
-                    System.out.println(ip.getBestMove(boardState, GDeck.getCurrentPiece(), RDeck.getCurrentPiece()) + "ip");
+                    GDeck.placePiece(hp.getBestMove(boardState, GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
 
-
-
-
-
-
+                    System.out.println("Red's score is currently "+boardState.BoardScore(false));
+                    System.out.println("Green's score is currently "+boardState.BoardScore(true));
 
                     if (piecesPlayed == 19) {
                         if (boardState.BoardScore(true) < boardState.BoardScore(false)) {
@@ -922,10 +919,14 @@ public class Board extends Application {
                 }
                 System.out.println(boards);
                 System.out.println(outcomes);
-
+                System.out.println(boardState.GetBoard());
             }
 
         }
+
+    private boolean gameOverQuery(BoardState board) {
+        return board.GetBoard().length()==164; //a boardstate after a complete game has length 168
+    }
 
 
 }
