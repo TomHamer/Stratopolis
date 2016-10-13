@@ -305,6 +305,7 @@ public class Board extends Application {
 
 
 
+
         // FIXME For Jingyi: this sound system now works - suggest another idea?
 
         //It needs to be such that when the user presses 'M' the music starts, and then when the
@@ -849,7 +850,7 @@ public class Board extends Application {
             NN1HL n = new NN1HL(8,676,1,0.001);
             HardPlayer hp = new HardPlayer(false);
             IntelligentPlayer ip = new IntelligentPlayer(n);
-            MonteCarloPlayer mcp = new MonteCarloPlayer(false);
+            MonteCarloPlayer mcp = new MonteCarloPlayer(true);
             RandomPlayer rand = new RandomPlayer(true);
 
             // int NO_OF_GAMES = 1;
@@ -886,9 +887,9 @@ public class Board extends Application {
                     //pair[0] for the green player
                     //pair[1] for the red player
 
-                    //RDeck.placePiece(ep1.getBestMove(boardState,RDeck.getCurrentPiece()));
+                    RDeck.placePiece(mcp.getBestMove(boardState,RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
-                    GDeck.placePiece(hp.getBestMove(boardState, GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
+                    GDeck.placePiece(ep2.getBestMove(boardState, GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
 
                     System.out.println("Red's score is currently "+boardState.BoardScore(false));
