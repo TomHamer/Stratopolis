@@ -72,7 +72,7 @@ public class Board extends Application {
     public void addPlacement(String placement) {
         boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
     }
-    
+
 
     //allows the user to save the game by writing the gameState into a textfile
     public String boardToText() {
