@@ -11,6 +11,7 @@ import java.util.Random;
 /**
  * Created by Tom on 13/10/2016.
  */
+// Written entirely by Tom
 public class PlayGames {
     public static void main(String[] args) {
 

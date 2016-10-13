@@ -1,9 +1,9 @@
 We declare that the work we have submitted for Stage G of this assignment and all stages before it is entirely our own work, with the following documented exceptions:
 
-* The idea of using <...> to make the game run faster came from a discussion with <...> (noted in source code comments)
+* The technique to implement radio buttons in Board.java was gathered from http://docs.oracle.com/javafx/2/ui_controls/radio-button.htm
 
-* The code in class <...> is based on a solution we found when researching the problem (URL provided in source code comments)
+* http://docs.oracle.com/javafx/2/animations/basics.htm was referenced to figure out how to do animations for Board.java
 
-* ....
+* http://stackoverflow.com/questions/26554814/javafx-updating-gui was referenced to figure out how to update UI while performing computations
 
-Signed: Mary Jones (u2345678), Bob Smith (u3456789), and Sue Black (u0123456)
+Signed: Calum Snowdon (u6044174)

@@ -9,6 +9,8 @@ package comp1110.ass2;
 
 // Pieces are given coordinates similarly to assignment 1
 
+    // Written entirely by Tom Hamer
+
 public class Pieces {
 
 

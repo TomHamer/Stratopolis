@@ -12,6 +12,7 @@ import javafx.scene.text.Font;
  */
 
 // Represents a single board tile.
+    // Written entirely by Calum Snowdon
 
 public class Tile {
     private int height;

@@ -9,6 +9,7 @@ import java.util.*;
  * The game is based directly on Gigamic's Stratopolis game
  * (http://boardgamegeek.com/boardgame/125022/stratopolis)
  */
+// Written jointly by Calum Snowdon and Tom Hamer
 public class StratoGame {
     /**
      * Determine whether a tile placement is well-formed according to the following:

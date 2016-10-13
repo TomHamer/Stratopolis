@@ -49,7 +49,7 @@ public class BoardState {
         }
     }
 
-    Tile[][] getTileArray() {return board;}
+    public Tile[][] getTileArray() {return board;}
 
     // Determine if a given move is valid on the board
     public boolean IsValidMove (String move) {

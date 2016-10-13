@@ -40,6 +40,11 @@ import static comp1110.ass2.gui.Board.PlayerMode.Easy;
 import static comp1110.ass2.gui.Board.PlayerMode.Medium;
 import static comp1110.ass2.gui.Board.PlayerMode.Hard;
 
+/*
+    Developed jointly by Tom Hamer and Calum Snowdon.
+    Calum created the UI and handled the logical flow of the game (making it work)
+    Tom created the AI and the draggable icons
+ */
 
 public class Board extends Application {
 
@@ -132,6 +137,7 @@ public class Board extends Application {
         displayBoard.setVisible(false);
 
         // This section creates the radio buttons which allow player options to be selected
+        // Referenced http://docs.oracle.com/javafx/2/ui_controls/radio-button.htm while creating
         RadioButton humanG = new RadioButton();
         humanG.setToggleGroup(greenOptions);
         humanG.setText("Human");
@@ -377,21 +383,6 @@ public class Board extends Application {
         }
     }
 
-    public static int getBoardWidth() {
-        return BOARD_WIDTH;
-    }
-
-    public static int getBoardHeight() {
-        return BOARD_HEIGHT;
-    }
-
-    public static int getSquareSize() {
-        return SQUARE_SIZE;
-    }
-
-    public BoardState getBoardState() { return boardState; }
-
-
     public void addPlacement(String placement) {
         boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
     }
@@ -463,8 +454,6 @@ public class Board extends Application {
                 public Void call() throws Exception {
                     piecesMarker++;
                     if (piecesMarker < 20) {
-                        System.out.println("added "+ newPiece);
-
                         currentPieceType = pieceArray[piecesMarker];
 
                         // Sections which update the UI are given to the main
