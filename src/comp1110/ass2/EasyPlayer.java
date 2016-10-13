@@ -5,6 +5,8 @@ import java.util.ArrayList;
 /**
  * Created by Tom on 3/10/2016.
  */
+
+//Entirely the work of Tom Hamer
 public class EasyPlayer {
     //keeps track of whether this particular instance of AI is playing as red or as green
     private boolean redIsPlaying;

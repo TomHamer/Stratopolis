@@ -13,10 +13,11 @@ import comp1110.ass2.la4j.vector.dense.BasicVector;
  * Created by Tom on 9/10/2016.
  */
 
-    //a player trained with a one-hidden-layer neural network to tell whether boards are good or bad
-    //only plays red!!
-    //While this player is labelled "Intelligent" it really isn't! (lol)
-    //uses values that
+//a player trained with a one-hidden-layer neural network to tell whether boards are good or bad
+//only plays red!!
+//the values that this network was trained to converged to a very high error, and the bot does not
+//seem to perform much better than randomly selecting moves
+
 public class IntelligentPlayer {
 
 
@@ -159,7 +160,7 @@ public class IntelligentPlayer {
         return -Y.get(0);
 
     }
-
+    //parses alphas in from the files
     private void processAlphas(String line, int pointNumber) {
         String toParse = "";
         boolean added = true;
@@ -183,7 +184,7 @@ public class IntelligentPlayer {
         betas.set(pointNumber,0,Double.parseDouble(line));
     }
 
-
+    //activation function
     private double sigmoid(double x) {
         return 1/(1 + Math.exp(-x));
     }

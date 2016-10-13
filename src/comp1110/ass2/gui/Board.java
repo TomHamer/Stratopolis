@@ -43,11 +43,9 @@ public class Board extends Application {
     private static final int DECK_COORD_R_Y = 50;
     private BoardState boardState = new BoardState("MMUA");
     private Group root = new Group();
-    private Group current = null;
     private Group displayBoard;
     private Text greenScore, redScore;
     private boolean greensTurn = true;
-    private AudioStream AS;
     private boolean soundOn = false;
     private Deck RDeck;
     private Deck GDeck;
@@ -307,7 +305,7 @@ public class Board extends Application {
         });
     }
 
-    public void hideHint() {
+    private void hideHint() {
         hint = null; // clear the hint group
     }
     // shows a hint, given by an easy AI
@@ -638,7 +636,7 @@ public class Board extends Application {
     }
 
 
-    public class HardPlayer {
+    private class HardPlayer {
         boolean redIsPlaying;
         char opponentDeckPiece;
         private final int MAX_LOOKAHEAD = 2;
@@ -687,9 +685,9 @@ public class Board extends Application {
                 if (maximiseForRed) {
                     bestValue = alpha;
 
-                    for (int i = 0; i < movesList.size(); i++) {
+                    for (String aMovesList : movesList) {
                         BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                        tBoard.PlaceTile(movesList.get(i));
+                        tBoard.PlaceTile(aMovesList);
                         int childValue = alphaBeta(tBoard, bestValue, beta, lookahead - 1, false);
                         bestValue = Math.max(bestValue, childValue);
                         if (beta <= bestValue) {
@@ -700,9 +698,9 @@ public class Board extends Application {
                 } else {
                     bestValue = beta;
 
-                    for (int i = 0; i < movesList.size(); i++) {
+                    for (String aMovesList : movesList) {
                         BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                        tBoard.PlaceTile(movesList.get(i));
+                        tBoard.PlaceTile(aMovesList);
                         int childValue = alphaBeta(tBoard, alpha, bestValue, lookahead - 1, true); //call alphabeta again with the new parameters
                         bestValue = Math.min(bestValue, childValue);
                         if (bestValue <= alpha) {
@@ -751,6 +749,7 @@ public class Board extends Application {
             HardPlayer hp = new HardPlayer(false);
             IntelligentPlayer ip = new IntelligentPlayer(n);
             MonteCarloPlayer mcp = new MonteCarloPlayer(false);
+            RandomPlayer rand = new RandomPlayer(true);
 
             // int NO_OF_GAMES = 1;
             for (int i = 0; i < numberOfGames; i++) {
@@ -786,9 +785,9 @@ public class Board extends Application {
                     //pair[0] for the green player
                     //pair[1] for the red player
 
-                    GDeck.placePiece(hp.getBestMove(boardState,GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
+                    RDeck.placePiece(mp.getBestMove(boardState,RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
-                    RDeck.placePiece(mp.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+                    GDeck.placePiece(hp.getBestMove(boardState, GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
 
                     System.out.println("Red's score is currently "+boardState.BoardScore(false));

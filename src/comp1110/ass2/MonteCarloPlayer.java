@@ -9,10 +9,20 @@ import java.util.Random;
  * Created by Tom on 11/10/2016.
  */
 
-//Yet another attempt to get good AI
-//due to the high expense of generating random moves, this algorithm is ineffecive
-//Entirely the work of Tom Hamer ):
+//Entirely the work of Tom Hamer
+
+//Yet another attempt to get good AI - this algorithm does a monte carlo tree search.
+//To evaluate the strength of a board position, it selects a node randomly, and plays a game, updating
+//the number of times the bot won or lost from that position. With each new game, another node is added
+//which has its own statistics, also the results of each game are backpropagated up each node, giving a
+//number of wins and a number of times games were played from that node. Dividing the wins and losses
+//we get a value for how good the board position is.
+//due to the high expense of generating random moves, this algorithm is ineffective
+//however this implementation of monte carlo does work better than a bot choosing a random moves. Its really interesting
+//to see how this bot starts off not so well, but really improves in the end game when exploring branches to the end of the game
+//isn't as intensive. Against the random player it always seems at least to make the right decision at the very end!
 //reference to https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/ for guidence on construction and theory for this algorithm
+
 public class MonteCarloPlayer {
 
     private final int MAX_MOVES = 164; //the maximum number of moves in the game
@@ -20,6 +30,7 @@ public class MonteCarloPlayer {
     private HashMap<PlayerStatePairing,Integer> wins; //a hashmap of all the states lined to the number of times the state has been won
     private boolean redIsPlaying;
     public ArrayList<State> states;
+    private final double WAITING_TIME_MILLISECONDS = 10; //the waiting time for each branch to be explored
 
     public MonteCarloPlayer(boolean redIsPlaying) {
         this.states = new ArrayList<>();
@@ -28,6 +39,7 @@ public class MonteCarloPlayer {
         this.wins = new HashMap<>();
     }
 
+    //created this class because the player who is playing has to be made distinguished from the player making the move
     private class PlayerStatePairing {
         private State state;
         public boolean redPlaying;
@@ -41,7 +53,7 @@ public class MonteCarloPlayer {
         }
 
     }
-
+    //this "state" class consists of a player and a board, which is then logged and looked up in a hashtable
     private class State {
         BoardState boardState;
         boolean playingRed;
@@ -60,33 +72,33 @@ public class MonteCarloPlayer {
         long startTime = System.currentTimeMillis(); //fetch starting time
         int games =0;
         states.add(state);
-        while((System.currentTimeMillis()-startTime)<1000)
+        while((System.currentTimeMillis()-startTime)<WAITING_TIME_MILLISECONDS)
         {
             run_simulation(state, opponentDeckPiece);
             games++;
             //the simulation runs, and updates the hashmap of plays and wins
         }
 
-
-        double maxVal = -1000;
+        double toReturn = 0;
+        int numGames = 0;
         ArrayList<String> moveList = state.boardState.generateAllPossibleMoves(!state.playingRed, opponentDeckPiece);
+        //iterate through the moves
         for(String i:moveList) {
             BoardState newBS = new BoardState(state.boardState.GetBoard()+i);
             State newState = new State(newBS, !state.playingRed);
-
+            //add all the ratios from all the games that were played together to get the average
             PlayerStatePairing key = new PlayerStatePairing(newState,redIsPlaying);
-            if(plays.containsKey(key)) {
-                double newVal = wins.get(key)/plays.get(key);
-                if(newVal>maxVal){
-                    maxVal = newVal;
-                }
+            if(plays.containsKey(key)) { //see if the dictionary of games that have been played contains a particular node
+                numGames++;
+                double newVal = wins.get(key) / plays.get(key); //get the ratio
+                toReturn+=newVal;
+            }
         }
-    }
-        //for children of the state
-            //if the child exists
-                //get childRatio
 
-        return -maxVal;
+
+        //finally, take the average ratio for all the games that were played,
+        // and take the negation because we want to minimise for the other player
+        return -toReturn/numGames;
     }
 
     private void run_simulation(State s, char opponentDeckPiece) {
@@ -97,7 +109,7 @@ public class MonteCarloPlayer {
         State state = new State(board,bool);
         Random rand = new Random();
 
-        boolean redWon = false;
+        boolean playerWon = false;
         boolean expand = true;
 
         for(int i = 0; i<MAX_MOVES;i++) { //plays a certain number of random moves into the future
@@ -125,11 +137,10 @@ public class MonteCarloPlayer {
             BoardState b = new BoardState(state.boardState.GetBoard());
             boolean pr = !state.playingRed;
             state = new State(b, pr);
-            //states_copy.add(state);
 
             PlayerStatePairing expandingKey = new PlayerStatePairing(state, redIsPlaying);
 
-            //expand the tree
+            //expand the tree if it hasnt been looked at and is at the top of the tree
             if (expand && !plays.containsKey(expandingKey)) {
                 expand = false;
                 plays.put(expandingKey, 0);
@@ -141,7 +152,7 @@ public class MonteCarloPlayer {
             //ask if the game has ended
             if (gameOverQuery(state.boardState)) {
                 //either red wins, or we break the tie
-                redWon = state.boardState.BoardScore(true) < state.boardState.BoardScore(false);
+                playerWon = state.boardState.BoardScore(!expandingKey.redPlaying) < state.boardState.BoardScore(expandingKey.redPlaying);
                 break;
             }
         }
@@ -153,7 +164,7 @@ public class MonteCarloPlayer {
             }
             int currentState = plays.get(psp);
             plays.put(psp, currentState++);
-            if (psp.redPlaying && redWon) {
+            if (psp.redPlaying && playerWon) {
                 int currentWins = wins.get(psp);
                 wins.put(psp, currentWins++);
             }
@@ -180,9 +191,11 @@ public class MonteCarloPlayer {
         }
 
         //finally, takes the index of the best move that is found
-        return board.generateAllPossibleMoves(true,deckPiece).get(moveNumber);
+        return board.generateAllPossibleMoves(redIsPlaying,deckPiece).get(moveNumber);
     }
 
+
+    //generate the next set of boards required
     private ArrayList<BoardState> generateNextBoards(BoardState board, boolean red, char deckPiece) {
         ArrayList<BoardState> toReturn = new ArrayList<>();
         //always reds turn
@@ -195,11 +208,6 @@ public class MonteCarloPlayer {
         }
         return toReturn;
     }
-
-
-
-
-
 
 }
 

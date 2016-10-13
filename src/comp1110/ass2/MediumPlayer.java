@@ -5,6 +5,9 @@ import java.util.ArrayList;
 /**
  * Created by Tom on 1/10/2016.
  */
+
+//entirely the work of Tom Hamer. Vanilla minimax with two lookaheads. Since alpha-beta only decreases the amount
+//of time and does not increase performance it was not needed. This function always executes in less than a few seconds.
 public class MediumPlayer{
     private boolean redIsPlaying;
 
@@ -21,7 +24,7 @@ public class MediumPlayer{
         //looks through the boards, evaluating each with a static evaluation function
         for(int i = 0; i<possibleBoards.size();i++) {
             //finds the board that maximises "evaluate tree"
-            if(evaluateTree(bestBoard, redIsPlaying, deckPiece, opponentDeckPiece) < evaluateTree(possibleBoards.get(i), redIsPlaying, deckPiece, opponentDeckPiece)) {
+            if(evaluateTree(bestBoard, redIsPlaying, opponentDeckPiece) < evaluateTree(possibleBoards.get(i), redIsPlaying, opponentDeckPiece)) {
                 bestBoard = possibleBoards.get(i);
                 moveNumber = i;
             }
@@ -34,10 +37,10 @@ public class MediumPlayer{
         ArrayList<BoardState> toReturn = new ArrayList<>();
         ArrayList<String> movesList = board.generateAllPossibleMoves(isRedsTurn, deckPiece);
 
-        for (int i = 0; i < movesList.size(); i++) {
-            if (board.IsValidMove(movesList.get(i))) {
+        for (String aMovesList : movesList) {
+            if (board.IsValidMove(aMovesList)) {
                 BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                tBoard.PlaceTile(movesList.get(i));
+                tBoard.PlaceTile(aMovesList);
                 toReturn.add(tBoard);
             }
         }
@@ -46,14 +49,14 @@ public class MediumPlayer{
     }
 
     //finds the board that minimises the other player's ability to play a good move
-    public int evaluateTree(BoardState board, boolean isRedsTurn, char playersDeckPiece, char opponentsDeckPiece) {
+    private int evaluateTree(BoardState board, boolean isRedsTurn, char opponentsDeckPiece) {
         int maxi = 0;
         if(!(gameOverQuery(board))) {
             ArrayList secondTierBoards = generateNextBoards(board, !isRedsTurn, opponentsDeckPiece);
             //here update second tier boards by iterating through all the possibilities
-            for (int j = 0; j < secondTierBoards.size(); j++) {
+            for (Object secondTierBoard : secondTierBoards) {
                 //find the maximum value that occurs here
-                int boardValue = evaluateBoard((BoardState) secondTierBoards.get(j), !isRedsTurn);
+                int boardValue = evaluateBoard((BoardState) secondTierBoard, !isRedsTurn);
                 if (boardValue > maxi) {
                     maxi = boardValue;
                 }
@@ -61,15 +64,17 @@ public class MediumPlayer{
         } else {
             maxi = evaluateBoard(board, !isRedsTurn); //just evaluates the board if the game is over
         }
-
+        //return the negation of the maximum so that the next node can minimise.
         return -maxi;
 
 
     }
+
+    //static evaluation function, takes one board minus the other
     private int evaluateBoard(BoardState board, boolean isRedsTurn) {
         return board.BoardScore(!isRedsTurn)-board.BoardScore(isRedsTurn);
     }
-
+    //queries if the game is over
     private boolean gameOverQuery(BoardState board) {
         return board.GetBoard().length()==168; //a boardstate after a complete game has length 168
     }
