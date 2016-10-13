@@ -618,6 +618,7 @@ public class BoardState {
                    coords.add(new char[]{(char) (c[0] + 64), (char) (c[1] + 66)});
                    coords.add(new char[]{(char) (c[0] + 66), (char) (c[1] + 65)});
                    coords.add(new char[]{(char) (c[0] + 64), (char) (c[1] + 65)});
+                   coords.add(new char[]{(char) (c[0] + 65), (char) (c[1] + 65)});
                    coords.add(new char[]{(char) (c[0] + 66), (char) (c[1] + 64)});
                    coords.add(new char[]{(char) (c[0] + 65), (char) (c[1] + 64)});
                    coords.add(new char[]{(char) (c[0] + 64), (char) (c[1] + 64)});

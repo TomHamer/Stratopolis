@@ -46,6 +46,10 @@ public class Trainer {
         }
         toOutput = Matrix.from1DArray(27760,1, target);
 
+        //this choice of network architecture was derived from http://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden-layers-and-nodes-in-a-feedforward-neural-netw
+        //where the formula was used:
+        //number of hidden layer neurons = (no of samples)/(10*(dimension of input + dimension of output))
+        //this calculated to approx 8 neurons
         NN1HL nn = new NN1HL(8,676,1,0.0001);
 
         nn.train(toInput,toOutput,100);
@@ -147,12 +151,12 @@ public class Trainer {
         }
 
 
-        }
-
-
-
-
     }
+
+
+
+
+}
 
 
 

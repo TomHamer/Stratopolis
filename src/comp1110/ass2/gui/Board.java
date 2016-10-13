@@ -405,6 +405,7 @@ public class Board extends Application {
         public char[] getPieceArray() {
             return pieceArray;
         }
+        public int getPiecesMarker() {return piecesMarker;}
 
 
 
@@ -650,10 +651,10 @@ public class Board extends Application {
             this.opponentDeckPiece = opponentDeckPiece;
             ArrayList<BoardState> possibleBoards = generateNextBoards(board, redIsPlaying, currentDeckPiece);
             BoardState bestBoard = possibleBoards.get(0);
-            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
+            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
             int moveNumber = 0;
             for (int i = 0; i < possibleBoards.size(); i++) {
-                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
+                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
                 if (bestBoardVal < testValue)  {
                     bestBoardVal = testValue;
                     moveNumber = i;
@@ -669,46 +670,46 @@ public class Board extends Application {
             ArrayList<String> movesList;
 
 
-
-            if(lookahead == MAX_LOOKAHEAD) {
-                movesList = board.generateAllPossibleMoves(maximiseForRed, opponentDeckPiece);
+            if (lookahead == 0 || gameOverQuery(board)) { //if we run out of lookaheads or the game is over
+                bestValue = evaluateBoard(board, maximiseForRed);
             } else {
-                if(maximiseForRed) {
-                    movesList = board.generateAllPossibleMoves(true, RDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
+                if (lookahead == MAX_LOOKAHEAD) {
+                    movesList = board.generateAllPossibleMoves(maximiseForRed, opponentDeckPiece);
                 } else {
-                    movesList = board.generateAllPossibleMoves(false, GDeck.getPieceArray()[MAX_LOOKAHEAD-1]);
-                }
-            }
-            if (lookahead == 0) {
-                bestValue = evaluateBoard(board,maximiseForRed);
-            }
-            else if (maximiseForRed) {
-                bestValue = alpha;
-
-                for (int i=0; i<movesList.size(); i++) {
-                    BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                    tBoard.PlaceTile(movesList.get(i));
-                    int childValue = alphaBeta(tBoard, bestValue, beta, lookahead-1, false);
-                    bestValue = Math.max(bestValue, childValue);
-                    if (beta <= bestValue) {
-                        break;
+                    if (maximiseForRed) {
+                        movesList = board.generateAllPossibleMoves(true, RDeck.getPieceArray()[RDeck.getPiecesMarker() + 1]);
+                    } else {
+                        movesList = board.generateAllPossibleMoves(false, GDeck.getPieceArray()[GDeck.getPiecesMarker() + 1]);
                     }
                 }
-            }
-            else {
-                bestValue = beta;
+                if (maximiseForRed) {
+                    bestValue = alpha;
 
-                for (int i=0; i<movesList.size(); i++) {
-                    BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                    tBoard.PlaceTile(movesList.get(i));
-                    int childValue = alphaBeta(tBoard, alpha, bestValue,lookahead-1, true);
-                    bestValue = Math.min(bestValue, childValue);
-                    if (bestValue <= alpha) {
-                        break;
+                    for (int i = 0; i < movesList.size(); i++) {
+                        BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                        tBoard.PlaceTile(movesList.get(i));
+                        int childValue = alphaBeta(tBoard, bestValue, beta, lookahead - 1, false);
+                        bestValue = Math.max(bestValue, childValue);
+                        if (beta <= bestValue) {
+                            break;
+                        }
+                    }
+                } else {
+                    bestValue = beta;
+
+                    for (int i = 0; i < movesList.size(); i++) {
+                        BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                        tBoard.PlaceTile(movesList.get(i));
+                        int childValue = alphaBeta(tBoard, alpha, bestValue, lookahead - 1, true);
+                        bestValue = Math.min(bestValue, childValue);
+                        if (bestValue <= alpha) {
+                            break;
+                        }
                     }
                 }
             }
             return bestValue;
+
         }
 
 
@@ -741,7 +742,7 @@ public class Board extends Application {
             //HardPlayer hp = new HardPlayer(false);
             EasyPlayer ep2 = new EasyPlayer(false);
             MediumPlayer mp = new MediumPlayer(true);
-            MediumPlayer mp2 = new MediumPlayer(true);
+            MediumPlayer mp2 = new MediumPlayer(false);
             NN1HL n = new NN1HL(8,676,1,0.001);
             HardPlayer hp = new HardPlayer(false);
             IntelligentPlayer ip = new IntelligentPlayer(n);
@@ -787,8 +788,8 @@ public class Board extends Application {
                     RDeck.placePiece(mp.getBestMove(boardState, RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
 
-                    System.out.println("Red's score is currently "+boardState.BoardScore(true));
-                    System.out.println("Green's score is currently "+boardState.BoardScore(false));
+                    System.out.println("Red's score is currently "+boardState.BoardScore(false));
+                    System.out.println("Green's score is currently "+boardState.BoardScore(true));
 
                     if (piecesPlayed == 19) {
                         if (boardState.BoardScore(true) < boardState.BoardScore(false)) {
@@ -823,6 +824,10 @@ public class Board extends Application {
             }
 
         }
+
+    private boolean gameOverQuery(BoardState board) {
+        return board.GetBoard().length()==168; //a boardstate after a complete game has length 168
+    }
 
 
 }

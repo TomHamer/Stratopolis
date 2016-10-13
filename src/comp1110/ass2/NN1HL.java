@@ -11,7 +11,7 @@ import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 
 
 //completely origional java implementation of a 1 hidden layer neural network. Did not copy psuedo code, or any other
-//resources except for basing the algorithm on backpropagation and feedforward equations which were taken from
+//resources except for using the backpropagation and feedforward equations from
 //from Essentials of Statistical Machine Learning (Trevor Hastie)
 
 //this file is entirely the work of Tom Hamer
@@ -21,9 +21,8 @@ import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 public class NN1HL {
 
         private double learningRate;
-        private final double WEIGHT_ESTIMATION_CONSTANT = 0.00000001;
+        private final double WEIGHT_ESTIMATION_CONSTANT = 1000; // making this larger means smaller weights
         private final double BIAS_CONSTANT = 0.001;
-        private double ACCEPTABLE_ERROR_RATE;
 
         private Matrix inputs;
         private Matrix outputs;
@@ -48,7 +47,11 @@ public class NN1HL {
 
         //generate a value close to 0
         private double generateWeight() {
-            return Math.random()/10;
+            if(Math.random()>0.5) {
+                return Math.random() / WEIGHT_ESTIMATION_CONSTANT;
+            } else {
+                return -Math.random() / WEIGHT_ESTIMATION_CONSTANT;
+            }
         }
 
         //activation function

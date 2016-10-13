@@ -301,7 +301,7 @@ public class StratoGame {
             }
         }
         Random rand = new Random();
-        ArrayList<String> mList = generateMoves(new BoardState(placement),playerIsRed,piece);
+        ArrayList<String> mList = (new BoardState(placement)).generateAllPossibleMoves(playerIsRed,piece);
         int r = rand.nextInt(mList.size());
         return mList.get(r); // return the first randomly generated move
 
