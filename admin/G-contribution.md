@@ -1,9 +1,9 @@
 We declare that the work toward our submission of Stage G was distributed among the group members as follows:
 
-U6081814 46
-U6044174 46
-Jingyi  8
+U6081814 47.5
+U6044174 47.5
+Jingyi Lu  5
 
 
-Signed: Calum Snowdon (u2345678), Tom Hamer (u6081614), and Sue Black (u0123456)
+Signed: Calum Snowdon (u2345678), Tom Hamer (u6081614), and Jingyi Lu
 

@@ -6,7 +6,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 /**
  * Created by calum on 8/15/2016.

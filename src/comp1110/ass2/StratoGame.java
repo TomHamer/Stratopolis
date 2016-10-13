@@ -1,9 +1,6 @@
 package comp1110.ass2;
 
-import java.lang.reflect.Array;
 import java.util.*;
-
-import comp1110.ass2.gui.Board;
 
 
 /**
@@ -13,26 +10,6 @@ import comp1110.ass2.gui.Board;
  * (http://boardgamegeek.com/boardgame/125022/stratopolis)
  */
 public class StratoGame {
-    private static BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBLOFAKJLAPPABQKMCJNECRLRBLQGBNPKBLPHDPRPBJOFAMRRDOKHCMINCOTGAQITDTIIBRPKCKIDCRSOBTPCCSRQASGCAQKPBQUADPRLCQNJAIPSBGOIB");
-
-
-    public static void main(String[] args) throws InterruptedException {
-        //BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBMLDANPLDNNBAONMCLOFAPQTC");
-        //BoardState b = new BoardState("MMUANLOBLNBCONSCKLDAPOTCMLEBPLMBKNJDOLNBLOFAKJLAPPABQKMCJNECRLRBLQGBNPKBLPHDPRPBJOFAMRRDOKHCMINCOTGAQITDTIIBRPKCKIDCRSOBTPCCSRQASGCAQKPBQUADPRLCQNJAIPSBGOIB");
-        long start = System.nanoTime();
-        System.out.println(b.ConcurrentScore(true));
-        long end = System.nanoTime();
-        System.out.println("Concurrent time: " + (end - start));
-
-        start = System.nanoTime();
-        System.out.println(b.BoardScore(true));
-        end = System.nanoTime();
-        System.out.println("Sequential time: " + (end - start));
-
-        //System.out.println("Green score is: " + b.BoardScore(true));
-        //System.out.println("Red  score  is: " + b.BoardScore(false));
-    }
-
     /**
      * Determine whether a tile placement is well-formed according to the following:
      * - it consists of exactly four characters
@@ -44,7 +21,7 @@ public class StratoGame {
      * @param tilePlacement A string describing a tile placement
      * @return True if the tile placement is well-formed
      */
-    static boolean isTilePlacementWellFormed(String tilePlacement) {
+    public static boolean isTilePlacementWellFormed(String tilePlacement) {
         // FIXME Task 3: determine whether a tile placement is well-formed
         char x = tilePlacement.charAt(0);
         char y = tilePlacement.charAt(1);
@@ -69,7 +46,7 @@ public class StratoGame {
      * @param placement A string describing a placement of one or more tiles
      * @return True if the placement is well-formed
      */
-    static boolean isPlacementWellFormed(String placement) {
+    public static boolean isPlacementWellFormed(String placement) {
         // FIXME Task 4: determine whether a placement is well-formed
         if (placement == null) {return false;}
         if (placement.isEmpty()) {return false;}
@@ -134,13 +111,6 @@ public class StratoGame {
     static int getScoreForPlacement(String placement, boolean green) {
         // FIXME Task 7: determine the score for a player given a placement
         return (new BoardState(placement)).BoardScore(green);
-
-        //try {
-        //    return (new BoardState(placement)).ConcurrentScore(green);
-        //} catch(InterruptedException e) {
-        //    e.printStackTrace();
-        //}
-        //return 0;
     }
 
     /**
@@ -153,140 +123,7 @@ public class StratoGame {
      * @return A string indicating a valid tile placement that represents your move.
      */
 
-    //generates all the possible moves, regardless of which player has what piece
-    public static ArrayList<String> generateAllPossibleMoves(BoardState board, boolean redIsPlaying) {
-        ArrayList<String> toReturn = new ArrayList<>();
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        for (char i : alphabet.toCharArray()) {
-            for (char j : alphabet.toCharArray()) {
-                for (char k : "ABCD".toCharArray()) {
-                    if (redIsPlaying)
-                        for (char p : "ABCDEFGHIJ".toCharArray()) {
-                            String newMove = ""+i + j + p +k;
-                            if (board.IsValidMove(newMove)) {
-                                toReturn.add(newMove);
-                            }
-                        }
-                    else {
-                        for (char p : "KLMNOPQRST".toCharArray()) {
-                            String newMove = "" + i + j + p + k;
-                            if (board.IsValidMove(newMove)) {
-                                toReturn.add(newMove);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return toReturn;
-    }
-    //this implementation will give some duplicate moves, but that isnt an issue
-    public static ArrayList<String> generateMoves(BoardState board, boolean redIsPlaying,char piece) {
-
-
-
-
-
-
-
-
-
-        //start with MMUA
-        String[] rectangle;
-        Set<String> hs = new HashSet<>();
-
-        ArrayList<String> toReturn = new ArrayList<>();
-        for(int i = 0;i<board.GetBoard().length();i+=4) {
-            String bString = board.GetBoard().substring(i,i+4);
-            BoardState toCheck = new BoardState(bString);
-            hs.addAll(generateAllPossibleMoves(toCheck,redIsPlaying,piece));
-        }
-
-        toReturn.addAll(hs);
-        return(toReturn);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //generates a string of the x axis followed by y axis, which bound the area that pieces can be placed validly
-    public static String[] generateRectangle(BoardState board) {
-        String currentString = board.GetBoard();
-        char leftBoundX = 'M';
-        char rightBoundX = 'M';
-        char lowerBoundY = 'M';
-        char upperBoundY = 'M';
-        for(int i = 0; i<currentString.length();i+=4) {
-            char testBoundx = currentString.toCharArray()[i];
-            char testBoundy = currentString.toCharArray()[i+1];
-            if(testBoundx<leftBoundX){
-                leftBoundX = testBoundx;
-            }
-            if(testBoundx>rightBoundX) {
-                rightBoundX = testBoundx;
-            }
-            if(testBoundy<lowerBoundY) {
-                lowerBoundY = testBoundy;
-            }
-            if(testBoundy>upperBoundY) {
-                upperBoundY = testBoundy;
-            }
-        }
-
-        //need to add two to each bound to make absolutely sure all valid spaces are covered
-        leftBoundX-=2;
-        lowerBoundY-=2;
-        upperBoundY+=2;
-        rightBoundX+=2;
-
-
-        String xAlphabet = "";
-        String yAlphabet = "";
-
-        for(int i = (int) Character.toUpperCase(leftBoundX); i<(int) Character.toUpperCase(rightBoundX); i++) {
-            xAlphabet = xAlphabet + (char) i;
-        }
-        for(int i = (int) Character.toUpperCase(lowerBoundY); i<(int) Character.toUpperCase(upperBoundY); i++) {
-            yAlphabet = yAlphabet + (char) i;
-        }
-
-
-        return new String[] {yAlphabet,xAlphabet};
-    }
-
-    //generates all possible moves, given a piece that can be placed
-    public static ArrayList<String> generateAllPossibleMoves(BoardState board, boolean redIsPlaying,char piece) {
-        ArrayList<String> toReturn = new ArrayList<>();
-        String[] alphabets = generateRectangle(board);
-        String xAlphabet = alphabets[0];
-        String yAlphabet = alphabets[1];
-        for (char i : xAlphabet.toCharArray()) {
-            for (char j : yAlphabet.toCharArray()) {
-                for (char k : "ABCD".toCharArray()) {
-                    String newMove = ""+i + j + piece + k;
-                    if (board.IsValidMove(newMove)) {
-                        toReturn.add(newMove);
-                    }
-                }
-            }
-        }
-
-
-        return toReturn;
-
-
-    }
-
-
+    //generates a random move by generating all the moves and selecting a random one
     public static String generateMove(String placement, char piece, char opponentsPiece) {
         char[] redDeck = new char[] {'A','B','C','D','E','F','G','H','I','J'};
         boolean playerIsRed = false;

@@ -1,6 +1,12 @@
 package comp1110.ass2.gui;
 
-import comp1110.ass2.*;
+import comp1110.ass2.AI.*;
+import comp1110.ass2.AI.NeuralNetworkFiles.IntelligentPlayer;
+import comp1110.ass2.AI.NeuralNetworkFiles.NN1HL;
+import comp1110.ass2.BoardState;
+import comp1110.ass2.Colour;
+import comp1110.ass2.Pieces;
+import comp1110.ass2.Tile;
 import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
@@ -22,7 +28,7 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-import  sun.audio.*;
+
 import java.io.*;
 import javafx.animation.FadeTransition;
 import java.util.ArrayList;
@@ -736,11 +742,13 @@ public class Board extends Application {
             list[i] = temp;
 
         }
-
         return list;
     }
 
-    private class HardPlayer implements Player {
+
+    //HardPlayer is a 3 lookhead minimax algorithm with alpha beta pruning. It is an inner class of the board,
+    //as it needs to access the next deck piece coming up, unlike the other bots.
+    public class HardPlayer implements Player {
         boolean redIsPlaying;
         char opponentDeckPiece;
         private final int MAX_LOOKAHEAD = 2;
@@ -754,7 +762,7 @@ public class Board extends Application {
             ArrayList<BoardState> possibleBoards = generateNextBoards(board, redIsPlaying, currentDeckPiece);
             BoardState bestBoard = possibleBoards.get(0);
             int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
-            int moveNumber = 0;
+            int moveNumber = 0; //keeps track of the index of the best move, so it can be returned
             for (int i = 0; i < possibleBoards.size(); i++) {
                 int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
                 //since we are taking alpha-beta of "!redIsPlaying" we have to minimise on this node.
@@ -764,6 +772,7 @@ public class Board extends Application {
                     moveNumber = i;
                 }
             }
+            bestBoard = possibleBoards.get(moveNumber);
             return bestBoard.GetBoard().substring(bestBoard.GetBoard().length() - 4);
         }
 

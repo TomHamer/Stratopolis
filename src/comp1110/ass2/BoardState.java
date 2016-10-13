@@ -1,8 +1,6 @@
 package comp1110.ass2;
 
 import javafx.scene.Group;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -593,17 +591,13 @@ public class BoardState {
     //NB: Moves where the origin of the piece was two tiles away from the tile were left out because that is generally
     //a bad move, and also helps us decrease the search space.
     public ArrayList<String> generateAllPossibleMoves(boolean redIsPlaying, char piece) {
-        //automatically remove duplicates by using a hashset
-        HashSet<String> hs = new HashSet<>();
-
+        HashSet<String> hs = new HashSet<>(); // a hashset for all the moves to guard against duplicates
         String bString = this.GetBoard();
-        HashSet<char[]> coords = new HashSet<>();
+        HashSet<char[]> coords = new HashSet<>(); //using a hashset for the coordinates to remove duplicates
            for(int i = 0; i<bString.length();i+=4) {
                Pieces p = new Pieces(bString.substring(i, i + 4));
-               //again using a hashset to guard against duplicates
-
                for (int[] c : p.coords) {
-                   //retrieve a list of x and y coords that bound the shape
+                   //retrieve a list of x and y coords that bound the shape by going one unit in each direction
                    coords.add(new char[]{(char) (c[0] + 66), (char) (c[1] + 66)});
                    coords.add(new char[]{(char) (c[0] + 65), (char) (c[1] + 66)});
                    coords.add(new char[]{(char) (c[0] + 64), (char) (c[1] + 66)});
@@ -619,22 +613,17 @@ public class BoardState {
 
            //code to get the (flattened) list of all tiles. Colour here is irrelevant
            //the variable board gives a list of tiles
-
-
                 for(char[] cor:coords) {
                     for(char o:"ABCD".toCharArray()) {
+                        //create the full piece from the coodinates along with a trial orientation.
+                        //if it is valid add it to the hashset
                         String pieceToTry = ""+ cor[0]+cor[1]+piece+o;
-
                         if(this.IsValidMove(pieceToTry)) {
-                        //then add to a hashmap
                         hs.add(pieceToTry);
                         }
 
                     }
                 }
-
-
-
 
         //convert to arraylist
         ArrayList<String> toReturn = new ArrayList<>();

@@ -1,9 +1,14 @@
-package comp1110.ass2;
+package comp1110.ass2.AI.NeuralNetworkFiles;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import comp1110.ass2.AI.Player;
+import comp1110.ass2.BoardState;
+import comp1110.ass2.Colour;
+import comp1110.ass2.Tile;
 import comp1110.ass2.la4j.Matrix;
 import comp1110.ass2.la4j.Vector;
 import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
@@ -78,7 +83,7 @@ public class IntelligentPlayer implements Player {
     }
 
 
-        public String getBestMove(BoardState board, char deckPiece,char opponentDeckPiece) {
+        public String getBestMove(BoardState board, char deckPiece, char opponentDeckPiece) {
             //generates all possible boards that could come from moves that are available to the AI
             ArrayList<BoardState> possibleBoards = generateNextBoards(board,deckPiece);
             BoardState bestBoard = possibleBoards.get(0);
@@ -126,9 +131,6 @@ public class IntelligentPlayer implements Player {
 
                     bvec.set(rowIndex,1.0);
                     //add 1
-                } else {
-                    //add 0
-                    //toInput.set(rowIndex,columnIndex,0);
                 }
                 rowIndex++;
             }

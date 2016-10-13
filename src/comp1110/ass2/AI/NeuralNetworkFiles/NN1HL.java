@@ -1,4 +1,4 @@
-package comp1110.ass2;
+package comp1110.ass2.AI.NeuralNetworkFiles;
 
 /**
  * Created by Tom on 25/09/2016.
@@ -47,6 +47,7 @@ public class NN1HL {
 
         //generate a value close to 0
         private double generateWeight() {
+            //randomise positive and negative values
             if(Math.random()>0.5) {
                 return Math.random() / WEIGHT_ESTIMATION_CONSTANT;
             } else {
@@ -58,10 +59,13 @@ public class NN1HL {
         private double sigmoid(double x) {
             return 1/(1 + Math.exp(-x));
         }
+
+        //sigmoid derivative
         private double diffSigmoid(double x) {
             return Math.exp(x)/((1+Math.exp(x))*(1+Math.exp(x)));
         }
 
+        //trains the neural network on given data
         public void train(Matrix inputs, Matrix outputs, double ACCEPTABLE_ERROR_RATE) {
             this.inputs = inputs;
             this.outputs = outputs;
@@ -71,7 +75,7 @@ public class NN1HL {
             System.out.println("Current error: "+getError());
 
             while(getError()>ACCEPTABLE_ERROR_RATE ) {
-
+                //prints alphas and betas and the error every backprop step
                 backProp();
                 System.out.println("Current error: "+getError());
                 System.out.println("training");
@@ -83,7 +87,7 @@ public class NN1HL {
 
 
         }
-        //feeds through all the values of
+        //feeds through all the values of the input and takes the euclidian norm between them and the data output values
         public double getError() {
             double errorSum = 0;
             for (int n = 0; n<inputs.rows();n++) {
@@ -115,6 +119,7 @@ public class NN1HL {
             return sigmoid(biases.get(m,0)+alphas.getColumn(m).innerProduct(x));
         }
 
+        //backpropagates and updates all the alphas and betas
         private void backProp() {
 
             //update betas
@@ -158,16 +163,15 @@ public class NN1HL {
 
         }
 
+        //feeds a given vector through the network
         public Vector feedForward(Vector x) {
 
             Vector Z = new BasicVector(M);
 
             for(int m = 0; m<M;m++) {
                 double z;
-                //System.out.println(x);
-                z = sigmoid(biases.get(m,0)+alphas.getColumn(m).innerProduct(x)); //
+                z = sigmoid(biases.get(m,0)+alphas.getColumn(m).innerProduct(x));
                 Z.set(m,z);
-                //System.out.println("the value of Z is "+Z);
             }
 
             Vector T = new BasicVector(K);
