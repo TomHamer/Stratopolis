@@ -114,7 +114,7 @@ public class IntelligentPlayer implements Player {
     private double evaluateBoard(BoardState board) {
         //vectorise the board
         BasicVector bvec = new BasicVector(676);
-        Tile[][] tList = board.getBoard();
+        Tile[][] tList = board.getTileArray();
         int rowIndex = 0;
         for (Tile[] c : tList) {
             for (Tile tile : c) {

@@ -143,10 +143,6 @@ public class StratoGame {
         //return 0;
     }
 
-
-
-
-
     /**
      * Generate a valid move that follows from: the given placement, a piece to
      * play, and the piece the opponent will play next.
