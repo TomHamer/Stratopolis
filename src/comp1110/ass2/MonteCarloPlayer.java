@@ -23,7 +23,7 @@ import java.util.Random;
 //isn't as intensive. Against the random player it always seems at least to make the right decision at the very end!
 //reference to https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/ for guidence on construction and theory for this algorithm
 
-public class MonteCarloPlayer {
+public class MonteCarloPlayer implements Player {
 
     private final int MAX_MOVES = 164; //the maximum number of moves in the game
     private HashMap<PlayerStatePairing,Integer> plays; //a hashmap of all the states linked to the number of times the state has been played

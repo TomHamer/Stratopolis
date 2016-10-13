@@ -37,11 +37,9 @@ public class MediumPlayer implements Player {
         ArrayList<String> movesList = board.generateAllPossibleMoves(isRedsTurn, deckPiece);
 
         for (String aMovesList : movesList) {
-            if (board.IsValidMove(aMovesList)) {
-                BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
-                tBoard.PlaceTile(aMovesList);
-                toReturn.add(tBoard);
-            }
+            BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+            tBoard.PlaceTile(aMovesList);
+            toReturn.add(tBoard);
         }
 
         return toReturn;
@@ -75,6 +73,6 @@ public class MediumPlayer implements Player {
     }
     //queries if the game is over
     private boolean gameOverQuery(BoardState board) {
-        return board.GetBoard().length()==168; //a boardstate after a complete game has length 168
+        return board.GetBoard().length()==164; //a boardstate after a complete game has length 168
     }
 }

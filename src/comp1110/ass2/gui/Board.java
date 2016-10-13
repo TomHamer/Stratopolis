@@ -48,7 +48,8 @@ public class Board extends Application {
     private BoardState boardState = new BoardState("MMUA");
     private Group root = new Group();
     private Group displayBoard;
-    private Group titleScreen = new Group();
+    private Group titleScreen = new Group(), overScreen = new Group();
+    private Text overText = new Text(), overBody = new Text();
     private Text greenScore, redScore;
     private boolean greensTurn = true;
     private boolean soundOn = false;
@@ -69,56 +70,11 @@ public class Board extends Application {
         Human, Easy, Medium, Hard
     }
 
-    public void addPlacement(String placement) {
-        boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
-    }
-
-    // FIXME For Jingyi: Implement a system that uses the following functions, writing to the "savedGame.txt" to save files
-    //clears the text file
-    public void newGame() {
-    }
-    //writes the text file
-    public void saveGame() {
-        //need to save
-
-        //types of the players, out of EasyPlayer, MediumPlayer, HardPlayer, Human player
-
-        //whos turn it is
-
-        //placement on board
-
-    }
-    public void loadGame() {
-        boolean redWasEasy;
-        boolean greenWasEasy;
-        boolean redWasMedium;
-        boolean greenWasMedium;
-        boolean redWasImpossible;
-        boolean greenWasImpossible;
-        boolean redWasHuman;
-        boolean greenWasHuman;
-        String placement = "";
-        boolean redsTurn;
-
-        //assign the above values through reading in the text file
-
-        boardState = new BoardState(placement);
-    }
-
-    //allows the user to save the game by writing the gameState into a textfile
-    public String boardToText() {
-        //this will need - placement, piece arrays for both decks, whether the two are AI or human and their difficulty
-        return null;
-    }
-
     public void start(Stage primaryStage) {
-
 
         Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT, Color.BLACK);
 
         primaryStage.setTitle("Stratopolis");
-        primaryStage.setWidth(415);
-        primaryStage.setHeight(200);
         primaryStage.setX(250);
         primaryStage.setY(100);
 
@@ -126,6 +82,9 @@ public class Board extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        Platform.setImplicitExit(true);
+
+        // Creates the rectangles in the background
         for (double x = -100; x < BOARD_WIDTH; x += 300) {
             for (double y = 0; y < BOARD_HEIGHT; y += 140) {
                 Rectangle toAdd = new Rectangle(x - 150 * (((int) (y / 140)) % 2) + 3, y + 3, 294, 134);
@@ -136,11 +95,6 @@ public class Board extends Application {
 
         greenScore = new Text();
         redScore = new Text();
-
-
-
-
-
 
         Rectangle greenBox = new Rectangle(DECK_COORD_G_X - SQUARE_SIZE * 1.5, DECK_COORD_G_Y - SQUARE_SIZE, SQUARE_SIZE * 5, 220);
         greenBox.setArcHeight(15);
@@ -158,8 +112,6 @@ public class Board extends Application {
         redBox.setStrokeWidth(3);
         root.getChildren().add(redBox);
 
-
-
         root.getChildren().add(greenScore);
         root.getChildren().add(redScore);
 
@@ -170,7 +122,10 @@ public class Board extends Application {
         redScore.relocate(DECK_COORD_R_X - SQUARE_SIZE / 2, DECK_COORD_R_Y + SQUARE_SIZE * 2.5);
 
         displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
+        root.getChildren().add(displayBoard);
+        displayBoard.setVisible(false);
 
+        // This section creates the radio buttons which allow player options to be selected
         RadioButton humanG = new RadioButton();
         humanG.setToggleGroup(greenOptions);
         humanG.setText("Human");
@@ -234,25 +189,39 @@ public class Board extends Application {
         startGame.disableProperty().bind(gameStarted);
         startGame.relocate(DECK_COORD_R_X - SQUARE_SIZE, BOARD_HEIGHT - 50);
 
+        remainingG = new Text();
+        remainingR = new Text();
+        root.getChildren().add(remainingG);
+        root.getChildren().add(remainingR);
+
         startGame.setOnMouseReleased(event -> {
+            boardState = new BoardState("MMUA");
+            root.getChildren().remove(displayBoard);
+
+            overScreen.setVisible(false);
+
+            displayBoard = boardState.GetBoardGroup(SQUARE_SIZE);
+            root.getChildren().add(displayBoard);
+
+            titleScreen.setVisible(false);
+
             gameStarted.setValue(true);
             greenMode = (PlayerMode) greenOptions.getSelectedToggle().getUserData();
             redMode   = (PlayerMode) redOptions.getSelectedToggle().getUserData();
 
             boardIndex = root.getChildren().indexOf(displayBoard);
             displayBoard.relocate((BOARD_WIDTH - SQUARE_SIZE * 26) / 2 - 10, (BOARD_HEIGHT - SQUARE_SIZE * 26 - 50) / 2 - 10);
-            root.getChildren().add(displayBoard);
 
             greenScore.setText("Score: 1");
             redScore.setText("Score: 1");
 
-            remainingG = new Text(DECK_COORD_G_X - SQUARE_SIZE * 1.2, DECK_COORD_G_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
+            remainingG.setText("Pieces Remaining: 20");
             remainingG.setFont(new Font(11));
-            root.getChildren().add(remainingG);
+            remainingG.relocate(DECK_COORD_G_X - SQUARE_SIZE * 1.2, DECK_COORD_G_Y - SQUARE_SIZE / 3 - 10);
 
-            remainingR = new Text(DECK_COORD_R_X - SQUARE_SIZE * 1.2, DECK_COORD_R_Y - SQUARE_SIZE / 3, "Pieces Remaining: 20");
+            remainingR.setText("Pieces Remaining: 20");
             remainingR.setFont(new Font(11));
-            root.getChildren().add(remainingR);
+            remainingR.relocate(DECK_COORD_R_X - SQUARE_SIZE * 1.2, DECK_COORD_R_Y - SQUARE_SIZE / 3 - 10);
 
             switch (redMode) {
                 case Human:
@@ -301,19 +270,9 @@ public class Board extends Application {
         });
 
         root.getChildren().add(startGame);
-        root.getChildren().addAll(new RadioButton[] {humanG, easyG, mediumG, hardG, humanR, easyR, mediumR, hardR});
-
-
-
-        // FIXME For Jingyi: this sound system now works - suggest another idea?
-
-        //It needs to be such that when the user presses 'M' the music starts, and then when the
-        //user presses 'M' again the music stops
-
-        //creates a new input stream for sound system
+        root.getChildren().addAll(humanG, easyG, mediumG, hardG, humanR, easyR, mediumR, hardR);
 
         final AudioClip in = new AudioClip(Board.class.getResource("assets/bensound-goinghigher.mp3").toString());
-
 
         //event handler for sound system
         scene.setOnKeyPressed(event -> {
@@ -321,15 +280,7 @@ public class Board extends Application {
                 if(soundOn) {
                     in.stop();
                     soundOn = false;
-
                 } else {
-                    PrintWriter writer = null;
-                    try {
-                        writer = new PrintWriter(new FileWriter(String.valueOf(Board.class.getResource("assets/Samples.txt")), true));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
                     in.play();
                     soundOn = true;
                 }
@@ -349,7 +300,29 @@ public class Board extends Application {
         titleText.relocate((BOARD_WIDTH - titleText.getLayoutBounds().getWidth()) / 2, BOARD_HEIGHT / 3);
         titleScreen.getChildren().add(titleText);
 
+        Text titleBody = new Text("- Use the radio buttons at the side to set up the game\n" +
+                "- Press M to play music\n" +
+                "- Press \"Start Game\" to begin\n");
+        titleBody.setWrappingWidth(360);
+        titleBody.relocate((BOARD_WIDTH - 360) / 2, BOARD_HEIGHT / 3 + 50);
+        titleBody.setFont(new Font(16));
+        titleScreen.getChildren().add(titleBody);
+
+        Rectangle overBack = new Rectangle((BOARD_WIDTH - 400) / 2, SQUARE_SIZE * 26 - 120, 400, 200);
+        overBack.setArcHeight(15);
+        overBack.setArcWidth(15);
+        overBack.setFill(Color.LIGHTGRAY);
+        overBack.setStrokeWidth(3);
+        overBack.setStroke(Color.BLACK);
+        overScreen.getChildren().add(overBack);
+
+        overText.setFont(new Font(36));
+        overBody.setFont(new Font(16));
+        overScreen.getChildren().addAll(overText, overBody);
+
         root.getChildren().add(titleScreen);
+        root.getChildren().add(overScreen);
+        overScreen.setVisible(false);
     }
 
     private void hideHint() {
@@ -385,8 +358,6 @@ public class Board extends Application {
                 Group toAdd = (newTile).TileFX(SQUARE_SIZE);
                 toAdd.relocate(x * SQUARE_SIZE, y * SQUARE_SIZE);
                 hint.getChildren().add(toAdd);
-
-
             }
 
             //make this object fade out
@@ -395,17 +366,8 @@ public class Board extends Application {
             fade.setFromValue(0.7);
             fade.setToValue(0);
             fade.play();
-
-
         }
     }
-
-
-
-
-
-
-
 
     public static int getBoardWidth() {
         return BOARD_WIDTH;
@@ -420,6 +382,11 @@ public class Board extends Application {
     }
 
     public BoardState getBoardState() { return boardState; }
+
+
+    public void addPlacement(String placement) {
+        boardState.UpdateBoardGroup(displayBoard, SQUARE_SIZE, placement);
+    }
 
 
     //A deck consists of a list of tiles. It has a subclass FXDraggablePiece which is essentially an imageview that
@@ -519,7 +486,36 @@ public class Board extends Application {
                         UpdateUI.get();
 
                         if (!green) {
-                            // game over case
+                            FutureTask<Void> EndGame = new FutureTask<>(() -> {
+                                overScreen.toFront();
+                                overScreen.setVisible(true);
+
+                                if (boardState.BoardScore(true) > boardState.BoardScore(false)) {
+                                    overText.setText("Green Wins!");
+                                    overText.setFill(Color.DARKGREEN);
+                                    overText.setStrokeWidth(1);
+                                    overText.setStroke(Color.BLACK);
+                                    overText.relocate((BOARD_WIDTH - overText.getLayoutBounds().getWidth()) / 2,
+                                            SQUARE_SIZE * 26 - 100);
+                                } else if (boardState.BoardScore(false) > boardState.BoardScore(true)) {
+                                    overText.setText("Red Wins!");
+                                    overText.setFill(Color.DARKRED);
+                                    overText.setStrokeWidth(1);
+                                    overText.setStroke(Color.BLACK);
+                                    overText.relocate((BOARD_WIDTH - overText.getLayoutBounds().getWidth()) / 2,
+                                            SQUARE_SIZE * 26 - 100);
+                                }
+
+                                overBody.setText("                       Final Scores:\n           " +
+                                        "    Green: " + boardState.BoardScore(true) + "      Red: " + boardState.BoardScore(false) + "\n" +
+                                        "Use radio buttons to set up next game \n" +
+                                        "      Press \"Start Game\" to play again");
+                                overBody.relocate((BOARD_WIDTH - overBody.getLayoutBounds().getWidth()) / 2, SQUARE_SIZE * 26 - 40);
+
+                                gameStarted.set(false);
+                            }, null);
+                            Platform.runLater(EndGame);
+                            EndGame.get();
                         }
                     }
 
@@ -732,8 +728,7 @@ public class Board extends Application {
         return list;
     }
 
-
-    public class HardPlayer implements Player {
+    private class HardPlayer implements Player {
         boolean redIsPlaying;
         char opponentDeckPiece;
         private final int MAX_LOOKAHEAD = 2;
@@ -757,9 +752,8 @@ public class Board extends Application {
                     moveNumber = i;
                 }
             }
-            return board.generateAllPossibleMoves(redIsPlaying, currentDeckPiece).get(moveNumber);
+            return bestBoard.GetBoard().substring(bestBoard.GetBoard().length() - 4);
         }
-
 
         //minimax alpha-beta algorithm
         private int alphaBeta(BoardState board, int alpha, int beta, int lookahead, boolean maximiseForRed) {
@@ -788,7 +782,6 @@ public class Board extends Application {
                         int childValue = alphaBeta(tBoard, bestValue, beta, lookahead - 1, false);
                         bestValue = Math.max(bestValue, childValue);
                         if (beta <= bestValue) {
-                            //prune
                             break;
                         }
                     }
@@ -809,8 +802,6 @@ public class Board extends Application {
             return bestValue;
 
         }
-
-
 
         private ArrayList<BoardState> generateNextBoards(BoardState board, boolean isRedsTurn, char deckPiece) {
             ArrayList<BoardState> toReturn = new ArrayList<>();
@@ -927,6 +918,4 @@ public class Board extends Application {
     private boolean gameOverQuery(BoardState board) {
         return board.GetBoard().length()==164; //a boardstate after a complete game has length 168
     }
-
-
 }
