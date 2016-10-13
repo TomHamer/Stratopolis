@@ -785,7 +785,7 @@ public class Board extends Application {
                     //pair[0] for the green player
                     //pair[1] for the red player
 
-                    RDeck.placePiece(mp.getBestMove(boardState,RDeck.getCurrentPiece(),GDeck.getCurrentPiece()));
+                    RDeck.placePiece(ep1.getBestMove(boardState,RDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
                     GDeck.placePiece(hp.getBestMove(boardState, GDeck.getCurrentPiece(),RDeck.getCurrentPiece()));
                     boards.add(boardState.GetBoard());
