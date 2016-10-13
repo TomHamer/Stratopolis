@@ -1,4 +1,6 @@
-package comp1110.ass2;
+package comp1110.ass2.AI;
+
+import comp1110.ass2.BoardState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,6 +71,7 @@ public class MonteCarloPlayer implements Player {
     private double get_play(State state, char opponentDeckPiece) {
         long startTime = System.currentTimeMillis(); //fetch starting time
         int games =0;
+        //we give each branch of the simulation a certain amount of time to run
         while((System.currentTimeMillis()-startTime)<WAITING_TIME_MILLISECONDS)
         {
             run_simulation(state, opponentDeckPiece);
@@ -79,7 +82,6 @@ public class MonteCarloPlayer implements Player {
         double toReturn = 0;
         int numGames = 0;
         ArrayList<String> moveList = state.boardState.generateAllPossibleMoves(!state.playingRed, opponentDeckPiece);
-        //iterate through the moves
         for(String i:moveList) {
             BoardState newBS = new BoardState(state.boardState.GetBoard()+i);
             State newState = new State(newBS, !state.playingRed);
@@ -94,8 +96,7 @@ public class MonteCarloPlayer implements Player {
 
 
         //finally, take the average ratio for all the games that were played,
-        // and take the negation because we want to minimise for the other player
-        return -toReturn/numGames;
+        return toReturn/numGames;
     }
 
     private void run_simulation(State s, char opponentDeckPiece) {
@@ -154,7 +155,7 @@ public class MonteCarloPlayer implements Player {
             }
         }
 
-            //backprop
+            //backpropagate the results up through the defined parts of the tree
         for(PlayerStatePairing psp:visitedStates) {
             if (!(plays.containsKey(psp))) {
                 continue;
@@ -171,7 +172,7 @@ public class MonteCarloPlayer implements Player {
     }
 
     private boolean gameOverQuery(BoardState board) {
-            return board.GetBoard().length() == 168; //a boardstate after a complete game has length 160
+            return board.GetBoard().length() == 164; //a boardstate after a complete game has length 160
     }
 
     public String getBestMove(BoardState board, char deckPiece, char opponentDeckPiece) {

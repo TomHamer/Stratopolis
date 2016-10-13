@@ -1,4 +1,6 @@
-package comp1110.ass2;
+package comp1110.ass2.AI;
+
+import comp1110.ass2.BoardState;
 
 import java.util.ArrayList;
 

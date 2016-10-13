@@ -9,13 +9,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
-
-
-import static comp1110.ass2.StratoGame.isPlacementValid;
 
 /**
  * A very simple viewer for piece placements in the link game.

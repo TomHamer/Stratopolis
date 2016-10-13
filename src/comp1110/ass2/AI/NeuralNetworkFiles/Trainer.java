@@ -1,7 +1,11 @@
-package comp1110.ass2;
+package comp1110.ass2.AI.NeuralNetworkFiles;
 
 import java.io.*;
 import java.util.ArrayList;
+
+import comp1110.ass2.BoardState;
+import comp1110.ass2.Colour;
+import comp1110.ass2.Tile;
 import comp1110.ass2.la4j.Matrix;
 import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 
