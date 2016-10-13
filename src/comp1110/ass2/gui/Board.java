@@ -749,7 +749,6 @@ public class Board extends Application {
             MonteCarloPlayer mcp = new MonteCarloPlayer(false);
 
             // int NO_OF_GAMES = 1;
-
             for (int i = 0; i < numberOfGames; i++) {
                 boardState = new BoardState("MMUA");
                 root.getChildren().remove(boardIndex);
