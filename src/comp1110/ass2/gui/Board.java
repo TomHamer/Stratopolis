@@ -757,7 +757,7 @@ public class Board extends Application {
                     moveNumber = i;
                 }
             }
-            return board.generateAllPossibleMoves(redIsPlaying, currentDeckPiece).get(moveNumber);
+            return possibleBoards.get(moveNumber).GetBoard().substring(possibleBoards.get(moveNumber).GetBoard().length()-4);
         }
 
 
@@ -783,7 +783,7 @@ public class Board extends Application {
                     bestValue = alpha;
 
                     for (String aMovesList : movesList) {
-                        BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                        BoardState tBoard = new BoardState(board.GetBoard());
                         tBoard.PlaceTile(aMovesList);
                         int childValue = alphaBeta(tBoard, bestValue, beta, lookahead - 1, false);
                         bestValue = Math.max(bestValue, childValue);
@@ -796,7 +796,7 @@ public class Board extends Application {
                     bestValue = beta;
 
                     for (String aMovesList : movesList) {
-                        BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
+                        BoardState tBoard = new BoardState(board.GetBoard());
                         tBoard.PlaceTile(aMovesList);
                         int childValue = alphaBeta(tBoard, alpha, bestValue, lookahead - 1, true); //call alphabeta again with the new parameters
                         bestValue = Math.min(bestValue, childValue);
