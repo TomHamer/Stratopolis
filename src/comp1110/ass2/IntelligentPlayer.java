@@ -77,7 +77,7 @@ public class IntelligentPlayer {
     }
 
 
-        public String getBestMove(BoardState board, char deckPiece) {
+        public String getBestMove(BoardState board, char deckPiece,char opponentDeckPiece) {
             //generates all possible boards that could come from moves that are available to the AI
             ArrayList<BoardState> possibleBoards = generateNextBoards(board,deckPiece);
             BoardState bestBoard = possibleBoards.get(0);

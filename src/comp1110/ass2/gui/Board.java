@@ -603,7 +603,7 @@ public class Board extends Application {
 
             green = Colour.G == alignment;
 
-            //generate a new deck
+            //create a new deck
             if (!green) {
                 deck = new char[] {'A','B','C','D','E','F','G','H','I','J','A','B','C','D','E','F','G','H','I','J'};
             } else  {
@@ -651,11 +651,13 @@ public class Board extends Application {
             this.opponentDeckPiece = opponentDeckPiece;
             ArrayList<BoardState> possibleBoards = generateNextBoards(board, redIsPlaying, currentDeckPiece);
             BoardState bestBoard = possibleBoards.get(0);
-            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
+            int bestBoardVal = alphaBeta(bestBoard, -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
             int moveNumber = 0;
             for (int i = 0; i < possibleBoards.size(); i++) {
-                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, redIsPlaying);
-                if (bestBoardVal < testValue)  {
+                int testValue = alphaBeta(possibleBoards.get(i), -1000, 1000, MAX_LOOKAHEAD, !redIsPlaying);
+                //since we are taking alpha-beta of "!redIsPlaying" we have to minimise on this node.
+                //so bestboardval is the minimum
+                if (bestBoardVal > testValue)  {
                     bestBoardVal = testValue;
                     moveNumber = i;
                 }
@@ -670,13 +672,13 @@ public class Board extends Application {
             ArrayList<String> movesList;
 
 
-            if (lookahead == 0 || gameOverQuery(board)) { //if we run out of lookaheads or the game is over
+            if (lookahead == 0  || gameOverQuery(board)) { //if we run out of lookaheads or the game is over we simply evaluate the board
                 bestValue = evaluateBoard(board, maximiseForRed);
             } else {
-                if (lookahead == MAX_LOOKAHEAD) {
+                if (lookahead == MAX_LOOKAHEAD) { //if we are on the first lookahead, use the opponent deck piece
                     movesList = board.generateAllPossibleMoves(maximiseForRed, opponentDeckPiece);
                 } else {
-                    if (maximiseForRed) {
+                    if (maximiseForRed) { //here we get the next move on the movelist if the if we are not on the
                         movesList = board.generateAllPossibleMoves(true, RDeck.getPieceArray()[RDeck.getPiecesMarker() + 1]);
                     } else {
                         movesList = board.generateAllPossibleMoves(false, GDeck.getPieceArray()[GDeck.getPiecesMarker() + 1]);
@@ -691,6 +693,7 @@ public class Board extends Application {
                         int childValue = alphaBeta(tBoard, bestValue, beta, lookahead - 1, false);
                         bestValue = Math.max(bestValue, childValue);
                         if (beta <= bestValue) {
+                            //prune
                             break;
                         }
                     }
@@ -700,7 +703,7 @@ public class Board extends Application {
                     for (int i = 0; i < movesList.size(); i++) {
                         BoardState tBoard = new BoardState(board.GetBoard()); // initialise a new board
                         tBoard.PlaceTile(movesList.get(i));
-                        int childValue = alphaBeta(tBoard, alpha, bestValue, lookahead - 1, true);
+                        int childValue = alphaBeta(tBoard, alpha, bestValue, lookahead - 1, true); //call alphabeta again with the new parameters
                         bestValue = Math.min(bestValue, childValue);
                         if (bestValue <= alpha) {
                             break;
@@ -736,6 +739,7 @@ public class Board extends Application {
 
     }
     //plays games over and over again and prints them to the log
+    //used this for machine learning extension
     private void play_n_sample(int numberOfGames) {
             //sets up the AI based on what the player wants
             EasyPlayer ep1 = new EasyPlayer(true);
@@ -825,7 +829,7 @@ public class Board extends Application {
         }
 
     private boolean gameOverQuery(BoardState board) {
-        return board.GetBoard().length()==168; //a boardstate after a complete game has length 168
+        return board.GetBoard().length()==164; //a boardstate after a complete game has length 168
     }
 
 
