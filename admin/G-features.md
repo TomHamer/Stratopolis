@@ -13,4 +13,12 @@ of our project implements the following features:
 
 additional features...
 
+- (bad) concurrent scoring algorithm
+- (bad) neural network trained opponenet
+- (bad) monte carlo tree search player
+- advanced computer opponents easy, medium and hard
+- animated AI piece placement
+- pretty UI
+
+
 

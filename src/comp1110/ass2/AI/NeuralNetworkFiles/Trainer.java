@@ -59,9 +59,11 @@ public class Trainer {
         nn.train(toInput,toOutput,100);
 
     }
-    //parses data from the
+    //parses data from the "samples.txt" file in gui. Each board is parsed in as a vector of -/+1 for red and green and 0 for anything else
+    //stacking is ignored
     private static void process(String line, int pointNumber) {
         //an even point number implies that we are looking at a line of boards, as opposed to a line of results
+        //this parses in the input matrix
         if(pointNumber%2==0) {
             int columnIndex = pointNumber*20; // each line has 40 entries
 
@@ -71,15 +73,15 @@ public class Trainer {
             char[] l = line.toCharArray();
             //iterate through all the characters in the line
             String analysed = "";
-            for (int i = 0; i < l.length; i++) {
+            for (char aL : l) {
                 //this if statement filters out the cases where we have a braket
                 //filter out the null
-                if (!(l[i] == '[' || l[i] == 'n' || l[i] == 'u' || l[i] == 'l' || l[i] == ' ')) {
+                if (!(aL == '[' || aL == 'n' || aL == 'u' || aL == 'l' || aL == ' ')) {
                     //every comma represents a break
-                    if (!(l[i] == ',' || l[i] == ']')) {
+                    if (!(aL == ',' || aL == ']')) {
                         //this is a letter
 
-                        analysed = analysed+l[i];
+                        analysed = analysed + aL;
 
                         //create a column vector
                         //add each element to the matrix
@@ -89,17 +91,14 @@ public class Trainer {
                         int rowIndex = 0;
                         for (Tile[] c : tList) {
                             for (Tile tile : c) {
-                                 // add one for each tile
+                                // add one for each tile
                                 if (tile.Alignment().equals(Colour.G)) {
-                                    toInput.set(columnIndex,rowIndex,-1.0);
+                                    toInput.set(columnIndex, rowIndex, -1.0);
                                     //add -1
                                 } else if (tile.Alignment().equals(Colour.R)) {
 
-                                    toInput.set(columnIndex,rowIndex,1.0);
+                                    toInput.set(columnIndex, rowIndex, 1.0);
                                     //add 1
-                                } else {
-                                    //add 0
-                                    //toInput.set(rowIndex,columnIndex,0);
                                 }
                                 rowIndex++;
                             }
@@ -114,31 +113,26 @@ public class Trainer {
                 }
             }
 
-
-                   // = Matrix.from1DArray(27760,676,target).transpose();
-        } else { //adds the ones and negative ones to the output vector
+        } else { //parses in the output vector
+            //adds the ones and negative ones to the output vector
 
             char[] l = line.toCharArray();
             //iterate through all the characters in the line
             String analysed = "";
             int numChars = 0;
-            for (int i = 0; i < l.length; i++) {
+            for (char aL : l) {
                 //this if statement filters out the cases where we have a braket
                 //filter out the null
 
-                if (!(l[i] == '[' || l[i] == ' ')) {
+                if (!(aL == '[' || aL == ' ')) {
                     //every comma represents a break
-                    if (!(l[i] == ',' || l[i] == ']')) {
+                    if (!(aL == ',' || aL == ']')) {
                         //this is a letter
-                        analysed = analysed + l[i];
-                        //System.out.println(l[i]);
+                        analysed = analysed + aL;
 
-                        //create a column vector
-                        //add each element to the matrix
                     } else {
-                        //the reason why this needs to be negative is that the data was actually collected wrogning
+                        //add the parsed double to the output matrix
                         out.add(-Double.parseDouble(analysed));
-
 
 
                         analysed = "";
