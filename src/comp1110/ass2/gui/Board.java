@@ -455,7 +455,6 @@ public class Board extends Application {
 
         // Places a piece on the board and changes the active player
         void placePiece(String newPiece) {
-
             // Computations are performed in a separate thread so that UI may be updated
             // while computations are occurring. Referenced http://stackoverflow.com/questions/26554814/javafx-updating-gui
             // for this section.
@@ -507,6 +506,20 @@ public class Board extends Application {
                                     overText.setStroke(Color.BLACK);
                                     overText.relocate((BOARD_WIDTH - overText.getLayoutBounds().getWidth()) / 2,
                                             SQUARE_SIZE * 26 - 100);
+                                } else if (boardState.BreakTie()) {
+                                    overText.setText("Green Wins!");
+                                    overText.setFill(Color.DARKGREEN);
+                                    overText.setStrokeWidth(1);
+                                    overText.setStroke(Color.BLACK);
+                                    overText.relocate((BOARD_WIDTH - overText.getLayoutBounds().getWidth()) / 2,
+                                            SQUARE_SIZE * 26 - 100);
+                                } else {
+                                    overText.setText("Red Wins!");
+                                    overText.setFill(Color.DARKRED);
+                                    overText.setStrokeWidth(1);
+                                    overText.setStroke(Color.BLACK);
+                                    overText.relocate((BOARD_WIDTH - overText.getLayoutBounds().getWidth()) / 2,
+                                            SQUARE_SIZE * 26 - 100);
                                 }
 
                                 overBody.setText("                       Final Scores:\n           " +
@@ -543,6 +556,7 @@ public class Board extends Application {
                     } else if (!greensTurn && RDeck.getAI() && RDeck.piecesMarker < 20) {
                         RDeck.AIPlace(redAI.getBestMove(boardState, RDeck.getCurrentPiece(), GDeck.getCurrentPiece()));
                     }
+
                     return null;
                 }
             };

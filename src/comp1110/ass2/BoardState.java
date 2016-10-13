@@ -23,8 +23,6 @@ import java.util.Set;
 public class BoardState {
     private Tile[][] board;
     private String state;
-    private static final String URI_BASE = "gui/assets/";
-    private static final int SQUARE_SIZE = 28;
 
     public BoardState() {
         board = new Tile[26][26];
@@ -51,7 +49,7 @@ public class BoardState {
         }
     }
 
-    public Tile[][] getBoard() {return board;}
+    Tile[][] getTileArray() {return board;}
 
     // Determine if a given move is valid on the board
     public boolean IsValidMove (String move) {
@@ -209,8 +207,6 @@ public class BoardState {
         fill.relocate(-8.5, -8.5);
         display.getChildren().add(fill);
 
-
-
         for (int x = 0; x < 26; x++) {
             for (int y = 0; y < 26; y++) {
                 Group toAdd = board[y][x].TileFX(squareSize);
@@ -223,7 +219,7 @@ public class BoardState {
         return display;
     }
 
-    // Adds a piece to the board group without generating a new group. There is
+    // Adds a piece to a board group without generating a new group. There is
     // room for optimisation, currently it stacks tile objects on top of each other
     // so there are objects in the background which are never seen again
     public void UpdateBoardGroup(Group boardGroup, double squareSize, String placement) {
@@ -300,7 +296,7 @@ public class BoardState {
         for (int i = 0; i < 26; i++) {
             for (int j = 0; j < 26; j++) {
                 if (board[j][i].Alignment() != Colour.N && board[j][i].Alignment() != Colour.W) {
-                    sets[i][j] = new Union(board[i][j].Height(), board[j][i].Alignment());
+                    sets[j][i] = new Union(board[j][i].Height(), board[j][i].Alignment());
                 }
             }
         }
@@ -368,11 +364,11 @@ public class BoardState {
                 }
             }
 
-            if (maxG.length * maxG.maxHeight == maxR.length * maxG.maxHeight) {
+            if (maxG.length * maxG.maxHeight == maxR.length * maxR.maxHeight) {
                 regionsG.remove(maxG);
                 regionsR.remove(maxR);
             } else {
-                return (maxG.length * maxG.maxHeight > maxR.length * maxG.maxHeight);
+                return (maxG.length * maxG.maxHeight > maxR.length * maxR.maxHeight);
             }
         }
     }
@@ -406,7 +402,6 @@ public class BoardState {
     // A parallelised version of scoring. Is slower than the sequential version
     // and is mildly dodgy code.
     public int ConcurrentScore (boolean green) throws InterruptedException {
-        //long start = System.nanoTime();
         Colour col;
 
         Cores cores = new Cores();
@@ -416,7 +411,6 @@ public class BoardState {
         else {col = Colour.R;}
 
         Union[][] sets = new Union[26][26];
-
 
         for (int i = 0; i < 26; i++) {
             for (int j = 0; j < 26; j++) {
@@ -519,9 +513,6 @@ public class BoardState {
                 }
             }
         }
-
-        //long end = System.nanoTime();
-        //System.out.println("Fucntion took " + (end - start) + " while task creation took " + (taskEnd - taskStart));
         return score.Return();
     }
 
@@ -538,8 +529,8 @@ public class BoardState {
         Union head; // The start of the list which the union is contained within
         Union next; // The next element in the list
         int length; // The number of elements in the list. NOTE: only kept valid for the head.
-        int maxHeight;
-        Colour colour;
+        int maxHeight; // Largest height in the set. Only valid at the head.
+        Colour colour; // Used to differentiate between sets for each player, used in the tie breaking algorithm
 
         public Union (int height) {
             head = this;
@@ -582,6 +573,8 @@ public class BoardState {
     public String GetBoard()
     {
         String toReturn = "";
+        // For some reason "null" was showing up in the string, we couldn't
+        // figure out the problem so we just filtered out the null
         for(char i: state.toCharArray()) {
             if(!(i=='n'||i=='l'||i=='u')) {
                 toReturn=toReturn + i;
@@ -637,13 +630,4 @@ public class BoardState {
         toReturn.addAll(hs);
         return toReturn;
     }
-
-
-
-
-
-
-
-
-
 }

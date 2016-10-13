@@ -87,7 +87,7 @@ public class Trainer {
                         //add each element to the matrix
                     } else {
                         BoardState b = new BoardState(analysed);
-                        Tile[][] tList = b.getBoard();
+                        Tile[][] tList = b.getTileArray();
                         int rowIndex = 0;
                         for (Tile[] c : tList) {
                             for (Tile tile : c) {
