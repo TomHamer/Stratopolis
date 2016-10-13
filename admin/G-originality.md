@@ -6,4 +6,14 @@ We declare that the work we have submitted for Stage G of this assignment and al
 
 * http://stackoverflow.com/questions/26554814/javafx-updating-gui was referenced to figure out how to update UI while performing computations
 
+* http://la4j.org (linear algebra package for neural network)
+
+* based monte carlo on https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/ for guidence on construction and theory for this algorithm
+
+* Assignment one music and drag and drop code
+
+* http://stackoverflow.com/questions/27527090/finding-the-best-move-using-minmax-with-alpha-beta-pruning for inspiration with java alpha beta pruning
+
+* The Elements of Statistical Learning (Trevor Hastie) (back and forward propagation equations)
+
 Signed: Calum Snowdon (u6044174)

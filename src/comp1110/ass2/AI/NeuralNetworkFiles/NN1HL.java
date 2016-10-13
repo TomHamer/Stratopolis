@@ -12,7 +12,7 @@ import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 
 //completely origional java implementation of a 1 hidden layer neural network. Did not copy psuedo code, or any other
 //resources except for using the backpropagation and feedforward equations from
-//from Essentials of Statistical Machine Learning (Trevor Hastie)
+//from The Elements of Statistical Learning (Trevor Hastie)
 
 //this file is entirely the work of Tom Hamer with the exception of LA4j which is an external linear algebra package
 //the validity of this network was checked using a test on pricing houses by housing data. However, when it attempted
