@@ -16,4 +16,4 @@ We declare that the work we have submitted for Stage G of this assignment and al
 
 * The Elements of Statistical Learning (Trevor Hastie) (back and forward propagation equations)
 
-Signed: Calum Snowdon (u6044174)
+Signed: Calum Snowdon (u6044174), Tom Hamer (U6081614)
