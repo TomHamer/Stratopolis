@@ -1,6 +1,8 @@
 package comp1110.ass2;
 
 import comp1110.ass2.AI.MonteCarloPlayer;
+import comp1110.ass2.AI.NeuralNetworkFiles.IntelligentPlayer;
+import comp1110.ass2.AI.NeuralNetworkFiles.NN1HL;
 import comp1110.ass2.AI.Player;
 import comp1110.ass2.AI.RandomPlayer;
 import comp1110.ass2.gui.Board;
@@ -25,21 +27,22 @@ public class PlayGames {
         MediumPlayer mp1 = new MediumPlayer(true);
         MediumPlayer mp2 = new MediumPlayer(false);
         //intellegent player requires a neural network architecture
-        NN1HL n = new NN1HL(8,676,1,0.001);
+
         //intelligent player can only play as red
         IntelligentPlayer ip = new IntelligentPlayer(n);
         */
-        MonteCarloPlayer mcp = new MonteCarloPlayer(true);
-        RandomPlayer rand = new RandomPlayer(true);
+        NN1HL n = new NN1HL(8,676,1,0.001);
+        IntelligentPlayer ip = new IntelligentPlayer(n);
+        RandomPlayer rand = new RandomPlayer(false);
 
         //create two players and run a game here
         //printRunningStats = true gives live updates of how the game is progressing
-        //typically use it when running 1 game for testing
+        //typically use ixt when running 1 game for testing
         //when sampling from many games, use false. This is the function used in the machine learning extension
         //as well as when debugging AI
 
 
-        playGame(1,mcp,rand,true);
+        playGame(100,rand,ip,false);
     }
 
 

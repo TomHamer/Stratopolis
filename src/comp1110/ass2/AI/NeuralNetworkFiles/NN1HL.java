@@ -21,7 +21,7 @@ import comp1110.ass2.la4j.matrix.dense.Basic1DMatrix;
 public class NN1HL {
 
         private double learningRate;
-        private final double WEIGHT_ESTIMATION_CONSTANT = 1000; // making this larger means smaller weights
+        private final double WEIGHT_ESTIMATION_CONSTANT = 10; // making this larger means smaller weights
         private final double BIAS_CONSTANT = 0.001;
 
         private Matrix inputs;

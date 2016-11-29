@@ -1,8 +1,8 @@
 We declare that the work toward our submission of Stage H was distributed among the group members as follows:
 
-* u2345678 30
-* u3456789 40
-* u0123456 30
+* u6081614 33
+* u6044174 33
+* u5932987 33
 
-Signed: Mary Jones (u2345678), Bob Smith (u3456789), and Sue Black (u0123456)
+Signed: Tom Hamer (u6081614), Calum Snowdon (u6044174), and Jingy Lu (u5932987)
 

@@ -76,6 +76,7 @@ public class BoardState {
                 board[cor[1][1]][cor[1][0]].Height() == board[cor[2][1]][cor[2][0]].Height()) && Adjacent(move) && Straddle(move);
     }
 
+
     // Determines whether a piece is adjacent to an already placed piece
     private boolean Adjacent (String move) {
         boolean adjacent = false;
