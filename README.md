@@ -1,4 +1,4 @@
-# Stratopolis - A strategy boardgame.
+# Stratopolis - A strategy board game.
 
 A boardgame implementing player vs player modes and player vs computer modes. 
 
