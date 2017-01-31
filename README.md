@@ -2,6 +2,9 @@
 
 A boardgame implementing player vs player modes and player vs computer modes. 
 
+##Authors: Tom Hamer, Calum Snowdon
+AI by Tom Hamer, UI by Calum Snowdon, implementation and game logic coded jointly by Tom Hamer and Calum Snowdon
+
 ##Features include
 
 - A simple placement viewer
@@ -90,5 +93,3 @@ The exceptions are mentioned above, and in G-originality.md
 
 
 
-Authors: Tom Hamer, Calum Snowdon
-UI by Calum Snowdon, implementation coded jointly between Tom Hamer and Calum Snowdon, AI by Tom Hamer.
